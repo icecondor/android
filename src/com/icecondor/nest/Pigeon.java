@@ -1,10 +1,13 @@
 package com.icecondor.nest;
 
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Service;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -20,7 +23,13 @@ public class Pigeon extends Service {
 		timer.scheduleAtFixedRate(
 			new TimerTask() {
 				public void run() {
-					Log.i(appTag, "I am a background process running periodically.");
+					Location fix;
+					Log.i(appTag, "getting locationservice");
+					LocationManager location_service = (LocationManager) getSystemService(LOCATION_SERVICE);
+					Log.i(appTag, "getting fix");
+					fix = location_service.getLastKnownLocation("gps");
+					Log.i(appTag, "got fix - ");
+					pushLocation(fix);					
 				}
 			}, 0, UPDATE_INTERVAL);		
 	}
@@ -33,6 +42,10 @@ public class Pigeon extends Service {
 	public IBinder onBind(Intent arg0) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public void pushLocation(Location fix) {
+		Log.i(appTag, "sending fix: "+fix.getLatitude()+" "+fix.getLongitude());
 	}
 
 }
