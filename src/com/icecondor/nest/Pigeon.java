@@ -5,6 +5,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -35,6 +36,7 @@ public class Pigeon extends Service {
 				public void run() {
 					Location fix;
 					fix = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+					fix = new Location("phoney");
 					pushLocation(fix);		
 				}
 			}, 0, UPDATE_INTERVAL);		
@@ -56,7 +58,9 @@ public class Pigeon extends Service {
 			Log.i(appTag, "sending fix: "+fix.getLatitude()+" "+fix.getLongitude());
 			
 			HttpClient client = new DefaultHttpClient();
-			client.execute(new HttpPost(URL));
+			HttpResponse response;
+			response = client.execute(new HttpPost(URL));
+			Log.i(appTag, "http response: "+response.getStatusLine());
 		} catch (NullPointerException t) {
 			Log.i(appTag,"no data in location record"+t);
 		} catch (ClientProtocolException e) {
