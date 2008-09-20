@@ -1,13 +1,22 @@
 package com.icecondor.nest;
 
-import java.util.List;
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import org.apache.http.HttpHost;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -19,17 +28,14 @@ public class Pigeon extends Service {
 	static final String appTag = "IcePigeon";
 	
 	public void onCreate() {
-		Log.i("Pigeon", "service created.");
+		Log.i(appTag, "*** service created.");
+		final LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		timer.scheduleAtFixedRate(
 			new TimerTask() {
 				public void run() {
 					Location fix;
-					Log.i(appTag, "getting locationservice");
-					LocationManager location_service = (LocationManager) getSystemService(LOCATION_SERVICE);
-					Log.i(appTag, "getting fix");
-					fix = location_service.getLastKnownLocation("gps");
-					Log.i(appTag, "got fix - ");
-					pushLocation(fix);					
+					fix = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+					pushLocation(fix);		
 				}
 			}, 0, UPDATE_INTERVAL);		
 	}
@@ -45,7 +51,22 @@ public class Pigeon extends Service {
 	}
 	
 	public void pushLocation(Location fix) {
-		Log.i(appTag, "sending fix: "+fix.getLatitude()+" "+fix.getLongitude());
+		String URL = "http://donpark.org/icecondor/locations"; // use preference
+		try {
+			Log.i(appTag, "sending fix: "+fix.getLatitude()+" "+fix.getLongitude());
+			
+			HttpClient client = new DefaultHttpClient();
+			client.execute(new HttpPost(URL));
+		} catch (NullPointerException t) {
+			Log.i(appTag,"no data in location record"+t);
+		} catch (ClientProtocolException e) {
+			Log.i(appTag, "client protocol exception");
+			e.printStackTrace();
+		} catch (IOException e) {
+			Log.i(appTag, "IO exception");
+			e.printStackTrace();
+		}
+
 	}
 
 }

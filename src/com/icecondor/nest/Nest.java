@@ -2,6 +2,8 @@ package com.icecondor.nest;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -17,7 +19,7 @@ public class Nest extends Activity {
         // Start the pigeon service
         Intent pigeon_service = new Intent(this, Pigeon.class);
         startService(pigeon_service);
-        Log.i(appTag, "in create: Pigeon service start intent given");
+        Log.i(appTag, "in create: Pigeon service start");
     }
 
     @Override
