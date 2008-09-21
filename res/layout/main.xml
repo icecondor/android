@@ -14,7 +14,7 @@
           android:paddingTop="65px">
           <LinearLayout
                android:id="@+id/grid_set_menu_radar"
-               android:orientation="horizontal"
+               android:orientation="vertical"
                android:layout_width="fill_parent"
                android:layout_height="fill_parent">
                     <TextView
@@ -23,7 +23,21 @@
                          android:layout_height="wrap_content"
                          android:layout_marginRight="3dip"
         				 android:layout_gravity="center_vertical"
-                         android:text="latiam"/>
+                         android:text="latitude"/>
+                    <TextView
+                         android:id="@+id/radar_lat"
+                         android:layout_width="35dip"
+                         android:layout_height="wrap_content"
+                         android:layout_marginRight="3dip"
+        				 android:layout_gravity="center_vertical"
+                         android:text="longitude"/>
+                    <TextView
+                         android:id="@+id/radar_close_list"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:layout_marginRight="3dip"
+        				 android:layout_gravity="center_vertical"
+                         android:text="list of near-by people"/>
           </LinearLayout>
           <LinearLayout
                android:id="@+id/grid_set_menu_settings"
