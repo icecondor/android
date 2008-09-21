@@ -1,30 +1,26 @@
 package com.icecondor.nest;
 
 import java.io.IOException;
-import java.util.List;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.ArrayList;
 
-import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 
 import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -45,7 +41,7 @@ public class Pigeon extends Service {
 					Location fix;
 					fix = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 					fix = new Location("phoney");
-					pushLocation(fix);		
+					pushLocation(fix);
 				}
 			}, 0, UPDATE_INTERVAL);		
 	}
@@ -63,30 +59,33 @@ public class Pigeon extends Service {
 	public void pushLocation(Location fix) {
 		String URL = "http://10.0.2.2/icecondor/locations"; // use preference
 		try {
-			Log.i(appTag, "sending fix: "+fix.getLatitude()+" "+fix.getLongitude());
+			Log.i(appTag, "sending fix: lat "+fix.getLatitude()+" long "+fix.getLongitude()+" alt "+fix.getAltitude());
 			
 			HttpClient client = new DefaultHttpClient();
 			HttpPost post = new HttpPost(URL);
-			ArrayList <NameValuePair> dict = new ArrayList <NameValuePair>();
-			dict.add(new BasicNameValuePair("location[latitude]", Double.toString(fix.getLatitude())));
-			dict.add(new BasicNameValuePair("location[longitude]", Double.toString(fix.getLongitude())));
-			dict.add(new BasicNameValuePair("location[altitude]", Double.toString(fix.getAltitude())));
-			post.setEntity(new UrlEncodedFormEntity(dict, HTTP.UTF_8));
+			post.setEntity(buildPostParameters(fix));
 			HttpResponse response;
 			response = client.execute(post);
 			Log.i(appTag, "http response: "+response.getStatusLine());
 		} catch (NullPointerException t) {
-			Log.i(appTag,"no data in location record"+t);
+			Log.i(appTag,"no data in location record "+t);
 		} catch (ClientProtocolException e) {
-			Log.i(appTag, "client protocol exception");
+			Log.i(appTag, "client protocol exception "+e);
 			e.printStackTrace();
 		} catch (HttpHostConnectException e) {
-			Log.i(appTag, "connection failed");
+			Log.i(appTag, "connection failed "+e);
 		} catch (IOException e) {
-			Log.i(appTag, "IO exception");
+			Log.i(appTag, "IO exception "+e);
 			e.printStackTrace();
 		}
-
+	}
+	
+	private UrlEncodedFormEntity buildPostParameters(Location fix) throws UnsupportedEncodingException {
+		ArrayList <NameValuePair> dict = new ArrayList <NameValuePair>();
+		dict.add(new BasicNameValuePair("location[latitude]", Double.toString(fix.getLatitude())));
+		dict.add(new BasicNameValuePair("location[longitude]", Double.toString(fix.getLongitude())));
+		dict.add(new BasicNameValuePair("location[altitude]", Double.toString(fix.getAltitude())));
+		return new UrlEncodedFormEntity(dict, HTTP.UTF_8);
 	}
 
 }
