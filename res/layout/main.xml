@@ -13,7 +13,7 @@
           android:layout_height="fill_parent"
           android:paddingTop="65px">
           <LinearLayout
-               android:id="@+id/grid_set_menu_page1"
+               android:id="@+id/grid_set_menu_radar"
                android:orientation="horizontal"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent">
@@ -29,17 +29,17 @@
                          android:src="@drawable/icon"/>
           </LinearLayout>
           <LinearLayout
-               android:id="@+id/grid_set_menu_page2"
+               android:id="@+id/grid_set_menu_settings"
                android:orientation="horizontal"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent">
                     <ImageButton
-                         android:id="@+id/ibtn_settings_favorites"
+                         android:id="@+id/ibtn_settings_on"
                          android:layout_width="wrap_content"
                          android:layout_height="wrap_content"
                          android:src="@drawable/icon"/>
                     <ImageButton
-                         android:id="@+id/ibtn_settings_close_page2"
+                         android:id="@+id/ibtn_settings_off"
                          android:layout_width="wrap_content"
                          android:layout_height="wrap_content"
                          android:gravity="right"

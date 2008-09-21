@@ -20,13 +20,13 @@ public class Nest extends Activity {
         this.myTabHost = (TabHost)this.findViewById(R.id.th_set_menu_tabhost);
         this.myTabHost.setup();
         TabSpec ts1 = myTabHost.newTabSpec("TAB1");
-        ts1.setIndicator("caption 1", getResources().getDrawable(R.drawable.icon));
-        ts1.setContent(R.id.grid_set_menu_page1);
+        ts1.setIndicator(getString(R.string.tab_title1), null);
+        ts1.setContent(R.id.grid_set_menu_radar);
         this.myTabHost.addTab(ts1);
         
         TabSpec ts2 = myTabHost.newTabSpec("TAB2");
-        ts2.setIndicator("caption 2", getResources().getDrawable(R.drawable.icon));
-        ts2.setContent(R.id.grid_set_menu_page2);
+        ts2.setIndicator(getString(R.string.tab_title2), null);
+        ts2.setContent(R.id.grid_set_menu_settings);
         this.myTabHost.addTab(ts2);
         
         this.myTabHost.setCurrentTab(0);

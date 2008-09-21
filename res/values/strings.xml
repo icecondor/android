@@ -2,4 +2,6 @@
 <resources>
     <string name="hello">Hello World, Nest</string>
     <string name="app_name">IceNest</string>
+	<string name="tab_title1">Radar</string>
+	<string name="tab_title2">Settings</string>
 </resources>
