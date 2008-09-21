@@ -16,8 +16,16 @@ public class Nest extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        uiSetup();
         
-        this.myTabHost = (TabHost)this.findViewById(R.id.th_set_menu_tabhost);
+        // Start the pigeon service
+        Intent pigeon_service = new Intent(this, Pigeon.class);
+        startService(pigeon_service);
+        Log.i(appTag, "in create: Pigeon service start");
+    }
+
+	private void uiSetup() {
+		this.myTabHost = (TabHost)this.findViewById(R.id.th_set_menu_tabhost);
         this.myTabHost.setup();
         TabSpec ts1 = myTabHost.newTabSpec("TAB1");
         ts1.setIndicator(getString(R.string.tab_title1), null);
@@ -30,12 +38,7 @@ public class Nest extends Activity {
         this.myTabHost.addTab(ts2);
         
         this.myTabHost.setCurrentTab(0);
-        
-        // Start the pigeon service
-        Intent pigeon_service = new Intent(this, Pigeon.class);
-        startService(pigeon_service);
-        Log.i(appTag, "in create: Pigeon service start");
-    }
+	}
 
     @Override
     public void onStart() {

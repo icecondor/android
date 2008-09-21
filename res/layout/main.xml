@@ -15,35 +15,26 @@
           <LinearLayout
                android:id="@+id/grid_set_menu_radar"
                android:orientation="horizontal"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent">
-                    <ImageButton
-                         android:id="@+id/ibtn_settings_audio"
+               android:layout_width="fill_parent"
+               android:layout_height="fill_parent">
+                    <TextView
+                         android:id="@+id/radar_lat"
                          android:layout_width="wrap_content"
                          android:layout_height="wrap_content"
-                         android:src="@drawable/icon"/>
-                    <ImageButton
-                         android:id="@+id/ibtn_settings_close_page1"
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         android:src="@drawable/icon"/>
+                         android:layout_marginRight="3dip"
+        				 android:layout_gravity="center_vertical"
+                         android:text="latiam"/>
           </LinearLayout>
           <LinearLayout
                android:id="@+id/grid_set_menu_settings"
                android:orientation="horizontal"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent">
-                    <ImageButton
+                    <RadioButton
                          android:id="@+id/ibtn_settings_on"
                          android:layout_width="wrap_content"
                          android:layout_height="wrap_content"
-                         android:src="@drawable/icon"/>
-                    <ImageButton
-                         android:id="@+id/ibtn_settings_off"
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         android:gravity="right"
-                         android:src="@drawable/icon"/>
+                         android:text="Transmit"/>
           </LinearLayout>
      </FrameLayout>
 </TabHost>
