@@ -11,6 +11,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.Service;
@@ -27,6 +28,7 @@ public class Pigeon extends Service {
 	private static final long UPDATE_INTERVAL = 5000;
 	private Timer timer = new Timer();
 	static final String appTag = "IcePigeon";
+	boolean on_switch = true;
 	
 	public void onCreate() {
 		Log.i(appTag, "*** service created.");
@@ -53,7 +55,7 @@ public class Pigeon extends Service {
 	}
 	
 	public void pushLocation(Location fix) {
-		String URL = "http://donpark.org/icecondor/locations"; // use preference
+		String URL = "http://10.0.2.2/icecondor/locations"; // use preference
 		try {
 			Log.i(appTag, "sending fix: "+fix.getLatitude()+" "+fix.getLongitude());
 			
@@ -66,6 +68,8 @@ public class Pigeon extends Service {
 		} catch (ClientProtocolException e) {
 			Log.i(appTag, "client protocol exception");
 			e.printStackTrace();
+		} catch (HttpHostConnectException e) {
+			Log.i(appTag, "connection failed");
 		} catch (IOException e) {
 			Log.i(appTag, "IO exception");
 			e.printStackTrace();

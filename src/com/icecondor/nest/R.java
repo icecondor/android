@@ -13,8 +13,18 @@ public final class R {
     public static final class drawable {
         public static final int icon=0x7f020000;
     }
+    public static final class id {
+        public static final int grid_set_menu_page1=0x7f050001;
+        public static final int grid_set_menu_page2=0x7f050004;
+        public static final int ibtn_settings_audio=0x7f050002;
+        public static final int ibtn_settings_close_page1=0x7f050003;
+        public static final int ibtn_settings_close_page2=0x7f050006;
+        public static final int ibtn_settings_favorites=0x7f050005;
+        public static final int th_set_menu_tabhost=0x7f050000;
+    }
     public static final class layout {
         public static final int main=0x7f030000;
+        public static final int tabhost=0x7f030001;
     }
     public static final class string {
         public static final int app_name=0x7f040001;
