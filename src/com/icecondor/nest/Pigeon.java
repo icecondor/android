@@ -1,8 +1,10 @@
 package com.icecondor.nest;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.ArrayList;
 
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -13,6 +15,10 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 
 import android.app.Service;
 import android.content.Intent;
@@ -60,8 +66,14 @@ public class Pigeon extends Service {
 			Log.i(appTag, "sending fix: "+fix.getLatitude()+" "+fix.getLongitude());
 			
 			HttpClient client = new DefaultHttpClient();
+			HttpPost post = new HttpPost(URL);
+			ArrayList <NameValuePair> dict = new ArrayList <NameValuePair>();
+			dict.add(new BasicNameValuePair("location[latitude]", Double.toString(fix.getLatitude())));
+			dict.add(new BasicNameValuePair("location[longitude]", Double.toString(fix.getLongitude())));
+			dict.add(new BasicNameValuePair("location[altitude]", Double.toString(fix.getAltitude())));
+			post.setEntity(new UrlEncodedFormEntity(dict, HTTP.UTF_8));
 			HttpResponse response;
-			response = client.execute(new HttpPost(URL));
+			response = client.execute(post);
 			Log.i(appTag, "http response: "+response.getStatusLine());
 		} catch (NullPointerException t) {
 			Log.i(appTag,"no data in location record"+t);
