@@ -16,7 +16,7 @@ public final class R {
     public static final class id {
         public static final int grid_set_menu_radar=0x7f050001;
         public static final int grid_set_menu_settings=0x7f050004;
-        public static final int ibtn_settings_on=0x7f050005;
+        public static final int ibtn_settings_pigeon_on=0x7f050005;
         public static final int radar_close_list=0x7f050003;
         public static final int radar_lat=0x7f050002;
         public static final int th_set_menu_tabhost=0x7f050000;

@@ -45,7 +45,7 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent">
                     <RadioButton
-                         android:id="@+id/ibtn_settings_on"
+                         android:id="@+id/ibtn_settings_pigeon_on"
                          android:layout_width="wrap_content"
                          android:layout_height="wrap_content"
                          android:text="Transmit"/>

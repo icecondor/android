@@ -6,9 +6,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TabHost;
+import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabSpec;
 
-public class Nest extends Activity {
+public class Nest extends Activity implements OnTabChangeListener {
 	TabHost myTabHost;
 	static final String appTag = "IceNest";
 	static final String version = "20080924";
@@ -20,14 +21,16 @@ public class Nest extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         uiSetup();
-        
-        // Restore preferences
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        restorePreferences();
+    }
+
+	private void restorePreferences() {
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         boolean startPigeon = settings.getBoolean("startPigeon", true);
         if (startPigeon) {
             startPigeon();
         }
-    }
+	}
 
 	private void startPigeon() {
 		// Start the pigeon service
@@ -38,6 +41,7 @@ public class Nest extends Activity {
 
 	private void uiSetup() {
 		this.myTabHost = (TabHost)this.findViewById(R.id.th_set_menu_tabhost);
+		this.myTabHost.setOnTabChangedListener(this);
         this.myTabHost.setup();
         TabSpec ts1 = myTabHost.newTabSpec("TAB1");
         ts1.setIndicator(getString(R.string.tab_title1), null);
@@ -69,4 +73,9 @@ public class Nest extends Activity {
     	super.onPause();
     	Log.i(appTag, "onPause yeah");
     }
+
+	public void onTabChanged(String tabId) {
+		Log.i(appTag, "changed to tab "+tabId);
+		
+	}
 }
