@@ -2,6 +2,7 @@ package com.icecondor.nest;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TabHost;
@@ -10,6 +11,8 @@ import android.widget.TabHost.TabSpec;
 public class Nest extends Activity {
 	TabHost myTabHost;
 	static final String appTag = "IceNest";
+	static final String version = "20080924";
+	public static final String PREFS_NAME = "IceNestPrefs";
 	
     /** Called when the activity is first created. */
     @Override
@@ -18,11 +21,20 @@ public class Nest extends Activity {
         setContentView(R.layout.main);
         uiSetup();
         
-        // Start the pigeon service
+        // Restore preferences
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        boolean startPigeon = settings.getBoolean("startPigeon", true);
+        if (startPigeon) {
+            startPigeon();
+        }
+    }
+
+	private void startPigeon() {
+		// Start the pigeon service
         Intent pigeon_service = new Intent(this, Pigeon.class);
         startService(pigeon_service);
         Log.i(appTag, "in create: Pigeon service start");
-    }
+	}
 
 	private void uiSetup() {
 		this.myTabHost = (TabHost)this.findViewById(R.id.th_set_menu_tabhost);
