@@ -48,12 +48,14 @@ public class Nest extends Activity implements OnTabChangeListener,
         startService(pigeon_service);
         Log.i(appTag, "startPigeon");
         // sideeffect of setting pigeon_service
-        bindService(pigeon_service, this, 0); // do not auto-start
+        bindService(pigeon_service, this, 0); // 0 = do not auto-start
 	}
 	
 	private void stopPigeon() {
 		Log.i(appTag, "stopPigeon");
+		unbindService(this);
 		stopService(pigeon_service);
+		Log.i(appTag, "unbound and stopped. isPigeonOn = "+isPigeonOn());
 	}
 
 	private void uiSetup() {
@@ -108,7 +110,7 @@ public class Nest extends Activity implements OnTabChangeListener,
 	private boolean isPigeonOn() {
 		// better way to do this?
 		boolean result = bindService(pigeon_service, this, 0); // do not auto-start
-		Log.i(appTag, "isPigeonOn => "+result);
+		Log.i(appTag, "isPigeonOn() => "+result);
         return result;
 	}
 
