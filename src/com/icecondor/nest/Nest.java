@@ -8,13 +8,17 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.TabHost;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabSpec;
 
 public class Nest extends Activity implements OnTabChangeListener,
-                                              ServiceConnection{
+                                              ServiceConnection, OnClickListener{
 	TabHost myTabHost;
 	static final String appTag = "IceNest";
 	static final String version = "20080924";
@@ -42,14 +46,21 @@ public class Nest extends Activity implements OnTabChangeListener,
 	private void startPigeon() {
 		// Start the pigeon service
         startService(pigeon_service);
-        Log.i(appTag, "in create: Pigeon service start");
+        Log.i(appTag, "startPigeon");
+        // sideeffect of setting pigeon_service
         bindService(pigeon_service, this, 0); // do not auto-start
+	}
+	
+	private void stopPigeon() {
+		Log.i(appTag, "stopPigeon");
+		stopService(pigeon_service);
 	}
 
 	private void uiSetup() {
 		this.myTabHost = (TabHost)this.findViewById(R.id.th_set_menu_tabhost);
 		this.myTabHost.setOnTabChangedListener(this);
         this.myTabHost.setup();
+        ((RadioButton) findViewById(R.id.ibtn_settings_pigeon_on)).setOnClickListener(this);
         TabSpec ts1 = myTabHost.newTabSpec("TAB1");
         ts1.setIndicator(getString(R.string.tab_title1), null);
         ts1.setContent(R.id.grid_set_menu_radar);
@@ -96,7 +107,9 @@ public class Nest extends Activity implements OnTabChangeListener,
 
 	private boolean isPigeonOn() {
 		// better way to do this?
-        return bindService(pigeon_service, this, 0); // do not auto-start
+		boolean result = bindService(pigeon_service, this, 0); // do not auto-start
+		Log.i(appTag, "isPigeonOn => "+result);
+        return result;
 	}
 
 	public void onServiceConnected(ComponentName arg0, IBinder arg1) {
@@ -107,5 +120,15 @@ public class Nest extends Activity implements OnTabChangeListener,
 	public void onServiceDisconnected(ComponentName name) {
 		Log.i(appTag, "onServiceDisconnected "+name);
 		
+	}
+
+	public void onClick(View arg0) {
+		if (arg0.getId() == R.id.ibtn_settings_pigeon_on) {
+			if(isPigeonOn() == true) {
+				stopPigeon();
+			} else {
+				startPigeon();
+			}
+		}
 	}
 }
