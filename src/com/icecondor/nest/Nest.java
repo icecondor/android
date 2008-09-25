@@ -1,24 +1,31 @@
 package com.icecondor.nest;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
+import android.widget.RadioButton;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabSpec;
 
-public class Nest extends Activity implements OnTabChangeListener {
+public class Nest extends Activity implements OnTabChangeListener,
+                                              ServiceConnection{
 	TabHost myTabHost;
 	static final String appTag = "IceNest";
 	static final String version = "20080924";
 	public static final String PREFS_NAME = "IceNestPrefs";
+	Intent pigeon_service;
 	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        pigeon_service = new Intent(this, Pigeon.class);
         setContentView(R.layout.main);
         uiSetup();
         restorePreferences();
@@ -34,9 +41,9 @@ public class Nest extends Activity implements OnTabChangeListener {
 
 	private void startPigeon() {
 		// Start the pigeon service
-        Intent pigeon_service = new Intent(this, Pigeon.class);
         startService(pigeon_service);
         Log.i(appTag, "in create: Pigeon service start");
+        bindService(pigeon_service, this, 0); // do not auto-start
 	}
 
 	private void uiSetup() {
@@ -76,6 +83,29 @@ public class Nest extends Activity implements OnTabChangeListener {
 
 	public void onTabChanged(String tabId) {
 		Log.i(appTag, "changed to tab "+tabId);
+		if (tabId == "TAB2") {
+			updateSettingTabWidgets();
+		}
+	}
+
+	private void updateSettingTabWidgets() {
+		Log.i(appTag, "updateSettingTabWidgets");
+		((RadioButton) findViewById(R.id.ibtn_settings_pigeon_on)).setChecked(isPigeonOn());
+		
+	}
+
+	private boolean isPigeonOn() {
+		// better way to do this?
+        return bindService(pigeon_service, this, 0); // do not auto-start
+	}
+
+	public void onServiceConnected(ComponentName arg0, IBinder arg1) {
+		Log.i(appTag, "onServiceConnected "+arg0);
+		
+	}
+
+	public void onServiceDisconnected(ComponentName name) {
+		Log.i(appTag, "onServiceDisconnected "+name);
 		
 	}
 }
