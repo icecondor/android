@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CompoundButton;
@@ -134,5 +135,12 @@ public class Nest extends Activity implements OnTabChangeListener,
 				startPigeon();
 			}
 		}
+	}
+	
+	public boolean onCreateOptionsMenu(Menu menu) {
+		Log.i(appTag, "onCreateOptionsMenu");
+		 boolean result = super.onCreateOptionsMenu(menu);
+	        menu.add(0, Menu.FIRST, 0, R.string.menu_version);
+	        return result;
 	}
 }
