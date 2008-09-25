@@ -28,6 +28,7 @@ public class Nest extends Activity implements OnTabChangeListener,
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+    	Log.i(appTag, "onCreate");
         super.onCreate(savedInstanceState);
         pigeon_service = new Intent(this, Pigeon.class);
         setContentView(R.layout.main);
@@ -36,6 +37,7 @@ public class Nest extends Activity implements OnTabChangeListener,
     }
 
 	private void restorePreferences() {
+		Log.i(appTag, "restorePreferences()");
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         boolean startPigeon = settings.getBoolean("startPigeon", true);
         if (startPigeon) {
@@ -46,7 +48,7 @@ public class Nest extends Activity implements OnTabChangeListener,
 	private void startPigeon() {
 		// Start the pigeon service
         startService(pigeon_service);
-        Log.i(appTag, "startPigeon");
+        Log.i(appTag, "startPigeon "+pigeon_service.toURI());
         // sideeffect of setting pigeon_service
         bindService(pigeon_service, this, 0); // 0 = do not auto-start
 	}
@@ -55,7 +57,7 @@ public class Nest extends Activity implements OnTabChangeListener,
 		Log.i(appTag, "stopPigeon");
 		unbindService(this);
 		stopService(pigeon_service);
-		Log.i(appTag, "unbound and stopped. isPigeonOn = "+isPigeonOn());
+		Log.i(appTag, "unbound and stopped. isPigeonOn returned "+isPigeonOn());
 	}
 
 	private void uiSetup() {
