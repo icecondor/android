@@ -139,8 +139,8 @@ public class Nest extends Activity implements OnTabChangeListener,
 	
 	public boolean onCreateOptionsMenu(Menu menu) {
 		Log.i(appTag, "onCreateOptionsMenu");
-		 boolean result = super.onCreateOptionsMenu(menu);
-	        menu.add(0, Menu.FIRST, 0, R.string.menu_version);
-	        return result;
+		boolean result = super.onCreateOptionsMenu(menu);
+		menu.add(0, Menu.FIRST, 0, R.string.menu_version);
+		return result;
 	}
 }
