@@ -7,6 +7,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -20,9 +21,9 @@ public class Nest extends Activity implements OnTabChangeListener,
                                               ServiceConnection, OnClickListener{
 	TabHost myTabHost;
 	static final String appTag = "IceNest";
-	static final String version = "20080924";
 	public static final String PREFS_NAME = "IceNestPrefs";
 	Intent pigeon_service;
+	PigeonService pigeon;
 	
     /** Called when the activity is first created. */
     @Override
@@ -30,9 +31,8 @@ public class Nest extends Activity implements OnTabChangeListener,
     	Log.i(appTag, "onCreate");
         super.onCreate(savedInstanceState);
         pigeon_service = new Intent(this, Pigeon.class);
-        setContentView(R.layout.main);
+        startPigeon();
         uiSetup();
-        restorePreferences();
     }
 
 	private void restorePreferences() {
@@ -40,15 +40,20 @@ public class Nest extends Activity implements OnTabChangeListener,
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         boolean startPigeon = settings.getBoolean("startPigeon", true);
         if (startPigeon) {
-            startPigeon();
+            try {
+				pigeon.startTransmitting();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
 	}
 
 	private void startPigeon() {
 		// Start the pigeon service
         startService(pigeon_service);
-        Log.i(appTag, "startPigeon "+pigeon_service.toURI());
-        // sideeffect of setting pigeon_service
+        Log.i(appTag, "startPigeon and bind "+pigeon_service.toURI());
+        // sideeffect: sets pigeon_service
         bindService(pigeon_service, this, 0); // 0 = do not auto-start
 	}
 	
@@ -56,10 +61,16 @@ public class Nest extends Activity implements OnTabChangeListener,
 		Log.i(appTag, "stopPigeon");
 		unbindService(this);
 		stopService(pigeon_service);
-		Log.i(appTag, "unbound and stopped. isPigeonOn returned "+isPigeonOn());
+		try {
+			Log.i(appTag, "unbound and stopped.");
+			Log.i(appTag, "isPigeonOn returned "+isPigeonOn());
+		} catch (RemoteException e) {
+			Log.i(appTag, "isPigeonOn exception "+e);
+		}
 	}
 
 	private void uiSetup() {
+        setContentView(R.layout.main);
 		this.myTabHost = (TabHost)this.findViewById(R.id.th_set_menu_tabhost);
 		this.myTabHost.setOnTabChangedListener(this);
         this.myTabHost.setup();
@@ -104,33 +115,43 @@ public class Nest extends Activity implements OnTabChangeListener,
 
 	private void updateSettingTabWidgets() {
 		Log.i(appTag, "updateSettingTabWidgets");
-		((RadioButton) findViewById(R.id.ibtn_settings_pigeon_on)).setChecked(isPigeonOn());
-		
+		boolean checked;
+		try {
+			checked = isPigeonOn();
+		} catch (RemoteException e) {
+			checked = false;
+			Log.i(appTag, "cannot reach pigeon service to display in settings tab");
+		}
+		((RadioButton) findViewById(R.id.ibtn_settings_pigeon_on)).setChecked(checked);
 	}
 
-	private boolean isPigeonOn() {
-		// better way to do this?
-		boolean result = bindService(pigeon_service, this, 0); // do not auto-start
-		Log.i(appTag, "isPigeonOn() => "+result);
+	private boolean isPigeonOn() throws RemoteException {
+		boolean result = pigeon.isTransmitting();
         return result;
 	}
 
-	public void onServiceConnected(ComponentName arg0, IBinder arg1) {
-		Log.i(appTag, "onServiceConnected "+arg0);
-		
+	public void onServiceConnected(ComponentName className, IBinder service) {
+		Log.i(appTag, "onServiceConnected "+service);
+		pigeon = PigeonService.Stub.asInterface(service);
+        restorePreferences();
 	}
 
-	public void onServiceDisconnected(ComponentName name) {
-		Log.i(appTag, "onServiceDisconnected "+name);
+	public void onServiceDisconnected(ComponentName className) {
+		Log.i(appTag, "onServiceDisconnected "+className);
 		
 	}
 
 	public void onClick(View arg0) {
 		if (arg0.getId() == R.id.ibtn_settings_pigeon_on) {
-			if(isPigeonOn() == true) {
-				stopPigeon();
-			} else {
-				startPigeon();
+			try {
+				if(isPigeonOn() == true) {
+					pigeon.stopTransmitting();
+				} else {
+					pigeon.startTransmitting();
+				}
+				((RadioButton) findViewById(R.id.ibtn_settings_pigeon_on)).setChecked(isPigeonOn());
+			} catch (RemoteException e) {
+				e.printStackTrace();
 			}
 		}
 	}

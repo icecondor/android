@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<string name="menu_version">Version: 27 Sep 2008</string>
     <string name="hello">Hello World, Nest</string>
     <string name="app_name">IceNest</string>
 	<string name="tab_title1">Radar</string>
 	<string name="tab_title2">Settings</string>
-	<string name="menu_version">Version: 25 Sep 2008</string>
+	<string name="settings_transmitting">Transmitting</string>
 </resources>

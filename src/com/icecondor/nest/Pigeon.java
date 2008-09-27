@@ -56,10 +56,8 @@ public class Pigeon extends Service {
 	
 	@Override
 	public IBinder onBind(Intent intent) {
-       if (PigeonService.class.getName().equals(intent.getAction())) {
-            return mSecondaryBinder;
-        }
-		return null;
+		Log.i(appTag, "onBind for "+intent.getAction());
+		return pigeonBinder;
 	}
 	
 	public void pushLocation(Location fix) {
@@ -94,14 +92,17 @@ public class Pigeon extends Service {
 		return new UrlEncodedFormEntity(dict, HTTP.UTF_8);
 	}
 	
-    private final PigeonService.Stub mSecondaryBinder = new PigeonService.Stub() {
+    private final PigeonService.Stub pigeonBinder = new PigeonService.Stub() {
 		public boolean isTransmitting() throws RemoteException {
+			Log.i(appTag, "isTransmitting => "+on_switch);
 			return on_switch;
 		}
 		public void startTransmitting() throws RemoteException {
+			Log.i(appTag, "startTransmitting");
 			on_switch = true;
 		}
 		public void stopTransmitting() throws RemoteException {
+			Log.i(appTag, "stopTransmitting");
 			on_switch = false;
 		}
     };
