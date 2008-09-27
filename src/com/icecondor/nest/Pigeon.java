@@ -31,7 +31,7 @@ public class Pigeon extends Service {
 	private static final long UPDATE_INTERVAL = 5000;
 	private Timer timer = new Timer();
 	static final String appTag = "IcePigeon";
-	boolean on_switch = true;
+	boolean on_switch;
 	
 	public void onCreate() {
 		Log.i(appTag, "*** service created.");
@@ -39,12 +39,15 @@ public class Pigeon extends Service {
 		timer.scheduleAtFixedRate(
 			new TimerTask() {
 				public void run() {
-					Location fix;
-					fix = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-					fix = new Location("phoney");
-					pushLocation(fix);
+					if (on_switch) {
+						Location fix;
+						fix = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+						fix = new Location("phoney");
+						pushLocation(fix);
+					}
 				}
 			}, 0, UPDATE_INTERVAL);		
+		on_switch = true;
 	}
 	
 	public void onStart() {
@@ -93,18 +96,13 @@ public class Pigeon extends Service {
 	
     private final PigeonService.Stub mSecondaryBinder = new PigeonService.Stub() {
 		public boolean isTransmitting() throws RemoteException {
-			// TODO Auto-generated method stub
-			return false;
+			return on_switch;
 		}
 		public void startTransmitting() throws RemoteException {
-			// TODO Auto-generated method stub
-			
+			on_switch = true;
 		}
 		public void stopTransmitting() throws RemoteException {
-			// TODO Auto-generated method stub
-			
+			on_switch = false;
 		}
     };
-
-
 }
