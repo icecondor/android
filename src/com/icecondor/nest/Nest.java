@@ -11,10 +11,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.TabHost;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabSpec;
 
