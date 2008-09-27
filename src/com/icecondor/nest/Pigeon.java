@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.util.Log;
 
 //look at android.permission.RECEIVE_BOOT_COMPLETED
@@ -51,8 +52,10 @@ public class Pigeon extends Service {
 	}
 	
 	@Override
-	public IBinder onBind(Intent arg0) {
-		// TODO Auto-generated method stub
+	public IBinder onBind(Intent intent) {
+       if (PigeonService.class.getName().equals(intent.getAction())) {
+            return mSecondaryBinder;
+        }
 		return null;
 	}
 	
@@ -87,5 +90,21 @@ public class Pigeon extends Service {
 		dict.add(new BasicNameValuePair("location[altitude]", Double.toString(fix.getAltitude())));
 		return new UrlEncodedFormEntity(dict, HTTP.UTF_8);
 	}
+	
+    private final PigeonService.Stub mSecondaryBinder = new PigeonService.Stub() {
+		public boolean isTransmitting() throws RemoteException {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		public void startTransmitting() throws RemoteException {
+			// TODO Auto-generated method stub
+			
+		}
+		public void stopTransmitting() throws RemoteException {
+			// TODO Auto-generated method stub
+			
+		}
+    };
+
 
 }
