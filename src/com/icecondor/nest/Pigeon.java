@@ -31,6 +31,7 @@ public class Pigeon extends Service {
 	private static final long UPDATE_INTERVAL = 5000;
 	private Timer timer = new Timer();
 	static final String appTag = "IcePigeon";
+	String URL = "http://donpark.org/icecondor/locations"; // use preference
 	boolean on_switch;
 	
 	public void onCreate() {
@@ -61,7 +62,6 @@ public class Pigeon extends Service {
 	}
 	
 	public void pushLocation(Location fix) {
-		String URL = "http://10.0.2.2/icecondor/locations"; // use preference
 		try {
 			Log.i(appTag, "sending fix: lat "+fix.getLatitude()+" long "+fix.getLongitude()+" alt "+fix.getAltitude());
 			
