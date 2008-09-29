@@ -10,6 +10,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.RadioButton;
@@ -160,6 +161,16 @@ public class Nest extends Activity implements OnTabChangeListener,
 		Log.i(appTag, "onCreateOptionsMenu");
 		boolean result = super.onCreateOptionsMenu(menu);
 		menu.add(0, Menu.FIRST, 0, R.string.menu_version);
+		menu.add(0, R.string.menu_first, 0, R.string.menu_first);
+		menu.add(0, 3, 0, R.string.menu_second);
 		return result;
+	}
+	
+	public boolean onOptionsItemSelected(MenuItem item) {
+		Log.i(appTag, "menu:"+item.getItemId());
+		if (item.getItemId() == R.string.menu_first) {
+			startActivity(new Intent(this, Radar.class));
+		}
+		return false;
 	}
 }
