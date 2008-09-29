@@ -23,21 +23,15 @@
                          android:layout_height="wrap_content"
                          android:layout_marginRight="3dip"
         				 android:layout_gravity="center_vertical"
-                         android:text="latitude"/>
-                    <TextView
+                         android:text="Identity URL"/>
+                    <EditText
                          android:id="@+id/radar_lat"
-                         android:layout_width="35dip"
+                         android:layout_width="fill_parent"
                          android:layout_height="wrap_content"
                          android:layout_marginRight="3dip"
         				 android:layout_gravity="center_vertical"
-                         android:text="longitude"/>
-                    <TextView
-                         android:id="@+id/radar_close_list"
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         android:layout_marginRight="3dip"
-        				 android:layout_gravity="center_vertical"
-                         android:text="list of near-by people"/>
+                         android:text=""
+                         android:maxLines="1"/>
           </LinearLayout>
           <LinearLayout
                android:id="@+id/grid_set_menu_settings"
