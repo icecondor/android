@@ -38,7 +38,7 @@ public class Start extends Activity implements ServiceConnection {
 			uuid = settings.getString("uuid", null);
 			Log.i(appTag, "retrieved UUID of "+uuid);
 		} else {
-			uuid = UUID.randomUUID().toString();
+			uuid = "urn:uuid:"+UUID.randomUUID().toString();
 			editor.putString("uuid", uuid);
 			Log.i(appTag, "no UUID in preferences. generated "+uuid);
 		}
