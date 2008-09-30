@@ -40,6 +40,7 @@ public class Start extends Activity implements ServiceConnection {
 		} else {
 			uuid = "urn:uuid:"+UUID.randomUUID().toString();
 			editor.putString("uuid", uuid);
+			editor.commit();
 			Log.i(appTag, "no UUID in preferences. generated "+uuid);
 		}
 		
