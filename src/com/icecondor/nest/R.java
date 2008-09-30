@@ -19,6 +19,7 @@ public final class R {
         public static final int ibtn_settings_pigeon_on=0x7f050004;
         public static final int radar=0x7f050005;
         public static final int radar_lat=0x7f050002;
+        public static final int radar_mapview=0x7f050006;
         public static final int th_set_menu_tabhost=0x7f050000;
     }
     public static final class layout {

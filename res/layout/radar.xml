@@ -9,5 +9,6 @@
         android:enabled="true"
         android:clickable="true"
         android:apiKey="apisamples"
+        android:id="@+id/radar_mapview"
         />
 </LinearLayout>
