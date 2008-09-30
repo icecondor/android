@@ -20,7 +20,6 @@ public class Start extends Activity implements ServiceConnection {
     	Log.i(appTag, "onCreate");
         super.onCreate(savedInstanceState);
         startPigeon();
-        bindService(new Intent(this, Pigeon.class), this, 0); // 0 = do not auto-start
     }
 
     private void restorePreferences() {
@@ -41,11 +40,13 @@ public class Start extends Activity implements ServiceConnection {
 		// Start the pigeon service
     	Intent pigeon_service = new Intent(this, Pigeon.class);
         startService(pigeon_service);
+        bindService(new Intent(this, Pigeon.class), this, 0); // 0 = do not auto-start
 	}
 	
 	private void stopPigeon() {
 		Log.i(appTag, "stopPigeon");
-		//stopService(pigeon_service);
+		unbindService(this);
+		stopService(new Intent(this, Pigeon.class));
 	}
 	
 	public void onServiceConnected(ComponentName className, IBinder service) {
@@ -54,6 +55,7 @@ public class Start extends Activity implements ServiceConnection {
         restorePreferences();
         // handoff to the Radar
         startActivity(new Intent(this, Radar.class));
+        // dont come back here
         finish();
 	}
 
