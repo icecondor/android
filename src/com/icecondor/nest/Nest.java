@@ -19,7 +19,9 @@ import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabSpec;
 
 public class Nest extends Activity implements OnTabChangeListener,
-                                              ServiceConnection, OnClickListener{
+                                              ServiceConnection, 
+                                              OnClickListener,
+                                              Constants {
 	TabHost myTabHost;
 	static final String appTag = "Nest";
 	Intent pigeon_service;

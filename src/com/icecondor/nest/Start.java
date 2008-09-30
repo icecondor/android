@@ -13,9 +13,10 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
-public class Start extends Activity implements ServiceConnection {
+public class Start extends Activity implements ServiceConnection,
+												Constants {
 	static final String appTag = "Start";
-	public static final String PREFS_NAME = "IceNestPrefs";
+
 	Intent pigeon_intent;
 	PigeonService pigeon;
 	
