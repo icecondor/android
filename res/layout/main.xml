@@ -18,20 +18,20 @@
                android:layout_width="fill_parent"
                android:layout_height="fill_parent">
                     <TextView
-                         android:id="@+id/radar_lat"
+                         android:id="@+id/settings_uuid_label"
                          android:layout_width="wrap_content"
                          android:layout_height="wrap_content"
                          android:layout_marginRight="3dip"
         				 android:layout_gravity="center_vertical"
                          android:text="Identity URL"/>
                     <EditText
-                         android:id="@+id/radar_lat"
+                         android:id="@+id/settings_uuid"
                          android:layout_width="fill_parent"
                          android:layout_height="wrap_content"
                          android:layout_marginRight="3dip"
         				 android:layout_gravity="center_vertical"
                          android:text=""
-                         android:maxLines="1"/>
+                         android:maxLines="2"/>
           </LinearLayout>
           <LinearLayout
                android:id="@+id/grid_set_menu_settings"
