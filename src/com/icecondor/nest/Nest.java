@@ -22,7 +22,6 @@ public class Nest extends Activity implements OnTabChangeListener,
                                               ServiceConnection, OnClickListener{
 	TabHost myTabHost;
 	static final String appTag = "Nest";
-	public static final String PREFS_NAME = "IceNestPrefs";
 	Intent pigeon_service;
 	PigeonService pigeon;
 	
@@ -32,43 +31,10 @@ public class Nest extends Activity implements OnTabChangeListener,
     	Log.i(appTag, "onCreate");
         super.onCreate(savedInstanceState);
         pigeon_service = new Intent(this, Pigeon.class);
-        startPigeon();
-        uiSetup();
-    }
-
-	private void restorePreferences() {
-		Log.i(appTag, "restorePreferences()");
-		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        boolean startPigeon = settings.getBoolean("startPigeon", true);
-        if (startPigeon) {
-            try {
-				pigeon.startTransmitting();
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-        }
-	}
-
-	private void startPigeon() {
-		// Start the pigeon service
-        startService(pigeon_service);
-        Log.i(appTag, "startPigeon and bind "+pigeon_service.toURI());
+        uiSetup();       
         // sideeffect: sets pigeon_service
         bindService(pigeon_service, this, 0); // 0 = do not auto-start
-	}
-	
-	private void stopPigeon() {
-		Log.i(appTag, "stopPigeon");
-		unbindService(this);
-		stopService(pigeon_service);
-		try {
-			Log.i(appTag, "unbound and stopped.");
-			Log.i(appTag, "isPigeonOn returned "+isPigeonOn());
-		} catch (RemoteException e) {
-			Log.i(appTag, "isPigeonOn exception "+e);
-		}
-	}
+    }
 
 	private void uiSetup() {
         setContentView(R.layout.main);
@@ -134,7 +100,6 @@ public class Nest extends Activity implements OnTabChangeListener,
 	public void onServiceConnected(ComponentName className, IBinder service) {
 		Log.i(appTag, "onServiceConnected "+service);
 		pigeon = PigeonService.Stub.asInterface(service);
-        restorePreferences();
 	}
 
 	public void onServiceDisconnected(ComponentName className) {
