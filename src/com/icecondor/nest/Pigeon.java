@@ -30,7 +30,7 @@ import android.util.Log;
 public class Pigeon extends Service {
 	private static final long UPDATE_INTERVAL = 5000;
 	private Timer timer = new Timer();
-	static final String appTag = "IcePigeon";
+	static final String appTag = "Pigeon";
 	String URL = "http://donpark.org/icecondor/locations"; // use preference
 	boolean on_switch;
 	
