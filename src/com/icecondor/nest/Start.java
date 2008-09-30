@@ -16,12 +16,14 @@ import android.util.Log;
 public class Start extends Activity implements ServiceConnection {
 	static final String appTag = "Start";
 	public static final String PREFS_NAME = "IceNestPrefs";
+	Intent pigeon_intent;
 	PigeonService pigeon;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	Log.i(appTag, "onCreate");
         super.onCreate(savedInstanceState);
+        pigeon_intent = new Intent(this, Pigeon.class);
         startPigeon();
     }
 
@@ -58,7 +60,7 @@ public class Start extends Activity implements ServiceConnection {
 		// Start the pigeon service
     	Intent pigeon_service = new Intent(this, Pigeon.class);
         startService(pigeon_service);
-        bindService(new Intent(this, Pigeon.class), this, 0); // 0 = do not auto-start
+        bindService(pigeon_intent, this, 0); // 0 = do not auto-start
 	}
 	
 	private void stopPigeon() {
@@ -67,14 +69,17 @@ public class Start extends Activity implements ServiceConnection {
 		stopService(new Intent(this, Pigeon.class));
 	}
 	
+	public void onPause() {
+		super.onPause();
+		unbindService(this);
+		finish();
+	}
 	public void onServiceConnected(ComponentName className, IBinder service) {
 		Log.i(appTag, "onServiceConnected "+service);
 		pigeon = PigeonService.Stub.asInterface(service);
         restorePreferences();
         // handoff to the Radar
         startActivity(new Intent(this, Radar.class));
-        // dont come back here
-        finish();
 	}
 
 	public void onServiceDisconnected(ComponentName className) {
