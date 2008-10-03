@@ -67,6 +67,7 @@ public class Pigeon extends Service {
 			
 			HttpClient client = new DefaultHttpClient();
 			HttpPost post = new HttpPost(URL);
+			post.addHeader("X_REQUESTED_WITH", "XMLHttpRequest");
 			post.setEntity(buildPostParameters(fix));
 			HttpResponse response;
 			response = client.execute(post);
