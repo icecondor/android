@@ -13,17 +13,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabSpec;
 
 public class Nest extends Activity implements OnTabChangeListener,
-                                              ServiceConnection, OnClickListener{
+                                              ServiceConnection, 
+                                              OnClickListener,
+                                              Constants {
 	TabHost myTabHost;
 	static final String appTag = "Nest";
 	Intent pigeon_service;
 	PigeonService pigeon;
+	SharedPreferences settings;
 	
     /** Called when the activity is first created. */
     @Override
@@ -31,6 +35,7 @@ public class Nest extends Activity implements OnTabChangeListener,
     	Log.i(appTag, "onCreate");
         super.onCreate(savedInstanceState);
         pigeon_service = new Intent(this, Pigeon.class);
+        settings = getSharedPreferences(PREFS_NAME, 0);
         uiSetup();       
         // sideeffect: sets pigeon_service
         bindService(pigeon_service, this, 0); // 0 = do not auto-start
@@ -46,6 +51,8 @@ public class Nest extends Activity implements OnTabChangeListener,
         ts1.setIndicator(getString(R.string.tab_title1), null);
         ts1.setContent(R.id.grid_set_menu_radar);
         this.myTabHost.addTab(ts1);
+        
+        ((EditText) findViewById(R.id.settings_uuid)).setText(settings.getString("uuid", "n/a"));
         
         TabSpec ts2 = myTabHost.newTabSpec("TAB2");
         ts2.setIndicator(getString(R.string.tab_title2), null);

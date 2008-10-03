@@ -19,6 +19,7 @@ import org.apache.http.protocol.HTTP;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.IBinder;
@@ -27,7 +28,7 @@ import android.util.Log;
 
 //look at android.permission.RECEIVE_BOOT_COMPLETED
 
-public class Pigeon extends Service {
+public class Pigeon extends Service implements Constants {
 	private static final long UPDATE_INTERVAL = 5000;
 	private Timer timer = new Timer();
 	static final String appTag = "Pigeon";
@@ -67,8 +68,11 @@ public class Pigeon extends Service {
 			
 			HttpClient client = new DefaultHttpClient();
 			HttpPost post = new HttpPost(URL);
+			
+			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+
 			post.addHeader("X_REQUESTED_WITH", "XMLHttpRequest");
-			post.setEntity(buildPostParameters(fix));
+			post.setEntity(buildPostParameters(fix, settings.getString("uuid","")));
 			HttpResponse response;
 			response = client.execute(post);
 			Log.i(appTag, "http response: "+response.getStatusLine());
@@ -85,11 +89,12 @@ public class Pigeon extends Service {
 		}
 	}
 	
-	private UrlEncodedFormEntity buildPostParameters(Location fix) throws UnsupportedEncodingException {
+	private UrlEncodedFormEntity buildPostParameters(Location fix, String uuid) throws UnsupportedEncodingException {
 		ArrayList <NameValuePair> dict = new ArrayList <NameValuePair>();
 		dict.add(new BasicNameValuePair("location[latitude]", Double.toString(fix.getLatitude())));
 		dict.add(new BasicNameValuePair("location[longitude]", Double.toString(fix.getLongitude())));
 		dict.add(new BasicNameValuePair("location[altitude]", Double.toString(fix.getAltitude())));
+		dict.add(new BasicNameValuePair("location[guid]", uuid));
 		return new UrlEncodedFormEntity(dict, HTTP.UTF_8);
 	}
 	
