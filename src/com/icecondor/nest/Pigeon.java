@@ -32,7 +32,7 @@ public class Pigeon extends Service implements Constants {
 	private static final long UPDATE_INTERVAL = 5000;
 	private Timer timer = new Timer();
 	static final String appTag = "Pigeon";
-	String URL = "http://donpark.org/icecondor/locations"; // use preference
+	String URL = "http://icecondor.com/locations"; // use preference
 	boolean on_switch;
 	
 	public void onCreate() {
