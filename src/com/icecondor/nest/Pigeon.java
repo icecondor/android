@@ -3,6 +3,7 @@ package com.icecondor.nest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -45,8 +46,10 @@ public class Pigeon extends Service implements Constants {
 						Location fix;
 						fix = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 						fix = new Location("phoney");
-						fix.setLatitude(45);
-						fix.setLongitude(-122);
+						// simulation
+						Random rand = new Random();
+						fix.setLatitude(45+rand.nextFloat());
+						fix.setLongitude(-122-rand.nextFloat());
 						pushLocation(fix);
 					}
 				}
