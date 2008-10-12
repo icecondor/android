@@ -100,6 +100,9 @@ public class Pigeon extends Service implements Constants {
 		dict.add(new BasicNameValuePair("location[longitude]", Double.toString(fix.getLongitude())));
 		dict.add(new BasicNameValuePair("location[altitude]", Double.toString(fix.getAltitude())));
 		dict.add(new BasicNameValuePair("location[guid]", uuid));
+		if(fix.hasAccuracy()) {
+			dict.add(new BasicNameValuePair("location[accuracy]", Double.toString(fix.getAccuracy())));
+		}
 		return new UrlEncodedFormEntity(dict, HTTP.UTF_8);
 	}
 	
