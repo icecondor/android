@@ -7,7 +7,6 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -35,7 +34,6 @@ public class Radar extends MapActivity implements ServiceConnection {
         MapView mapView = (MapView) findViewById(R.id.radar_mapview);
         controller = mapView.getController();
         controller.setZoom(9);
-        controller.animateTo(new GeoPoint(45500000,-122500000)); // hard coded scroll over portland
     	Timer timer = new Timer();
 		timer.scheduleAtFixedRate(
 				new TimerTask() {
