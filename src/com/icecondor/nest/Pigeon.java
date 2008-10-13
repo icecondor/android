@@ -38,6 +38,7 @@ public class Pigeon extends Service implements Constants {
 	static final String appTag = "Pigeon";
 	String URL = "http://icecondor.com/locations"; // use preference
 	boolean on_switch;
+	private Location last_fix;
 	
 	public void onCreate() {
 		Log.i(appTag, "*** service created.");
@@ -49,6 +50,7 @@ public class Pigeon extends Service implements Constants {
 						Location fix;
 						fix = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 						fix = phoneyLocation();
+						last_fix = fix;
 						pushLocation(fix);
 					}
 				}
@@ -129,6 +131,9 @@ public class Pigeon extends Service implements Constants {
 		public void stopTransmitting() throws RemoteException {
 			Log.i(appTag, "stopTransmitting");
 			on_switch = false;
+		}
+		public Location getLastFix() throws RemoteException {
+			return last_fix;
 		}
     };
 }

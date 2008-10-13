@@ -1,7 +1,16 @@
 package com.icecondor.nest;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,18 +20,37 @@ import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 
-public class Radar extends MapActivity {
+public class Radar extends MapActivity implements ServiceConnection {
 	static final String appTag = "Radar";
 	MapController controller;
+	PigeonService pigeon;
+	private static final long UPDATE_INTERVAL = 5000;
 	
     public void onCreate(Bundle savedInstanceState) {
     	Log.i(appTag, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.radar);
+        Intent pigeon_service = new Intent(this, Pigeon.class);
+        bindService(pigeon_service, this, 0); // 0 = do not auto-start
         MapView mapView = (MapView) findViewById(R.id.radar_mapview);
         controller = mapView.getController();
         controller.setZoom(9);
         controller.animateTo(new GeoPoint(45500000,-122500000)); // hard coded scroll over portland
+    	Timer timer = new Timer();
+		timer.scheduleAtFixedRate(
+				new TimerTask() {
+					public void run() {
+						try {
+							Location fix = pigeon.getLastFix();
+							Log.i(appTag, "radar: pigeon says last fix is "+fix);
+							controller.animateTo(new GeoPoint((int)(fix.getLatitude()*1000000),
+									                          (int)(fix.getLongitude()*1000000)));
+						} catch (RemoteException e) {
+							Log.e(appTag, "radar: error reading fix from pigeon.");
+							e.printStackTrace();
+						}
+					}
+				}, 0, UPDATE_INTERVAL);
     }
     
 	@Override
@@ -47,5 +75,16 @@ public class Radar extends MapActivity {
 		}
 		return false;
 	}
+	
+	public void onServiceConnected(ComponentName className, IBinder service) {
+		Log.i(appTag, "onServiceConnected "+service);
+		pigeon = PigeonService.Stub.asInterface(service);
+	}
+
+	public void onServiceDisconnected(ComponentName className) {
+		Log.i(appTag, "onServiceDisconnected "+className);
+		
+	}
+
 
 }
