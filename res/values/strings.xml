@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="menu_version">V20080930</string>
+	<string name="menu_version">V20081012</string>
 	<string name="menu_first">Radar</string>
 	<string name="menu_second">Settings</string>
     <string name="hello">Hello World, Nest</string>
