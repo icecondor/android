@@ -113,7 +113,7 @@ public class Pigeon extends Service implements Constants {
 		if(fix.hasAccuracy()) {
 			dict.add(new BasicNameValuePair("location[accuracy]", Double.toString(fix.getAccuracy())));
 		}
-		dict.add(new BasicNameValuePair("location[timestamp]", Util.DateTimeIso8601(fix.getTime())));
+		dict.add(new BasicNameValuePair("location[time]", Util.DateTimeIso8601(fix.getTime())));
 		return new UrlEncodedFormEntity(dict, HTTP.UTF_8);
 	}
 	
