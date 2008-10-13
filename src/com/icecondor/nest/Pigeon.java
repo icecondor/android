@@ -2,7 +2,9 @@ package com.icecondor.nest;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -26,6 +28,7 @@ import android.location.LocationManager;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
+import android.util.TimeUtils;
 
 //look at android.permission.RECEIVE_BOOT_COMPLETED
 
@@ -45,13 +48,20 @@ public class Pigeon extends Service implements Constants {
 					if (on_switch) {
 						Location fix;
 						fix = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-						fix = new Location("phoney");
-						// simulation
-						Random rand = new Random();
-						fix.setLatitude(45+rand.nextFloat());
-						fix.setLongitude(-122-rand.nextFloat());
+						fix = phoneyLocation();
 						pushLocation(fix);
 					}
+				}
+
+				private Location phoneyLocation() {
+					Location fix;
+					fix = new Location("phoney");
+					// simulation
+					Random rand = new Random();
+					fix.setLatitude(45+rand.nextFloat());
+					fix.setLongitude(-122-rand.nextFloat());
+					fix.setTime(Calendar.getInstance().getTimeInMillis());
+					return fix;
 				}
 			}, 0, UPDATE_INTERVAL);		
 		on_switch = true;
@@ -69,8 +79,8 @@ public class Pigeon extends Service implements Constants {
 	
 	public void pushLocation(Location fix) {
 		try {
-			Log.i(appTag, "sending fix: lat "+fix.getLatitude()+" long "+fix.getLongitude()+" alt "+fix.getAltitude());
-			
+			Log.i(appTag, "sending fix: lat "+fix.getLatitude()+" long "+fix.getLongitude()+
+					" alt "+fix.getAltitude() + " " + Util.DateTimeIso8601(fix.getTime()));
 			HttpClient client = new DefaultHttpClient();
 			HttpPost post = new HttpPost(URL);
 			
@@ -103,6 +113,7 @@ public class Pigeon extends Service implements Constants {
 		if(fix.hasAccuracy()) {
 			dict.add(new BasicNameValuePair("location[accuracy]", Double.toString(fix.getAccuracy())));
 		}
+		dict.add(new BasicNameValuePair("location[timestamp]", Util.DateTimeIso8601(fix.getTime())));
 		return new UrlEncodedFormEntity(dict, HTTP.UTF_8);
 	}
 	
