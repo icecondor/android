@@ -2,7 +2,6 @@ package com.icecondor.nest;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
@@ -28,7 +27,6 @@ import android.location.LocationManager;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
-import android.util.TimeUtils;
 
 //look at android.permission.RECEIVE_BOOT_COMPLETED
 
