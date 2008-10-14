@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.view.View.OnKeyListener;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -26,7 +27,7 @@ import android.widget.LinearLayout;
 public class Nest extends Activity implements OnTabChangeListener,
                                               ServiceConnection, 
                                               OnClickListener,
-                                              Constants, OnKeyListener {
+                                              Constants, OnKeyListener, OnFocusChangeListener {
 	TabHost myTabHost;
 	static final String appTag = "Nest";
 	Intent pigeon_service;
@@ -69,9 +70,6 @@ public class Nest extends Activity implements OnTabChangeListener,
         this.myTabHost.setCurrentTab(0);
         
         settings_layout = (LinearLayout) findViewById(R.id.grid_set_menu_radar);
-        //TextView dyn_text = new TextView(this);
-        //dyn_text.setText("dynamic,bitches.");
-        //comm_tab_layout.addView(dyn_text);
 	}
 
     @Override
@@ -173,16 +171,24 @@ public class Nest extends Activity implements OnTabChangeListener,
 		if(v.getId() == R.id.settings_uuid_edit) {
 			Log.i(appTag, "keycode: "+keyCode);
 			if(keyCode == 66) {
-				settings.edit().putString("uuid",((EditText)v).getText().toString()).commit();
-				settings_layout.removeView(v);
-				TextView uuid = new TextView(this);
-				uuid.setId(R.id.settings_uuid);
-				uuid.setOnKeyListener(this);
-				uuid.setText(settings.getString("uuid", "n/a"));
-				settings_layout.addView(uuid, 2);
-
+				add_uuid_display(v);
 			}
 		}
 		return false;
+	}
+
+	private void add_uuid_display(View v) {
+		settings.edit().putString("uuid",((EditText)v).getText().toString()).commit();
+		settings_layout.removeView(v);
+		TextView uuid = new TextView(this);
+		uuid.setId(R.id.settings_uuid);
+		uuid.setOnClickListener(this);
+		uuid.setText(settings.getString("uuid", "n/a"));
+		settings_layout.addView(uuid, 2);
+	}
+
+	public void onFocusChange(View arg0, boolean arg1) {
+		// TODO Auto-generated method stub
+		
 	}
 }
