@@ -79,12 +79,12 @@ public class Pigeon extends Service implements Constants {
 	
 	public void pushLocation(Location fix) {
 		try {
-			Log.i(appTag, "sending fix: lat "+fix.getLatitude()+" long "+fix.getLongitude()+
-					" alt "+fix.getAltitude() + " " + Util.DateTimeIso8601(fix.getTime()));
+			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+			Log.i(appTag, "sending id: "+settings.getString("uuid","")+ " fix: " 
+					+fix.getLatitude()+" long: "+fix.getLongitude()+
+					" alt: "+fix.getAltitude() + " time: " + Util.DateTimeIso8601(fix.getTime()));
 			HttpClient client = new DefaultHttpClient();
 			HttpPost post = new HttpPost(URL);
-			
-			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 
 			post.addHeader("X_REQUESTED_WITH", "XMLHttpRequest");
 			post.setEntity(buildPostParameters(fix, settings.getString("uuid","")));

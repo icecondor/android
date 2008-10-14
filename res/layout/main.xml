@@ -25,13 +25,21 @@
         				 android:layout_gravity="center_vertical"
                          android:text="Identity URL"/>
                     <EditText
-                         android:id="@+id/settings_uuid"
+                         android:id="@+id/settings_uuid_edit"
                          android:layout_width="fill_parent"
                          android:layout_height="wrap_content"
                          android:layout_marginRight="3dip"
         				 android:layout_gravity="center_vertical"
                          android:text=""
-                         android:maxLines="2"/>
+                         android:maxLines="2"
+                         android:visibility="gone"/>
+                    <TextView
+                         android:id="@+id/settings_uuid"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:layout_marginRight="3dip"
+        				 android:layout_gravity="center_vertical"
+                         android:text="Identity URL"/>
           </LinearLayout>
           <LinearLayout
                android:id="@+id/grid_set_menu_settings"

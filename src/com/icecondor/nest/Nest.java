@@ -9,25 +9,31 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TabHost;
+import android.widget.TextView;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabSpec;
+import android.widget.LinearLayout;
 
 public class Nest extends Activity implements OnTabChangeListener,
                                               ServiceConnection, 
                                               OnClickListener,
-                                              Constants {
+                                              Constants, OnKeyListener {
 	TabHost myTabHost;
 	static final String appTag = "Nest";
 	Intent pigeon_service;
 	PigeonService pigeon;
 	SharedPreferences settings;
+	LinearLayout settings_layout;
+	int identity_url_id;
 	
     /** Called when the activity is first created. */
     @Override
@@ -52,7 +58,8 @@ public class Nest extends Activity implements OnTabChangeListener,
         ts1.setContent(R.id.grid_set_menu_radar);
         this.myTabHost.addTab(ts1);
         
-        ((EditText) findViewById(R.id.settings_uuid)).setText(settings.getString("uuid", "n/a"));
+        ((TextView) findViewById(R.id.settings_uuid)).setText(settings.getString("uuid", "n/a"));
+        ((TextView) findViewById(R.id.settings_uuid)).setOnClickListener(this);
         
         TabSpec ts2 = myTabHost.newTabSpec("TAB2");
         ts2.setIndicator(getString(R.string.tab_title2), null);
@@ -60,6 +67,11 @@ public class Nest extends Activity implements OnTabChangeListener,
         this.myTabHost.addTab(ts2);
         
         this.myTabHost.setCurrentTab(0);
+        
+        settings_layout = (LinearLayout) findViewById(R.id.grid_set_menu_radar);
+        //TextView dyn_text = new TextView(this);
+        //dyn_text.setText("dynamic,bitches.");
+        //comm_tab_layout.addView(dyn_text);
 	}
 
     @Override
@@ -126,9 +138,19 @@ public class Nest extends Activity implements OnTabChangeListener,
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
+		} else if (arg0.getId() == R.id.settings_uuid) {
+			settings_layout.removeView(arg0);
+			if(arg0.getClass() == TextView.class) {
+				EditText edit_uuid = new EditText(this);
+				edit_uuid.setId(R.id.settings_uuid_edit);
+				edit_uuid.setOnKeyListener(this);
+				edit_uuid.setText(settings.getString("uuid", "n/a"));
+				settings_layout.addView(edit_uuid, 2);
+			}
 		}
 	}
 	
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		Log.i(appTag, "onCreateOptionsMenu");
 		boolean result = super.onCreateOptionsMenu(menu);
@@ -138,10 +160,28 @@ public class Nest extends Activity implements OnTabChangeListener,
 		return result;
 	}
 	
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Log.i(appTag, "menu:"+item.getItemId());
 		if (item.getItemId() == R.string.menu_first) {
 			startActivity(new Intent(this, Radar.class));
+		}
+		return false;
+	}
+
+	public boolean onKey(View v, int keyCode, KeyEvent event) {
+		if(v.getId() == R.id.settings_uuid_edit) {
+			Log.i(appTag, "keycode: "+keyCode);
+			if(keyCode == 66) {
+				settings.edit().putString("uuid",((EditText)v).getText().toString()).commit();
+				settings_layout.removeView(v);
+				TextView uuid = new TextView(this);
+				uuid.setId(R.id.settings_uuid);
+				uuid.setOnKeyListener(this);
+				uuid.setText(settings.getString("uuid", "n/a"));
+				settings_layout.addView(uuid, 2);
+
+			}
 		}
 		return false;
 	}
