@@ -127,8 +127,6 @@ public class Radar extends MapActivity implements ServiceConnection,
 			HttpClient client = new DefaultHttpClient();
 			String url_with_params = URL + "?id="+settings.getString("uuid", "");
 			HttpGet get = new HttpGet(url_with_params);
-
-			get.addHeader("X_REQUESTED_WITH", "XMLHttpRequest");
 			HttpResponse response;
 			response = client.execute(get);
 			Log.i(appTag, "http response: "+response.getStatusLine());
