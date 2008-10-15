@@ -39,7 +39,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	private Timer pigeon_poll_timer = new Timer();
 	private Timer service_read_timer = new Timer();
 	SharedPreferences settings;
-	String URL = "http://icecondor.com/locations"; // use preference
+	String URL = "http://icecondor.com/locations.xml"; // use preference
 	
     public void onCreate(Bundle savedInstanceState) {
     	Log.i(appTag, "onCreate");
