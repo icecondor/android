@@ -1,9 +1,13 @@
 package com.icecondor.nest;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -39,7 +43,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	private Timer pigeon_poll_timer = new Timer();
 	private Timer service_read_timer = new Timer();
 	SharedPreferences settings;
-	String URL = "http://icecondor.com/locations.xml"; // use preference
+	String URL = "http://icecondor.com/locations.json"; // use preference
 	
     public void onCreate(Bundle savedInstanceState) {
     	Log.i(appTag, "onCreate");
@@ -123,15 +127,24 @@ public class Radar extends MapActivity implements ServiceConnection,
 
 	public void getNearbys() {
 		try {
-			Log.i(appTag, "send read request");
 			HttpClient client = new DefaultHttpClient();
-			String url_with_params = URL + "?id="+settings.getString("uuid", "");
+			String url_with_params = URL + "?id="
+					+ settings.getString("uuid", "");
+			Log.i(appTag, "GET " + url_with_params);
 			HttpGet get = new HttpGet(url_with_params);
 			HttpResponse response;
 			response = client.execute(get);
-			Log.i(appTag, "http response: "+response.getStatusLine());
+			Log.i(appTag, "http response: " + response.getStatusLine());
+			HttpEntity entity = response.getEntity();
+			InputStream instream = entity.getContent();
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					instream));
+			// do something useful with the response
+			Log.i(appTag,reader.readLine());
+
 		} catch (ClientProtocolException e) {
-			Log.i(appTag, "client protocol exception "+e);
+			Log.i(appTag, "client protocol exception " + e);
 		} catch (HttpHostConnectException e) {
 			Log.i(appTag, "connection failed "+e);
 		} catch (IOException e) {
