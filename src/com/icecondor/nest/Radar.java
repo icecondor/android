@@ -1,10 +1,8 @@
 package com.icecondor.nest;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -13,12 +11,10 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpParams;
+import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.content.ComponentName;
 import android.content.Intent;
@@ -42,7 +38,6 @@ public class Radar extends MapActivity implements ServiceConnection,
 	static final String appTag = "Radar";
 	MapController controller;
 	PigeonService pigeon;
-	private static final long UPDATE_INTERVAL = 5000;
 	private Timer pigeon_poll_timer = new Timer();
 	private Timer service_read_timer = new Timer();
 	SharedPreferences settings;
@@ -71,13 +66,13 @@ public class Radar extends MapActivity implements ServiceConnection,
 							e.printStackTrace();
 						}
 					}
-				}, 0, UPDATE_INTERVAL);
+				}, 0, PIGEON_LOCATION_POST_INTERVAL);
 		service_read_timer.scheduleAtFixedRate(
 				new TimerTask() {
 					public void run() {
 						getNearbys();
 					}
-				}, 0, UPDATE_INTERVAL);
+				}, 0, PIGEON_LOCATION_POST_INTERVAL);
     }
     
     @Override
@@ -140,15 +135,20 @@ public class Radar extends MapActivity implements ServiceConnection,
 			Log.i(appTag, "http response: " + response.getStatusLine());
 			HttpEntity entity = response.getEntity();
 			InputStream instream = entity.getContent();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					instream));
 			int length = (int)entity.getContentLength();
-			char[] buffer = new char[length];
+			InputStreamReader reader = new InputStreamReader(
+					instream);
 			Log.i(appTag, "reading "+length);
-			reader.read(buffer);
-			String buffer_string = new String(buffer, 1, length-2); // strip strange leading/trailing []
+			int byte_read = 0;
+			String buffer_string = "";
+			while(byte_read != -1) {
+				byte_read = reader.read();
+				buffer_string += (char) byte_read;
+			}
+			Log.i(appTag, "parsing: "+ buffer_string);
 			try {
-				JSONObject jobj = new JSONObject(buffer_string);
+				JSONArray locations = new JSONArray(buffer_string);
+				Log.i(appTag, "parsed "+locations.length()+" locations");
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
