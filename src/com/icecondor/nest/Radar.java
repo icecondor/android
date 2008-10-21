@@ -138,15 +138,11 @@ public class Radar extends MapActivity implements ServiceConnection,
 			InputStreamReader reader = new InputStreamReader(
 					instream);
 			Log.i(appTag, "reading "+length);
-			int byte_read = 0;
-			String buffer_string = "";
-			while(byte_read != -1) {
-				byte_read = reader.read();
-				buffer_string += (char) byte_read;
-			}
-			Log.i(appTag, "parsing: "+ buffer_string);
+			char[] buffer = new char[length];
+			reader.read(buffer);
+			Log.i(appTag, "parsing: "+ buffer.toString());
 			try {
-				JSONArray locations = new JSONArray(buffer_string);
+				JSONArray locations = new JSONArray(buffer.toString());
 				Log.i(appTag, "parsed "+locations.length()+" locations");
 			} catch (JSONException e) {
 				e.printStackTrace();
