@@ -108,6 +108,7 @@ public class Pigeon extends Service implements Constants {
 		dict.add(new BasicNameValuePair("location[longitude]", Double.toString(fix.getLongitude())));
 		dict.add(new BasicNameValuePair("location[altitude]", Double.toString(fix.getAltitude())));
 		dict.add(new BasicNameValuePair("location[guid]", uuid));
+		dict.add(new BasicNameValuePair("client[version]", getString(R.string.menu_version)));
 		if(fix.hasAccuracy()) {
 			dict.add(new BasicNameValuePair("location[accuracy]", Double.toString(fix.getAccuracy())));
 		}
