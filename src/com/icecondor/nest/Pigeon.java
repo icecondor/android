@@ -45,7 +45,7 @@ public class Pigeon extends Service implements Constants {
 					if (on_switch) {
 						Location fix;
 						fix = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-						fix = phoneyLocation();
+						//fix = phoneyLocation();
 						last_fix = fix;
 						pushLocation(fix);
 					}
