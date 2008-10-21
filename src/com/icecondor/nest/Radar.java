@@ -41,7 +41,6 @@ public class Radar extends MapActivity implements ServiceConnection,
 	private Timer pigeon_poll_timer = new Timer();
 	private Timer service_read_timer = new Timer();
 	SharedPreferences settings;
-	String URL = "http://icecondor.com/locations.json"; // use preference
 	
     public void onCreate(Bundle savedInstanceState) {
     	Log.i(appTag, "onCreate");
@@ -126,7 +125,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	public void getNearbys() {
 		try {
 			HttpClient client = new DefaultHttpClient();
-			String url_with_params = URL + "?id="
+			String url_with_params = ICECONDOR_WRITE_URL + "?id="
 					+ settings.getString("uuid", "");
 			Log.i(appTag, "GET " + url_with_params);
 			HttpGet get = new HttpGet(url_with_params);

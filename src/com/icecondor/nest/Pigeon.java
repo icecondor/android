@@ -31,10 +31,8 @@ import android.util.Log;
 //look at android.permission.RECEIVE_BOOT_COMPLETED
 
 public class Pigeon extends Service implements Constants {
-	private static final long UPDATE_INTERVAL = 5000;
 	private Timer timer = new Timer();
 	static final String appTag = "Pigeon";
-	String URL = "http://icecondor.com/locations"; // use preference
 	boolean on_switch;
 	private Location last_fix;
 	
@@ -63,7 +61,7 @@ public class Pigeon extends Service implements Constants {
 					fix.setTime(Calendar.getInstance().getTimeInMillis());
 					return fix;
 				}
-			}, 0, UPDATE_INTERVAL);		
+			}, 0, ICECONDOR_READ_INTERVAL);		
 		on_switch = true;
 	}
 	
@@ -84,7 +82,7 @@ public class Pigeon extends Service implements Constants {
 					+fix.getLatitude()+" long: "+fix.getLongitude()+
 					" alt: "+fix.getAltitude() + " time: " + Util.DateTimeIso8601(fix.getTime()));
 			HttpClient client = new DefaultHttpClient();
-			HttpPost post = new HttpPost(URL);
+			HttpPost post = new HttpPost(ICECONDOR_READ_URL);
 
 			post.addHeader("X_REQUESTED_WITH", "XMLHttpRequest");
 			post.setEntity(buildPostParameters(fix, settings.getString("uuid","")));
