@@ -142,12 +142,12 @@ public class Radar extends MapActivity implements ServiceConnection,
 			char[] buffer = new char[length];
 			reader.read(buffer);
 			Log.i(appTag, "parsing: "+ buffer.toString());
-			try {
-				JSONArray locations = new JSONArray(buffer.toString());
-				Log.i(appTag, "parsed "+locations.length()+" locations");
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				JSONArray locations = new JSONArray(buffer.toString());
+//				Log.i(appTag, "parsed "+locations.length()+" locations");
+//			} catch (JSONException e) {
+//				e.printStackTrace();
+//			}
 		} catch (ClientProtocolException e) {
 			Log.i(appTag, "client protocol exception " + e);
 		} catch (HttpHostConnectException e) {
