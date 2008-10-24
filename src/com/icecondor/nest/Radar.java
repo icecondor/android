@@ -47,8 +47,6 @@ public class Radar extends MapActivity implements ServiceConnection,
         super.onCreate(savedInstanceState);
         settings = getSharedPreferences(PREFS_NAME, 0);
         setContentView(R.layout.radar);
-        Intent pigeon_service = new Intent(this, Pigeon.class);
-        bindService(pigeon_service, this, 0); // 0 = do not auto-start
         MapView mapView = (MapView) findViewById(R.id.radar_mapview);
         controller = mapView.getController();
         controller.setZoom(9);
@@ -77,6 +75,9 @@ public class Radar extends MapActivity implements ServiceConnection,
     @Override
     public void onResume() {
     	super.onResume();
+        Intent pigeon_service = new Intent(this, Pigeon.class);
+        boolean result = bindService(pigeon_service, this, 0); // 0 = do not auto-start
+        Log.i(appTag, "pigeon bind result="+result);
     	Log.i(appTag, "onResume yeah");
     }
     

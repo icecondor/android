@@ -30,7 +30,6 @@ public class Nest extends Activity implements OnTabChangeListener,
                                               Constants, OnKeyListener, OnFocusChangeListener {
 	TabHost myTabHost;
 	static final String appTag = "Nest";
-	Intent pigeon_service;
 	PigeonService pigeon;
 	SharedPreferences settings;
 	LinearLayout settings_layout;
@@ -41,11 +40,8 @@ public class Nest extends Activity implements OnTabChangeListener,
     public void onCreate(Bundle savedInstanceState) {
     	Log.i(appTag, "onCreate");
         super.onCreate(savedInstanceState);
-        pigeon_service = new Intent(this, Pigeon.class);
         settings = getSharedPreferences(PREFS_NAME, 0);
         uiSetup();       
-        // sideeffect: sets pigeon_service
-        bindService(pigeon_service, this, 0); // 0 = do not auto-start
     }
 
 	private void uiSetup() {
@@ -81,12 +77,16 @@ public class Nest extends Activity implements OnTabChangeListener,
     @Override
     public void onResume() {
     	super.onResume();
+        Intent pigeon_service = new Intent(this, Pigeon.class);
+        boolean result = bindService(pigeon_service, this, 0); // 0 = do not auto-start
+        Log.i(appTag, "pigeon bind result="+result);
     	Log.i(appTag, "onResume yeah");
     }
     
     @Override
     public void onPause() {
     	super.onPause();
+		unbindService(this);
     	Log.i(appTag, "onPause yeah");
     }
 
