@@ -8,7 +8,7 @@
         android:layout_height="fill_parent"
         android:enabled="true"
         android:clickable="true"
-        android:apiKey="apisamples"
+        android:apiKey="0KVP3r7JZvW_sgroTh1V0qpOfazwq-Vr4vpNlGQ"
         android:id="@+id/radar_mapview"
         />
 </LinearLayout>
