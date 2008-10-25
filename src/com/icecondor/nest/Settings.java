@@ -24,7 +24,7 @@ import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabSpec;
 import android.widget.LinearLayout;
 
-public class Nest extends Activity implements OnTabChangeListener,
+public class Settings extends Activity implements OnTabChangeListener,
                                               ServiceConnection, 
                                               OnClickListener,
                                               Constants, OnKeyListener, OnFocusChangeListener {

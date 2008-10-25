@@ -112,7 +112,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Log.i(appTag, "menu:"+item.getItemId());
 		if (item.getItemId() == R.string.menu_second) {
-			startActivity(new Intent(this, Nest.class));
+			startActivity(new Intent(this, Settings.class));
 		}
 		return false;
 	}

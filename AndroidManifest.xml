@@ -10,7 +10,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Nest" android:label="Nest">
+        <activity android:name=".Settings" android:label="Settings">
         </activity>
         <activity android:name=".Radar" android:label="Radar">
         </activity>
