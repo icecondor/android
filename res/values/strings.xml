@@ -4,7 +4,7 @@
 	<string name="menu_first">Radar</string>
 	<string name="menu_second">Settings</string>
     <string name="hello">Hello World, Nest</string>
-    <string name="app_name">IceNest</string>
+    <string name="app_name">IceCondor</string>
 	<string name="tab_title1">Identity</string>
 	<string name="tab_title2">Communication</string>
 	<string name="settings_transmitting">Transmitting</string>
