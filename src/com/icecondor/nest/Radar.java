@@ -49,7 +49,7 @@ public class Radar extends MapActivity implements ServiceConnection,
         setContentView(R.layout.radar);
         MapView mapView = (MapView) findViewById(R.id.radar_mapview);
         controller = mapView.getController();
-        controller.setZoom(9);
+        controller.setZoom(15);
 		pigeon_poll_timer.scheduleAtFixedRate(
 				new TimerTask() {
 					public void run() {
