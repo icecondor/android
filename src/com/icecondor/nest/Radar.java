@@ -27,6 +27,7 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -47,7 +48,9 @@ public class Radar extends MapActivity implements ServiceConnection,
         super.onCreate(savedInstanceState);
         settings = getSharedPreferences(PREFS_NAME, 0);
         setContentView(R.layout.radar);
+        ViewGroup radar_zoom = (ViewGroup)findViewById(R.id.radar_mapview_zoom);
         MapView mapView = (MapView) findViewById(R.id.radar_mapview);
+        radar_zoom.addView(mapView.getZoomControls());
         controller = mapView.getController();
         controller.setZoom(15);
 		pigeon_poll_timer.scheduleAtFixedRate(

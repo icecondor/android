@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/radar"
     android:layout_width="fill_parent" 
     android:layout_height="fill_parent">
@@ -11,4 +11,9 @@
         android:apiKey="0KVP3r7JZvW_sgroTh1V0qpOfazwq-Vr4vpNlGQ"
         android:id="@+id/radar_mapview"
         />
-</LinearLayout>
+     <LinearLayout android:id="@+id/radar_mapview_zoom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" /> 
+</RelativeLayout>
