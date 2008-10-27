@@ -33,6 +33,7 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
+import com.google.android.maps.Overlay;
 
 public class Radar extends MapActivity implements ServiceConnection,
 												  Constants {
@@ -42,6 +43,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	private Timer pigeon_poll_timer = new Timer();
 	private Timer service_read_timer = new Timer();
 	SharedPreferences settings;
+	Overlay nearbys;
 	
     public void onCreate(Bundle savedInstanceState) {
     	Log.i(appTag, "onCreate");
@@ -53,6 +55,8 @@ public class Radar extends MapActivity implements ServiceConnection,
         radar_zoom.addView(mapView.getZoomControls());
         controller = mapView.getController();
         controller.setZoom(15);
+        nearbys = new BirdOverlay();
+        mapView.getOverlays().add(nearbys);
 		pigeon_poll_timer.scheduleAtFixedRate(
 				new TimerTask() {
 					public void run() {
@@ -144,7 +148,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 			Log.i(appTag, "reading "+length);
 			char[] buffer = new char[length];
 			reader.read(buffer);
-			Log.i(appTag, "parsing: "+ buffer.toString());
+			Log.i(appTag, "parsing: "+ new String(buffer));
 //			try {
 //				JSONArray locations = new JSONArray(buffer.toString());
 //				Log.i(appTag, "parsed "+locations.length()+" locations");
