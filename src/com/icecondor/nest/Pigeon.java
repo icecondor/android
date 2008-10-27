@@ -19,6 +19,9 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,10 +38,19 @@ public class Pigeon extends Service implements Constants {
 	static final String appTag = "Pigeon";
 	boolean on_switch;
 	private Location last_fix;
+	Notification notification;
+	NotificationManager notificationManager;
 	
 	public void onCreate() {
 		Log.i(appTag, "*** service created.");
 		final LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		CharSequence text = getText(R.string.status_transmitting);
+		notification = new Notification(R.drawable.statusbar,text,System.currentTimeMillis());
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+                new Intent(this, Start.class), 0);
+		notification.setLatestEventInfo(this, "event title", "event text", contentIntent);
+
 		timer.scheduleAtFixedRate(
 			new TimerTask() {
 				public void run() {
@@ -124,10 +136,12 @@ public class Pigeon extends Service implements Constants {
 		public void startTransmitting() throws RemoteException {
 			Log.i(appTag, "startTransmitting");
 			on_switch = true;
+			notificationManager.notify(1, notification);
 		}
 		public void stopTransmitting() throws RemoteException {
 			Log.i(appTag, "stopTransmitting");
 			on_switch = false;
+			notificationManager.cancel(1);
 		}
 		public Location getLastFix() throws RemoteException {
 			return last_fix;
