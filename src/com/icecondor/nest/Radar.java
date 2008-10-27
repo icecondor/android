@@ -16,6 +16,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.ComponentName;
 import android.content.Intent;
@@ -146,8 +147,16 @@ public class Radar extends MapActivity implements ServiceConnection,
 			try {
 				JSONArray locations = new JSONArray(json);
 				Log.i(appTag, "parsed "+locations.length()+" locations");
+				for(int i=0; i < locations.length(); i++) {
+					JSONObject location = (JSONObject)locations.getJSONObject(i).get("location");
+					String timestamp = location.getString("timestamp");
+					double longitude = location.getJSONObject("geom").getDouble("x");
+					double latitude = location.getJSONObject("geom").getDouble("y");
+					Log.i(appTag, "#"+i+" longititude: "+longitude+" latitude: "+latitude);
+
+				}
 			} catch (JSONException e) {
-				e.printStackTrace();
+				Log.i(appTag,"JSON exception: "+e);
 			}
 		} catch (ClientProtocolException e) {
 			Log.i(appTag, "client protocol exception " + e);
