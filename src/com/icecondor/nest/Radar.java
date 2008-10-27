@@ -13,6 +13,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -141,20 +142,13 @@ public class Radar extends MapActivity implements ServiceConnection,
 			response = client.execute(get);
 			Log.i(appTag, "http response: " + response.getStatusLine());
 			HttpEntity entity = response.getEntity();
-			InputStream instream = entity.getContent();
-			int length = (int)entity.getContentLength();
-			InputStreamReader reader = new InputStreamReader(
-					instream);
-			Log.i(appTag, "reading "+length);
-			char[] buffer = new char[length];
-			reader.read(buffer);
-			Log.i(appTag, "parsing: "+ new String(buffer));
-//			try {
-//				JSONArray locations = new JSONArray(buffer.toString());
-//				Log.i(appTag, "parsed "+locations.length()+" locations");
-//			} catch (JSONException e) {
-//				e.printStackTrace();
-//			}
+			String json = EntityUtils.toString(entity);
+			try {
+				JSONArray locations = new JSONArray(json);
+				Log.i(appTag, "parsed "+locations.length()+" locations");
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 		} catch (ClientProtocolException e) {
 			Log.i(appTag, "client protocol exception " + e);
 		} catch (HttpHostConnectException e) {
