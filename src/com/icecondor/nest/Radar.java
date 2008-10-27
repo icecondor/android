@@ -56,7 +56,7 @@ public class Radar extends MapActivity implements ServiceConnection,
         controller = mapView.getController();
         controller.setZoom(15);
         nearbys = new BirdOverlay();
-        mapView.getOverlays().add(nearbys);
+        //mapView.getOverlays().add(nearbys);
 		pigeon_poll_timer.scheduleAtFixedRate(
 				new TimerTask() {
 					public void run() {
