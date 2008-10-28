@@ -26,14 +26,16 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
 //look at android.permission.RECEIVE_BOOT_COMPLETED
 
-public class Pigeon extends Service implements Constants {
+public class Pigeon extends Service implements Constants, LocationListener {
 	private Timer timer = new Timer();
 	static final String appTag = "Pigeon";
 	boolean on_switch;
@@ -44,6 +46,8 @@ public class Pigeon extends Service implements Constants {
 	public void onCreate() {
 		Log.i(appTag, "*** service created.");
 		final LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+		Log.i(appTag, "GPS provider enabled: "+locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER));
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, ICECONDOR_READ_INTERVAL, 0.0F, this);
 		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		CharSequence text = getText(R.string.status_transmitting);
 		notification = new Notification(R.drawable.statusbar,text,System.currentTimeMillis());
@@ -51,29 +55,29 @@ public class Pigeon extends Service implements Constants {
                 new Intent(this, Start.class), 0);
 		notification.setLatestEventInfo(this, "event title", "event text", contentIntent);
 
-		timer.scheduleAtFixedRate(
-			new TimerTask() {
-				public void run() {
-					if (on_switch) {
-						Location fix;
-						fix = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-						//fix = phoneyLocation();
-						last_fix = fix;
-						pushLocation(fix);
-					}
-				}
-
-				private Location phoneyLocation() {
-					Location fix;
-					fix = new Location("phoney");
-					// simulation
-					Random rand = new Random();
-					fix.setLatitude(45+rand.nextFloat());
-					fix.setLongitude(-122-rand.nextFloat());
-					fix.setTime(Calendar.getInstance().getTimeInMillis());
-					return fix;
-				}
-			}, 0, ICECONDOR_READ_INTERVAL);		
+//		timer.scheduleAtFixedRate(
+//			new TimerTask() {
+//				public void run() {
+//					if (on_switch) {
+//						Location fix;
+//						fix = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+//						//fix = phoneyLocation();
+//						last_fix = fix;
+//						pushLocation(fix);
+//					}
+//				}
+//
+//				private Location phoneyLocation() {
+//					Location fix;
+//					fix = new Location("phoney");
+//					// simulation
+//					Random rand = new Random();
+//					fix.setLatitude(45+rand.nextFloat());
+//					fix.setLongitude(-122-rand.nextFloat());
+//					fix.setTime(Calendar.getInstance().getTimeInMillis());
+//					return fix;
+//				}
+//			}, 0, ICECONDOR_READ_INTERVAL);		
 		on_switch = true;
 	}
 	
@@ -147,4 +151,21 @@ public class Pigeon extends Service implements Constants {
 			return last_fix;
 		}
     };
+
+	public void onLocationChanged(Location location) {
+		last_fix = location;
+		pushLocation(location);
+	}
+
+	public void onProviderDisabled(String provider) {
+		Log.i(appTag, "provider "+provider+" disabled");
+	}
+
+	public void onProviderEnabled(String provider) {
+		Log.i(appTag, "provider "+provider+" enabled");		
+	}
+
+	public void onStatusChanged(String provider, int status, Bundle extras) {
+		Log.i(appTag, "provider "+provider+" status changed to "+status);
+	}
 }
