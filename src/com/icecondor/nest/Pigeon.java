@@ -28,6 +28,7 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -42,12 +43,15 @@ public class Pigeon extends Service implements Constants, LocationListener {
 	private Location last_fix;
 	Notification notification;
 	NotificationManager notificationManager;
+	LocationManager locationManager;
+	Pigeon pigeon; // need 'this' for stub
 	
 	public void onCreate() {
 		Log.i(appTag, "*** service created.");
-		final LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+		pigeon = this;
+		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		Log.i(appTag, "GPS provider enabled: "+locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER));
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, ICECONDOR_READ_INTERVAL, 0.0F, this);
+		locationManager.getProvider(LocationManager.GPS_PROVIDER);
 		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		CharSequence text = getText(R.string.status_transmitting);
 		notification = new Notification(R.drawable.statusbar,text,System.currentTimeMillis());
@@ -96,7 +100,8 @@ public class Pigeon extends Service implements Constants, LocationListener {
 			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 			Log.i(appTag, "sending id: "+settings.getString("uuid","")+ " fix: " 
 					+fix.getLatitude()+" long: "+fix.getLongitude()+
-					" alt: "+fix.getAltitude() + " time: " + Util.DateTimeIso8601(fix.getTime()));
+					" alt: "+fix.getAltitude() + " time: " + Util.DateTimeIso8601(fix.getTime()) +
+					" meters: "+fix.getAccuracy());
 			HttpClient client = new DefaultHttpClient();
 			HttpPost post = new HttpPost(ICECONDOR_READ_URL);
 
@@ -140,11 +145,13 @@ public class Pigeon extends Service implements Constants, LocationListener {
 		public void startTransmitting() throws RemoteException {
 			Log.i(appTag, "startTransmitting");
 			on_switch = true;
+			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60000L, 0.0F, pigeon);
 			notificationManager.notify(1, notification);
 		}
 		public void stopTransmitting() throws RemoteException {
 			Log.i(appTag, "stopTransmitting");
 			on_switch = false;
+			locationManager.removeUpdates(pigeon);
 			notificationManager.cancel(1);
 		}
 		public Location getLastFix() throws RemoteException {
@@ -154,7 +161,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 
 	public void onLocationChanged(Location location) {
 		last_fix = location;
-		pushLocation(location);
+		if (on_switch) { pushLocation(location); }
 	}
 
 	public void onProviderDisabled(String provider) {
@@ -166,6 +173,11 @@ public class Pigeon extends Service implements Constants, LocationListener {
 	}
 
 	public void onStatusChanged(String provider, int status, Bundle extras) {
-		Log.i(appTag, "provider "+provider+" status changed to "+status);
+		String status_msg = "";
+		if (status ==  LocationProvider.TEMPORARILY_UNAVAILABLE) {status_msg = "TEMPORARILY_UNAVAILABLE";}
+		if (status ==  LocationProvider.OUT_OF_SERVICE) {status_msg = "OUT_OF_SERVICE";}
+		if (status ==  LocationProvider.AVAILABLE) {status_msg = "AVAILABLE";}
+		Log.i(appTag, "provider "+provider+" status changed to "+status_msg+
+				" enabled: "+locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER));
 	}
 }
