@@ -114,17 +114,73 @@ public class Radar extends MapActivity implements ServiceConnection,
 	public boolean onCreateOptionsMenu(Menu menu) {
 		Log.i(appTag, "onCreateOptionsMenu");
 		boolean result = super.onCreateOptionsMenu(menu);
-		menu.add(0, R.string.menu_radar, 0, R.string.menu_radar).setIcon(android.R.drawable.ic_menu_compass);
-		menu.add(0, R.string.menu_settings, 0, R.string.menu_settings).setIcon(android.R.drawable.ic_menu_preferences);
+		menu.add(Menu.NONE, 1, Menu.NONE, R.string.menu_last_fix).setIcon(android.R.drawable.ic_menu_mylocation);
+		menu.add(Menu.NONE, 2, Menu.NONE, R.string.menu_settings).setIcon(android.R.drawable.ic_menu_preferences);
+		menu.add(Menu.NONE, 3, Menu.NONE, pigeonStatusTitle()).setIcon(android.R.drawable.presence_invisible);
 		return result;
 	}
 	
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Log.i(appTag, "menu:"+item.getItemId());
-		if (item.getItemId() == R.string.menu_settings) {
+		
+		switch (item.getItemId()) {
+		case 1:
+			scrollToLastFix();
+			break;
+		case 2:
 			startActivity(new Intent(this, Settings.class));
+			break;
+		case 3:
+			togglePigeon();
+			item.setIcon(pigeonStatusIcon()).setTitle(pigeonStatusTitle());
+			break;
 		}
+		
 		return false;
+	}
+	
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		boolean result = super.onPrepareOptionsMenu(menu);
+		menu.findItem(3).setIcon(pigeonStatusIcon()).setTitle(pigeonStatusTitle());
+		return result;
+	}
+	
+	public boolean togglePigeon() {
+		try {
+			if (pigeon.isTransmitting()) {
+				pigeon.stopTransmitting();
+				return false;
+			} else {
+				pigeon.startTransmitting();
+				return true;
+			}
+		} catch (RemoteException e) {
+			return false;
+		}
+	}
+	
+	public int pigeonStatusIcon() {
+		try {
+			if(pigeon.isTransmitting()) {
+				return android.R.drawable.presence_online;
+			} else {
+				return android.R.drawable.presence_invisible;
+			}
+		} catch (RemoteException e) {
+			return android.R.drawable.presence_offline;
+		}
+	}
+	
+	public int pigeonStatusTitle() {
+		try {
+			if(pigeon.isTransmitting()) {
+				return R.string.status_transmitting;
+			} else {
+				return R.string.status_not_transmitting;
+			}
+		} catch (RemoteException e) {
+			return R.string.status_error;
+		}
 	}
 	
 	public void onServiceConnected(ComponentName className, IBinder service) {
