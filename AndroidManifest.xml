@@ -10,12 +10,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Settings" android:label="Settings">
-        </activity>
         <activity android:name=".Radar" android:label="Radar">
         </activity>
         <service android:name=".Pigeon">
         </service>
         <uses-library android:name="com.google.android.maps" />
     </application>
+
 </manifest>
