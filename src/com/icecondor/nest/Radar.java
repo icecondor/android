@@ -48,6 +48,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	Overlay nearbys;
 	
     public void onCreate(Bundle savedInstanceState) {
+    	setTitle(getString(R.string.app_name) + " " + getString(R.string.menu_version));
     	Log.i(appTag, "onCreate");
         super.onCreate(savedInstanceState);
         settings = getSharedPreferences(PREFS_NAME, 0);
