@@ -63,15 +63,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 		pigeon_poll_timer.scheduleAtFixedRate(
 				new TimerTask() {
 					public void run() {
-						try {
-							Location fix = pigeon.getLastFix();
-							Log.i(appTag, "radar: pigeon says last fix is "+fix);
-							controller.animateTo(new GeoPoint((int)(fix.getLatitude()*1000000),
-									                          (int)(fix.getLongitude()*1000000)));
-						} catch (RemoteException e) {
-							Log.e(appTag, "radar: error reading fix from pigeon.");
-							e.printStackTrace();
-						}
+						scrollToLastFix();
 					}
 				}, 0, PIGEON_LOCATION_POST_INTERVAL);
 		service_read_timer.scheduleAtFixedRate(
@@ -80,6 +72,18 @@ public class Radar extends MapActivity implements ServiceConnection,
 						getNearbys();
 					}
 				}, 0, PIGEON_LOCATION_POST_INTERVAL);
+    }
+    
+    public void scrollToLastFix() {
+    	try {
+			Location fix = pigeon.getLastFix();
+			Log.i(appTag, "radar: pigeon says last fix is "+fix);
+			controller.animateTo(new GeoPoint((int)(fix.getLatitude()*1000000),
+					                          (int)(fix.getLongitude()*1000000)));
+		} catch (RemoteException e) {
+			Log.e(appTag, "radar: error reading fix from pigeon.");
+			e.printStackTrace();
+		}
     }
     
     @Override
