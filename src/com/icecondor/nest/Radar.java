@@ -110,15 +110,14 @@ public class Radar extends MapActivity implements ServiceConnection,
 	public boolean onCreateOptionsMenu(Menu menu) {
 		Log.i(appTag, "onCreateOptionsMenu");
 		boolean result = super.onCreateOptionsMenu(menu);
-		menu.add(0, Menu.FIRST, 0, R.string.menu_version);
-		menu.add(0, R.string.menu_first, 0, R.string.menu_first).setIcon(android.R.drawable.ic_menu_compass);
-		menu.add(0, R.string.menu_second, 0, R.string.menu_second).setIcon(android.R.drawable.ic_menu_preferences);
+		menu.add(0, R.string.menu_radar, 0, R.string.menu_radar).setIcon(android.R.drawable.ic_menu_compass);
+		menu.add(0, R.string.menu_settings, 0, R.string.menu_settings).setIcon(android.R.drawable.ic_menu_preferences);
 		return result;
 	}
 	
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Log.i(appTag, "menu:"+item.getItemId());
-		if (item.getItemId() == R.string.menu_second) {
+		if (item.getItemId() == R.string.menu_settings) {
 			startActivity(new Intent(this, Settings.class));
 		}
 		return false;

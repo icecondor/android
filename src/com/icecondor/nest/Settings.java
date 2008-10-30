@@ -153,15 +153,15 @@ public class Settings extends Activity implements OnTabChangeListener,
 		Log.i(appTag, "onCreateOptionsMenu");
 		boolean result = super.onCreateOptionsMenu(menu);
 		menu.add(0, Menu.FIRST, 0, R.string.menu_version);
-		menu.add(0, R.string.menu_first, 0, R.string.menu_first).setIcon(android.R.drawable.ic_menu_compass);
-		menu.add(0, R.string.menu_second, 0, R.string.menu_second).setIcon(android.R.drawable.ic_menu_preferences);
+		menu.add(0, R.string.menu_radar, 0, R.string.menu_radar).setIcon(android.R.drawable.ic_menu_compass);
+		menu.add(0, R.string.menu_settings, 0, R.string.menu_settings).setIcon(android.R.drawable.ic_menu_preferences);
 		return result;
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Log.i(appTag, "menu:"+item.getItemId());
-		if (item.getItemId() == R.string.menu_first) {
+		if (item.getItemId() == R.string.menu_radar) {
 			startActivity(new Intent(this, Radar.class));
 		}
 		return false;
