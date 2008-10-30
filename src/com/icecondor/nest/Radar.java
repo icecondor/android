@@ -18,7 +18,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -27,9 +30,12 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -46,6 +52,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	private Timer service_read_timer = new Timer();
 	SharedPreferences settings;
 	Overlay nearbys;
+	EditText uuid_field;
 	
     public void onCreate(Bundle savedInstanceState) {
     	setTitle(getString(R.string.app_name) + " " + getString(R.string.menu_version));
@@ -128,7 +135,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 			scrollToLastFix();
 			break;
 		case 2:
-			startActivity(new Intent(this, Settings.class));
+			showDialog(1);
 			break;
 		case 3:
 			togglePigeon();
@@ -143,6 +150,32 @@ public class Radar extends MapActivity implements ServiceConnection,
 		boolean result = super.onPrepareOptionsMenu(menu);
 		menu.findItem(3).setIcon(pigeonStatusIcon()).setTitle(pigeonStatusTitle());
 		return result;
+	}
+	
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		LayoutInflater factory = LayoutInflater.from(this);
+        View settings_view = factory.inflate(R.layout.settings, null);
+        
+		return new AlertDialog.Builder(this)
+			.setView(settings_view)
+			.setTitle(R.string.menu_settings)
+			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichbutton) {
+					settings.edit().putString("uuid",uuid_field.getText().toString()).commit();
+				}
+			})
+			.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichbutton) {
+					
+				}
+			})
+			.create();
+	}
+	
+	protected void onPrepareDialog(int id, Dialog dialog) {
+		uuid_field = (EditText) dialog.findViewById(R.id.settings_uuid_edit);
+        uuid_field.setText(settings.getString("uuid", "n/a"));
 	}
 	
 	public boolean togglePigeon() {
