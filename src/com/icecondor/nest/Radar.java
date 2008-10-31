@@ -35,6 +35,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.EditText;
 
 import com.google.android.maps.GeoPoint;
@@ -53,26 +54,26 @@ public class Radar extends MapActivity implements ServiceConnection,
 	SharedPreferences settings;
 	Overlay nearbys;
 	EditText uuid_field;
+	MapView mapView;
 	
     public void onCreate(Bundle savedInstanceState) {
-    	setTitle(getString(R.string.app_name) + " " + getString(R.string.menu_version));
     	Log.i(appTag, "onCreate");
         super.onCreate(savedInstanceState);
         settings = getSharedPreferences(PREFS_NAME, 0);
+        
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        setProgressBarIndeterminateVisibility(false);
+        
+        setTitle(getString(R.string.app_name) + " " + getString(R.string.menu_version));
+                
         setContentView(R.layout.radar);
         ViewGroup radar_zoom = (ViewGroup)findViewById(R.id.radar_mapview_zoom);
-        MapView mapView = (MapView) findViewById(R.id.radar_mapview);
+        mapView = (MapView) findViewById(R.id.radar_mapview);
         radar_zoom.addView(mapView.getZoomControls());
         controller = mapView.getController();
         controller.setZoom(15);
         nearbys = new BirdOverlay();
         //mapView.getOverlays().add(nearbys);
-		pigeon_poll_timer.scheduleAtFixedRate(
-				new TimerTask() {
-					public void run() {
-						scrollToLastFix();
-					}
-				}, 0, PIGEON_LOCATION_POST_INTERVAL);
 		service_read_timer.scheduleAtFixedRate(
 				new TimerTask() {
 					public void run() {
@@ -83,10 +84,13 @@ public class Radar extends MapActivity implements ServiceConnection,
     
     public void scrollToLastFix() {
     	try {
+    		controller = mapView.getController();
 			Location fix = pigeon.getLastFix();
 			Log.i(appTag, "radar: pigeon says last fix is "+fix);
-			controller.animateTo(new GeoPoint((int)(fix.getLatitude()*1000000),
-					                          (int)(fix.getLongitude()*1000000)));
+			if(fix!=null) {
+				controller.animateTo(new GeoPoint((int)(fix.getLatitude()*1000000),
+						                          (int)(fix.getLongitude()*1000000)));
+			}
 		} catch (RemoteException e) {
 			Log.e(appTag, "radar: error reading fix from pigeon.");
 			e.printStackTrace();
@@ -226,6 +230,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	}
 
 	public void getNearbys() {
+		setProgressBarIndeterminateVisibility(true);
 		try {
 			HttpClient client = new DefaultHttpClient();
 			String url_with_params = ICECONDOR_WRITE_URL + "?id="
@@ -246,11 +251,11 @@ public class Radar extends MapActivity implements ServiceConnection,
 					double longitude = location.getJSONObject("geom").getDouble("x");
 					double latitude = location.getJSONObject("geom").getDouble("y");
 					Log.i(appTag, "#"+i+" longititude: "+longitude+" latitude: "+latitude);
-
 				}
 			} catch (JSONException e) {
 				Log.i(appTag,"JSON exception: "+e);
 			}
+			
 		} catch (ClientProtocolException e) {
 			Log.i(appTag, "client protocol exception " + e);
 		} catch (HttpHostConnectException e) {
@@ -259,5 +264,6 @@ public class Radar extends MapActivity implements ServiceConnection,
 			Log.i(appTag, "IO exception "+e);
 			e.printStackTrace();
 		}
+		setProgressBarIndeterminateVisibility(false);
 	}
 }
