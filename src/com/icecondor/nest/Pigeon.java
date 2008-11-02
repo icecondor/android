@@ -145,7 +145,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 		public void startTransmitting() throws RemoteException {
 			Log.i(appTag, "startTransmitting");
 			on_switch = true;
-			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 6000L, 0.0F, pigeon);
+			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60000L, 0.0F, pigeon);
 			notificationManager.notify(1, notification);
 		}
 		public void stopTransmitting() throws RemoteException {
@@ -160,9 +160,18 @@ public class Pigeon extends Service implements Constants, LocationListener {
     };
 
 	public void onLocationChanged(Location location) {
-		last_fix = location;
 		Log.i(appTag, "onLocationChanged: "+location);
-		if (on_switch) { pushLocation(location); }
+		if (on_switch) {
+			long last_time = 0;
+			if(last_fix != null) { last_time = last_fix.getTime(); }
+			long time_since_last_update = location.getTime() - last_time; 
+			if(time_since_last_update > ICECONDOR_READ_INTERVAL) { 
+				last_fix = location;
+				pushLocation(location); 
+			} else {
+				Log.i(appTag, time_since_last_update+" is less than "+ICECONDOR_READ_INTERVAL+ " server push skipped");
+			}
+		}
 	}
 
 	public void onProviderDisabled(String provider) {
