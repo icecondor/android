@@ -162,7 +162,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 	public void onLocationChanged(Location location) {
 		last_fix = location;
 		Log.i(appTag, "onLocationChanged: "+location);
-		//if (on_switch) { pushLocation(location); }
+		if (on_switch) { pushLocation(location); }
 	}
 
 	public void onProviderDisabled(String provider) {
