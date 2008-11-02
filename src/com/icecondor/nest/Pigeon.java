@@ -190,6 +190,5 @@ public class Pigeon extends Service implements Constants, LocationListener {
 		Log.i(appTag, "provider "+provider+" status changed to "+status_msg+
 				" enabled: "+locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER));
 		Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		Log.i(appTag, "location anyways: "+location+ " msec"+location.getTime()+" time:"+Util.DateTimeIso8601(location.getTime()-(60*60*7))); 
 	}
 }
