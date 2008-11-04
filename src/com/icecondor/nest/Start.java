@@ -47,14 +47,16 @@ public class Start extends Activity implements ServiceConnection,
 		
 		// Start the Pigeon
         boolean startPigeon = settings.getBoolean("startPigeon", true);
-        if (startPigeon) {
-            try {
+        try {
+			if (startPigeon) {
 				pigeon.startTransmitting();
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} else {
+				pigeon.stopTransmitting();
 			}
-        }
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         
 	}
 

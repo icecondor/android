@@ -39,7 +39,7 @@ import android.util.Log;
 public class Pigeon extends Service implements Constants, LocationListener {
 	private Timer timer = new Timer();
 	static final String appTag = "Pigeon";
-	boolean on_switch;
+	boolean on_switch = false;
 	private Location last_fix, last_local_fix;
 	Notification notification;
 	NotificationManager notificationManager;
@@ -76,7 +76,6 @@ public class Pigeon extends Service implements Constants, LocationListener {
 //					return fix;
 //				}
 			}, 0, PIGEON_LOCATION_POST_INTERVAL);		
-		on_switch = true;
 	}
 	
 	public void onStart() {
