@@ -40,7 +40,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 	private Timer timer = new Timer();
 	static final String appTag = "Pigeon";
 	boolean on_switch;
-	private Location last_fix;
+	private Location last_fix, last_local_fix;
 	Notification notification;
 	NotificationManager notificationManager;
 	LocationManager locationManager;
@@ -59,17 +59,11 @@ public class Pigeon extends Service implements Constants, LocationListener {
                 new Intent(this, Start.class), 0);
 		notification.setLatestEventInfo(this, "event title", "event text", contentIntent);
 
-//		timer.scheduleAtFixedRate(
-//			new TimerTask() {
-//				public void run() {
-//					if (on_switch) {
-//						Location fix;
-//						fix = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-//						//fix = phoneyLocation();
-//						last_fix = fix;
-//						pushLocation(fix);
-//					}
-//				}
+		timer.scheduleAtFixedRate(
+			new TimerTask() {
+				public void run() {
+					Log.i(appTag, "timer task here. last_fix is "+last_fix);
+				}
 //
 //				private Location phoneyLocation() {
 //					Location fix;
@@ -81,7 +75,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 //					fix.setTime(Calendar.getInstance().getTimeInMillis());
 //					return fix;
 //				}
-//			}, 0, ICECONDOR_READ_INTERVAL);		
+			}, 0, ICECONDOR_READ_INTERVAL);		
 		on_switch = true;
 	}
 	
@@ -160,7 +154,12 @@ public class Pigeon extends Service implements Constants, LocationListener {
     };
 
 	public void onLocationChanged(Location location) {
-		Log.i(appTag, "onLocationChanged: "+location);
+		String msg = "onLocationChanged: "+location;
+		if(last_local_fix != null) {
+			msg = msg + " last location change elapsed time "+(location.getTime()-last_local_fix.getTime())/1000.0;
+		}
+		Log.i(appTag, msg);
+		last_local_fix = location;
 		if (on_switch) {
 			long last_time = 0;
 			if(last_fix != null) { last_time = last_fix.getTime(); }
@@ -169,7 +168,8 @@ public class Pigeon extends Service implements Constants, LocationListener {
 				last_fix = location;
 				pushLocation(location); 
 			} else {
-				Log.i(appTag, time_since_last_update+" is less than "+ICECONDOR_READ_INTERVAL+ " server push skipped");
+				Log.i(appTag, time_since_last_update/1000+" is less than "+
+						ICECONDOR_READ_INTERVAL/1000+ " server push skipped");
 			}
 		}
 	}
