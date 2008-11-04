@@ -72,12 +72,6 @@ public class Radar extends MapActivity implements ServiceConnection,
         radar_zoom.addView(mapView.getZoomControls());
         controller = mapView.getController();
         controller.setZoom(15);
-		service_read_timer.scheduleAtFixedRate(
-				new TimerTask() {
-					public void run() {
-						getNearbys();
-					}
-				}, 0, ICECONDOR_READ_INTERVAL);
     }
     
     public void scrollToLastFix() {
@@ -98,10 +92,11 @@ public class Radar extends MapActivity implements ServiceConnection,
     @Override
     public void onResume() {
     	super.onResume();
+    	Log.i(appTag, "onResume yeah");
         Intent pigeon_service = new Intent(this, Pigeon.class);
         boolean result = bindService(pigeon_service, this, 0); // 0 = do not auto-start
         Log.i(appTag, "pigeon bind result="+result);
-    	Log.i(appTag, "onResume yeah");
+        //startNeighborReadTimer();
     }
     
     @Override
@@ -109,7 +104,7 @@ public class Radar extends MapActivity implements ServiceConnection,
     	super.onPause();
 		unbindService(this);
     	pigeon_poll_timer.cancel();
-    	service_read_timer.cancel();
+    	stopNeighborReadTimer();
     	Log.i(appTag, "onPause yeah");
     }
 
@@ -238,6 +233,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 					+ settings.getString("uuid", "");
 			Log.i(appTag, "GET " + url_with_params);
 			HttpGet get = new HttpGet(url_with_params);
+			get.getParams().setIntParameter("http.socket.timeout", 1000);
 			HttpResponse response;
 			response = client.execute(get);
 			Log.i(appTag, "http response: " + response.getStatusLine());
@@ -266,5 +262,17 @@ public class Radar extends MapActivity implements ServiceConnection,
 			e.printStackTrace();
 		}
 		setProgressBarIndeterminateVisibility(false);
+	}
+	
+	public void startNeighborReadTimer() {
+		service_read_timer.scheduleAtFixedRate(new TimerTask() {
+			public void run() {
+				getNearbys();
+			}
+		}, 0, ICECONDOR_READ_INTERVAL);
+	}
+
+	public void stopNeighborReadTimer() {
+		service_read_timer.cancel();
 	}
 }
