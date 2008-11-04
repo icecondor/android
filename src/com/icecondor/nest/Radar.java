@@ -72,8 +72,6 @@ public class Radar extends MapActivity implements ServiceConnection,
         radar_zoom.addView(mapView.getZoomControls());
         controller = mapView.getController();
         controller.setZoom(15);
-        nearbys = new BirdOverlay();
-        mapView.getOverlays().add(nearbys);
 		service_read_timer.scheduleAtFixedRate(
 				new TimerTask() {
 					public void run() {
@@ -223,6 +221,9 @@ public class Radar extends MapActivity implements ServiceConnection,
 	public void onServiceConnected(ComponentName className, IBinder service) {
 		Log.i(appTag, "onServiceConnected "+service);
 		pigeon = PigeonService.Stub.asInterface(service);
+        nearbys = new BirdOverlay(pigeon);
+        //mapView.getOverlays().add(nearbys);
+
 	}
 
 	public void onServiceDisconnected(ComponentName className) {
