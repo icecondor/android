@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -64,6 +65,13 @@ public class Pigeon extends Service implements Constants, LocationListener {
 			new TimerTask() {
 				public void run() {
 					Log.i(appTag, "heartbeat. last_fix is "+last_fix);
+					String ago="none";
+					if (last_fix != null) {
+						long seconds_ago = (Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis() - last_fix.getTime())/1000;
+						ago = ""+seconds_ago+" ago";
+					}
+					notification.setLatestEventInfo(pigeon, "IceCondor", "Heartbeat: last fix "+ago, contentIntent);				
+					notificationManager.notify(1, notification);
 				}
 //
 //				private Location phoneyLocation() {
@@ -76,7 +84,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 //					fix.setTime(Calendar.getInstance().getTimeInMillis());
 //					return fix;
 //				}
-			}, 0, PIGEON_LOCATION_POST_INTERVAL);		
+			}, 0, 30000);		
 	}
 	
 	public void onStart() {
