@@ -63,7 +63,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 		timer.scheduleAtFixedRate(
 			new TimerTask() {
 				public void run() {
-					Log.i(appTag, "timer task here. last_fix is "+last_fix);
+					Log.i(appTag, "heartbeat. last_fix is "+last_fix);
 				}
 //
 //				private Location phoneyLocation() {
