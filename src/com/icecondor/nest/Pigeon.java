@@ -45,6 +45,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 	NotificationManager notificationManager;
 	LocationManager locationManager;
 	Pigeon pigeon; // need 'this' for stub
+	PendingIntent contentIntent;
 	
 	public void onCreate() {
 		Log.i(appTag, "*** service created.");
@@ -55,9 +56,9 @@ public class Pigeon extends Service implements Constants, LocationListener {
 		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		CharSequence text = getText(R.string.status_transmitting);
 		notification = new Notification(R.drawable.statusbar,text,System.currentTimeMillis());
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, Start.class), 0);
-		notification.setLatestEventInfo(this, "event title", "event text", contentIntent);
+		notification.flags = notification.flags ^ Notification.FLAG_ONGOING_EVENT;
+		contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, Start.class), 0);
+		notification.setLatestEventInfo(this, "IceCondor", "Background task started", contentIntent);
 
 		timer.scheduleAtFixedRate(
 			new TimerTask() {
@@ -88,7 +89,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 		return pigeonBinder;
 	}
 	
-	public void pushLocation(Location fix) {
+	public int pushLocation(Location fix) {
 		try {
 			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 			Log.i(appTag, "sending id: "+settings.getString("uuid","")+ " fix: " 
@@ -103,6 +104,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 			HttpResponse response;
 			response = client.execute(post);
 			Log.i(appTag, "http response: "+response.getStatusLine());
+			return response.getStatusLine().getStatusCode();
 		} catch (NullPointerException t) {
 			Log.i(appTag,"no data in location record "+t);
 		} catch (ClientProtocolException e) {
@@ -114,6 +116,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 			Log.i(appTag, "IO exception "+e);
 			e.printStackTrace();
 		}
+		return 0;
 	}
 	
 	private UrlEncodedFormEntity buildPostParameters(Location fix, String uuid) throws UnsupportedEncodingException {
@@ -165,7 +168,12 @@ public class Pigeon extends Service implements Constants, LocationListener {
 			long time_since_last_update = location.getTime() - last_time; 
 			if(time_since_last_update > PIGEON_LOCATION_POST_INTERVAL) { 
 				last_fix = location;
-				pushLocation(location); 
+				int result = pushLocation(location); 
+				if(result >= 200 && result < 300) {
+					notification.setLatestEventInfo(this, "IceCondor", "Location pushed", contentIntent);
+				} else {
+					notification.setLatestEventInfo(this, "IceCondor", "Location push failed (HTTP error "+result+")", contentIntent);				
+				}
 			} else {
 				Log.i(appTag, time_since_last_update/1000+" is less than "+
 						PIGEON_LOCATION_POST_INTERVAL/1000+ " server push skipped");
