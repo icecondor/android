@@ -174,6 +174,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 				} else {
 					notification.setLatestEventInfo(this, "IceCondor", "Location push failed (HTTP error "+result+")", contentIntent);				
 				}
+				notificationManager.notify(1, notification);
 			} else {
 				Log.i(appTag, time_since_last_update/1000+" is less than "+
 						PIGEON_LOCATION_POST_INTERVAL/1000+ " server push skipped");
