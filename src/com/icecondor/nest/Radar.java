@@ -78,13 +78,13 @@ public class Radar extends MapActivity implements ServiceConnection,
     	try {
     		controller = mapView.getController();
 			Location fix = pigeon.getLastFix();
-			Log.i(appTag, "radar: pigeon says last fix is "+fix);
+			Log.i(appTag, "pigeon says last fix is "+fix);
 			if(fix!=null) {
 				controller.animateTo(new GeoPoint((int)(fix.getLatitude()*1000000),
 						                          (int)(fix.getLongitude()*1000000)));
 			}
 		} catch (RemoteException e) {
-			Log.e(appTag, "radar: error reading fix from pigeon.");
+			Log.e(appTag, "error reading fix from pigeon.");
 			e.printStackTrace();
 		}
     }
@@ -185,6 +185,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 				return true;
 			}
 		} catch (RemoteException e) {
+			Log.e(appTag, "togglePigeon: pigeon communication error");
 			return false;
 		}
 	}
