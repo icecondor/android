@@ -73,13 +73,13 @@ public class Radar extends MapActivity implements ServiceConnection,
         controller = mapView.getController();
         controller.setZoom(15);
         nearbys = new BirdOverlay();
-        //mapView.getOverlays().add(nearbys);
+        mapView.getOverlays().add(nearbys);
 		service_read_timer.scheduleAtFixedRate(
 				new TimerTask() {
 					public void run() {
 						getNearbys();
 					}
-				}, 0, PIGEON_LOCATION_POST_INTERVAL);
+				}, 0, ICECONDOR_READ_INTERVAL);
     }
     
     public void scrollToLastFix() {

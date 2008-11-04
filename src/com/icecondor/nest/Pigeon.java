@@ -75,7 +75,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 //					fix.setTime(Calendar.getInstance().getTimeInMillis());
 //					return fix;
 //				}
-			}, 0, ICECONDOR_READ_INTERVAL);		
+			}, 0, PIGEON_LOCATION_POST_INTERVAL);		
 		on_switch = true;
 	}
 	
@@ -164,12 +164,12 @@ public class Pigeon extends Service implements Constants, LocationListener {
 			long last_time = 0;
 			if(last_fix != null) { last_time = last_fix.getTime(); }
 			long time_since_last_update = location.getTime() - last_time; 
-			if(time_since_last_update > ICECONDOR_READ_INTERVAL) { 
+			if(time_since_last_update > PIGEON_LOCATION_POST_INTERVAL) { 
 				last_fix = location;
 				pushLocation(location); 
 			} else {
 				Log.i(appTag, time_since_last_update/1000+" is less than "+
-						ICECONDOR_READ_INTERVAL/1000+ " server push skipped");
+						PIGEON_LOCATION_POST_INTERVAL/1000+ " server push skipped");
 			}
 		}
 	}
@@ -189,6 +189,5 @@ public class Pigeon extends Service implements Constants, LocationListener {
 		if (status ==  LocationProvider.AVAILABLE) {status_msg = "AVAILABLE";}
 		Log.i(appTag, "provider "+provider+" status changed to "+status_msg+
 				" enabled: "+locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER));
-		Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 	}
 }
