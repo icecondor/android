@@ -66,11 +66,17 @@ public class Pigeon extends Service implements Constants, LocationListener {
 				public void run() {
 					Log.i(appTag, "heartbeat. last_fix is "+last_fix);
 					String ago="none";
+					String unit="";
 					if (last_fix != null) {
 						long seconds_ago = (Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis() - last_fix.getTime())/1000;
-						ago = ""+seconds_ago+" ago";
+						unit = "sec.";
+						if (seconds_ago > 60) {
+							seconds_ago = seconds_ago / 60;
+							unit = "min.";
+						}
+						ago = ""+seconds_ago+" "+unit+" ago";
 					}
-					notification.setLatestEventInfo(pigeon, "IceCondor", "Heartbeat: last fix "+ago, contentIntent);				
+					notification.setLatestEventInfo(pigeon, "IceCondor", "Heartbeat: last GPS fix "+ago, contentIntent);				
 					notificationManager.notify(1, notification);
 				}
 //
