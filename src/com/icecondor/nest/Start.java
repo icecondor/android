@@ -46,7 +46,7 @@ public class Start extends Activity implements ServiceConnection,
 		}
 		
 		// Start the Pigeon
-        boolean startPigeon = settings.getBoolean("startPigeon", true);
+        boolean startPigeon = settings.getBoolean("pigeon_on", true);
         try {
 			if (startPigeon) {
 				pigeon.startTransmitting();
