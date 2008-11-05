@@ -43,23 +43,40 @@ public class Pigeon extends Service implements Constants, LocationListener {
 	boolean on_switch = false;
 	private Location last_fix, last_local_fix;
 	Notification notification;
+	Notification heartbeat_notification;
 	NotificationManager notificationManager;
 	LocationManager locationManager;
 	Pigeon pigeon; // need 'this' for stub
 	PendingIntent contentIntent;
+	SharedPreferences settings;
 	
 	public void onCreate() {
 		Log.i(appTag, "*** service created.");
 		pigeon = this;
+		settings = getSharedPreferences(PREFS_NAME, 0);
 		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		Log.i(appTag, "GPS provider enabled: "+locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER));
 		locationManager.getProvider(LocationManager.GPS_PROVIDER);
 		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		CharSequence text = getText(R.string.status_transmitting);
-		notification = new Notification(R.drawable.statusbar,text,System.currentTimeMillis());
-		notification.flags = notification.flags ^ Notification.FLAG_ONGOING_EVENT;
-		contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, Start.class), 0);
-		notification.setLatestEventInfo(this, "IceCondor", "Background task started", contentIntent);
+		contentIntent = PendingIntent.getActivity(this, 0, new Intent(this,
+				Start.class), 0);
+		
+		on_switch = settings.getBoolean("pigeon_on", true);
+		if (on_switch) {
+			CharSequence text = getText(R.string.status_transmitting);
+			notification = new Notification(R.drawable.statusbar, text, System
+					.currentTimeMillis());
+			notification.flags = notification.flags
+					^ Notification.FLAG_ONGOING_EVENT;
+			notification.setLatestEventInfo(this, "IceCondor",
+					"Background task started, awating fix.", contentIntent);
+			locationManager.requestLocationUpdates(
+					LocationManager.GPS_PROVIDER, 60000L, 0.0F, pigeon);
+		}
+
+		heartbeat_notification = new Notification(R.drawable.statusbar,"Heartbeat On",System.currentTimeMillis());
+		heartbeat_notification.flags = heartbeat_notification.flags ^ Notification.FLAG_ONGOING_EVENT;
+		heartbeat_notification.flags = notification.flags ^ Notification.FLAG_ONGOING_EVENT;
 
 		timer.scheduleAtFixedRate(
 			new TimerTask() {
@@ -76,8 +93,13 @@ public class Pigeon extends Service implements Constants, LocationListener {
 						}
 						ago = ""+seconds_ago+" "+unit+" ago";
 					}
-					notification.setLatestEventInfo(pigeon, "IceCondor", "Heartbeat: last GPS fix "+ago, contentIntent);				
-					notificationManager.notify(1, notification);
+					String time = Calendar.getInstance().getTime().getHours() + ":" 
+					              + Calendar.getInstance().getTime().getMinutes() + ":"
+					              + Calendar.getInstance().getTime().getSeconds();
+					
+					heartbeat_notification.setLatestEventInfo(pigeon, "IceCondor Heartbeat", 
+							             "beat "+time+" last GPS fix "+ago, contentIntent);
+					notificationManager.notify(2, heartbeat_notification);
 				}
 //
 //				private Location phoneyLocation() {
@@ -105,7 +127,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 	
 	public int pushLocation(Location fix) {
 		try {
-			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+
 			Log.i(appTag, "sending id: "+settings.getString("uuid","")+ " fix: " 
 					+fix.getLatitude()+" long: "+fix.getLongitude()+
 					" alt: "+fix.getAltitude() + " time: " + Util.DateTimeIso8601(fix.getTime()) +

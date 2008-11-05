@@ -183,9 +183,11 @@ public class Radar extends MapActivity implements ServiceConnection,
 		try {
 			if (pigeon.isTransmitting()) {
 				pigeon.stopTransmitting();
+				settings.edit().putBoolean("pigeon_on",true).commit();
 				return false;
 			} else {
 				pigeon.startTransmitting();
+				settings.edit().putBoolean("pigeon_on",false).commit();
 				return true;
 			}
 		} catch (RemoteException e) {
