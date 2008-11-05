@@ -29,6 +29,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -159,7 +160,10 @@ public class Radar extends MapActivity implements ServiceConnection,
 			.setTitle(R.string.menu_settings)
 			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int whichbutton) {
-					settings.edit().putString("uuid",uuid_field.getText().toString()).commit();
+					Editable new_uuid = uuid_field.getText();
+					if (new_uuid != null) {
+					settings.edit().putString("uuid",new_uuid.toString()).commit();
+					}
 				}
 			})
 			.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
