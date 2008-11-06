@@ -56,7 +56,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 		settings = getSharedPreferences(PREFS_NAME, 0);
 		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		Log.i(appTag, "GPS provider enabled: "+locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER));
-		locationManager.getProvider(LocationManager.GPS_PROVIDER);
+		Log.i(appTag, "NETWORK provider enabled: "+locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER));
 		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		contentIntent = PendingIntent.getActivity(this, 0, new Intent(this,
 				Start.class), 0);
@@ -70,8 +70,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 					^ Notification.FLAG_ONGOING_EVENT;
 			notification.setLatestEventInfo(this, "IceCondor",
 					"Background task started, awating fix.", contentIntent);
-			locationManager.requestLocationUpdates(
-					LocationManager.GPS_PROVIDER, 60000L, 0.0F, pigeon);
+			requestUpdates();
 		}
 
 		heartbeat_notification = new Notification(R.drawable.statusbar,"Heartbeat On",System.currentTimeMillis());
@@ -97,7 +96,8 @@ public class Pigeon extends Service implements Constants, LocationListener {
 					              + Calendar.getInstance().getTime().getSeconds();
 					
 					heartbeat_notification.setLatestEventInfo(pigeon, "IceCondor Heartbeat", 
-							             "beat "+time+" last GPS fix "+ago, contentIntent);
+							             "beat "+time+" last "+last_fix.getProvider()+" fix "+ago, 
+							             contentIntent);
 					notificationManager.notify(2, heartbeat_notification);
 				}
 //
@@ -113,7 +113,20 @@ public class Pigeon extends Service implements Constants, LocationListener {
 //				}
 			}, 0, 30000);		
 	}
+
+	private void requestUpdates() {
+		locationManager.requestLocationUpdates(
+				LocationManager.GPS_PROVIDER, 60000L, 0.0F, pigeon);
+		// Network provider takes no extra power but the accuracy is
+		// too low to be useful.
+		//locationManager.requestLocationUpdates(
+		//		LocationManager.NETWORK_PROVIDER, 60000L, 0.0F, pigeon);
+	}
 	
+	private void removeUpdates() {
+		locationManager.removeUpdates(pigeon);
+	}
+
 	public void onStart() {
 		Log.i(appTag, "service started!");
 	}
@@ -180,8 +193,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 				Log.i(appTag, "startTransmitting");
 				on_switch = true;
 				settings.edit().putBoolean("pigeon_on", on_switch).commit();
-				locationManager.requestLocationUpdates(
-						LocationManager.GPS_PROVIDER, 60000L, 0.0F, pigeon);
+				requestUpdates();
 				notificationManager.notify(1, notification);
 			}
 		}
@@ -189,7 +201,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 			Log.i(appTag, "stopTransmitting");
 			on_switch = false;
 			settings.edit().putBoolean("pigeon_on",on_switch).commit();
-			locationManager.removeUpdates(pigeon);
+			removeUpdates();
 			notificationManager.cancel(1);
 		}
 		public Location getLastFix() throws RemoteException {
@@ -212,7 +224,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 				last_fix = location;
 				int result = pushLocation(location); 
 				if(result >= 200 && result < 300) {
-					notification.setLatestEventInfo(this, "IceCondor", "Location pushed", contentIntent);
+					notification.setLatestEventInfo(this, "IceCondor", last_fix.getProvider()+" location pushed", contentIntent);
 				} else {
 					notification.setLatestEventInfo(this, "IceCondor", "Location push failed (HTTP error "+result+")", contentIntent);				
 				}
