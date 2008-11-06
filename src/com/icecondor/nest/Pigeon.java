@@ -76,7 +76,6 @@ public class Pigeon extends Service implements Constants, LocationListener {
 
 		heartbeat_notification = new Notification(R.drawable.statusbar,"Heartbeat On",System.currentTimeMillis());
 		heartbeat_notification.flags = heartbeat_notification.flags ^ Notification.FLAG_ONGOING_EVENT;
-		heartbeat_notification.flags = heartbeat_notification.flags ^ Notification.FLAG_ONGOING_EVENT;
 
 		timer.scheduleAtFixedRate(
 			new TimerTask() {
