@@ -174,11 +174,16 @@ public class Pigeon extends Service implements Constants, LocationListener {
 			return on_switch;
 		}
 		public void startTransmitting() throws RemoteException {
-			Log.i(appTag, "startTransmitting");
-			on_switch = true;
-			settings.edit().putBoolean("pigeon_on",on_switch).commit();
-			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60000L, 0.0F, pigeon);
-			notificationManager.notify(1, notification);
+			if (on_switch) {
+				Log.i(appTag, "startTransmitting: already transmitting");
+			} else {
+				Log.i(appTag, "startTransmitting");
+				on_switch = true;
+				settings.edit().putBoolean("pigeon_on", on_switch).commit();
+				locationManager.requestLocationUpdates(
+						LocationManager.GPS_PROVIDER, 60000L, 0.0F, pigeon);
+				notificationManager.notify(1, notification);
+			}
 		}
 		public void stopTransmitting() throws RemoteException {
 			Log.i(appTag, "stopTransmitting");
