@@ -39,12 +39,13 @@ import android.util.Log;
 //look at android.permission.RECEIVE_BOOT_COMPLETED
 
 public class Pigeon extends Service implements Constants, LocationListener {
-	private Timer timer = new Timer();
+	private Timer heartbeat_timer = new Timer();
+	private Timer wifi_scan_timer = new Timer();
 	static final String appTag = "Pigeon";
 	boolean on_switch = false;
 	private Location last_fix, last_local_fix;
+	int last_fix_http_status;
 	Notification notification;
-	Notification heartbeat_notification;
 	NotificationManager notificationManager;
 	LocationManager locationManager;
 	WifiManager wifiManager;
@@ -70,48 +71,41 @@ public class Pigeon extends Service implements Constants, LocationListener {
 		contentIntent = PendingIntent.getActivity(this, 0, new Intent(this,
 				Start.class), 0);
 		CharSequence text = getText(R.string.status_transmitting);
-		notification = new Notification(R.drawable.statusbar, text, System
+		notification = new Notification(R.drawable.icecube_statusbar, text, System
 				.currentTimeMillis());
-		notification.flags = notification.flags
-				^ Notification.FLAG_ONGOING_EVENT;
+		notification.flags = notification.flags ^ Notification.FLAG_ONGOING_EVENT;
 		
 		on_switch = settings.getBoolean("pigeon_on", true);
 		if (on_switch) {
 			notification.setLatestEventInfo(this, "IceCondor",
-					"Background task started, awating fix.", contentIntent);
+					"Background task started, awating first fix.", contentIntent);
 			notification.when = System.currentTimeMillis();
 			notificationManager.notify(1, notification);
 			requestUpdates();
 		}
 
-		heartbeat_notification = new Notification(R.drawable.statusbar,"Heartbeat On",System.currentTimeMillis());
-		heartbeat_notification.flags = heartbeat_notification.flags ^ Notification.FLAG_ONGOING_EVENT;
-
-		timer.scheduleAtFixedRate(
+		heartbeat_timer.scheduleAtFixedRate(
 			new TimerTask() {
 				public void run() {
 					Log.i(appTag, "heartbeat. last_fix is "+last_fix);
-					String ago="none";
-					String unit="";
+					String fix_part = "No fix yet.";
 					if (last_fix != null) {
-						long seconds_ago = (Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis() - last_fix.getTime())/1000;
-						unit = "sec.";
-						if (seconds_ago > 60) {
-							seconds_ago = seconds_ago / 60;
-							unit = "min.";
-						}
-						ago = ""+seconds_ago+" "+unit+" ago";
-					}
-					String time = Calendar.getInstance().getTime().getHours() + ":" 
-					              + Calendar.getInstance().getTime().getMinutes() + ":"
-					              + Calendar.getInstance().getTime().getSeconds();
-					
-					heartbeat_notification.setLatestEventInfo(pigeon, "IceCondor Heartbeat", 
-							             "beat "+time+" last "+last_fix.getProvider()+" fix "+ago, 
-							             contentIntent);
-					heartbeat_notification.when = System.currentTimeMillis();
+						String ago = Util.timeAgoInWords(last_fix.getTime());
+						fix_part = last_fix.getProvider()+" push("+last_fix_http_status+") "+
+						           ago;
+					}					
 
-					notificationManager.notify(2, heartbeat_notification);
+					String beat_part = "";
+					if (last_local_fix != null) {
+						String ago = Util.timeAgoInWords(last_local_fix.getTime());
+						beat_part = "fix "+ago;
+					}
+					notification.setLatestEventInfo(pigeon, "IceCondor", 
+							             fix_part+" "+beat_part, 
+							             contentIntent);
+					notification.when = System.currentTimeMillis();
+
+					notificationManager.notify(1, notification);
 				}
 //
 //				private Location phoneyLocation() {
@@ -124,6 +118,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 //					fix.setTime(Calendar.getInstance().getTimeInMillis());
 //					return fix;
 //				}
+
 			}, 0, 30000);		
 	}
 
@@ -134,6 +129,14 @@ public class Pigeon extends Service implements Constants, LocationListener {
 		// too low to be useful.
 		//locationManager.requestLocationUpdates(
 		//		LocationManager.NETWORK_PROVIDER, 60000L, 0.0F, pigeon);
+		Log.i(appTag, "kicking off wifi scan timer");
+		wifi_scan_timer.scheduleAtFixedRate(
+				new TimerTask() {
+					public void run() {
+						Log.i(appTag, "wifi: start scan (enabled:"+wifiManager.isWifiEnabled()+")");
+						wifiManager.startScan();
+					}
+				}, 0, 60000);		
 	}
 	
 	private void removeUpdates() {
@@ -238,14 +241,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 			long time_since_last_update = location.getTime() - last_time; 
 			if(time_since_last_update > PIGEON_LOCATION_POST_INTERVAL) { 
 				last_fix = location;
-				int result = pushLocation(location); 
-				if(result >= 200 && result < 300) {
-					notification.setLatestEventInfo(this, "IceCondor", last_fix.getProvider()+" location pushed", contentIntent);
-				} else {
-					notification.setLatestEventInfo(this, "IceCondor", "Location push failed (HTTP error "+result+")", contentIntent);				
-				}
-				notification.when = System.currentTimeMillis();
-				notificationManager.notify(1, notification);
+				last_fix_http_status = pushLocation(location); 
 			} else {
 				Log.i(appTag, time_since_last_update/1000+" is less than "+
 						PIGEON_LOCATION_POST_INTERVAL/1000+ " server push skipped");
