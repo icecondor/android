@@ -73,6 +73,8 @@ public class Radar extends MapActivity implements ServiceConnection,
         radar_zoom.addView(mapView.getZoomControls());
         mapController = mapView.getController();
         mapController.setZoom(15);
+        nearbys = new BirdOverlay();
+        mapView.getOverlays().add(nearbys);
     }
     
     public void scrollToLastFix() {
@@ -227,8 +229,6 @@ public class Radar extends MapActivity implements ServiceConnection,
 		Log.i(appTag, "onServiceConnected "+service);
 		pigeon = PigeonService.Stub.asInterface(service);
 		if(nearbys == null) {
-	        nearbys = new BirdOverlay(pigeon);
-	        mapView.getOverlays().add(nearbys);			
 		}
 	}
 
