@@ -97,7 +97,7 @@ public class Radar extends MapActivity implements ServiceConnection,
         Intent pigeon_service = new Intent(this, Pigeon.class);
         boolean result = bindService(pigeon_service, this, 0); // 0 = do not auto-start
         Log.i(appTag, "pigeon bind result="+result);
-        //startNeighborReadTimer();
+        startNeighborReadTimer();
     }
     
     @Override
@@ -222,7 +222,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 		Log.i(appTag, "onServiceConnected "+service);
 		pigeon = PigeonService.Stub.asInterface(service);
         nearbys = new BirdOverlay(pigeon);
-        //mapView.getOverlays().add(nearbys);
+        mapView.getOverlays().add(nearbys);
 
 	}
 
