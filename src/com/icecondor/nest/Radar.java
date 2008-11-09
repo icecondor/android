@@ -48,7 +48,7 @@ import com.google.android.maps.Overlay;
 public class Radar extends MapActivity implements ServiceConnection,
 												  Constants {
 	static final String appTag = "Radar";
-	MapController controller;
+	MapController mapController;
 	PigeonService pigeon;
 	private Timer pigeon_poll_timer = new Timer();
 	private Timer service_read_timer = new Timer();
@@ -71,17 +71,17 @@ public class Radar extends MapActivity implements ServiceConnection,
         ViewGroup radar_zoom = (ViewGroup)findViewById(R.id.radar_mapview_zoom);
         mapView = (MapView) findViewById(R.id.radar_mapview);
         radar_zoom.addView(mapView.getZoomControls());
-        controller = mapView.getController();
-        controller.setZoom(15);
+        mapController = mapView.getController();
+        mapController.setZoom(15);
     }
     
     public void scrollToLastFix() {
     	try {
-    		controller = mapView.getController();
+    		mapController = mapView.getController();
 			Location fix = pigeon.getLastFix();
 			Log.i(appTag, "pigeon says last fix is "+fix);
 			if(fix!=null) {
-				controller.animateTo(new GeoPoint((int)(fix.getLatitude()*1000000),
+				mapController.animateTo(new GeoPoint((int)(fix.getLatitude()*1000000),
 						                          (int)(fix.getLongitude()*1000000)));
 			}
 		} catch (RemoteException e) {
