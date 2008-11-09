@@ -50,8 +50,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	static final String appTag = "Radar";
 	MapController mapController;
 	PigeonService pigeon;
-	private Timer pigeon_poll_timer = new Timer();
-	private Timer service_read_timer = new Timer();
+	private Timer service_read_timer;
 	SharedPreferences settings;
 	BirdOverlay nearbys;
 	EditText uuid_field;
@@ -121,7 +120,6 @@ public class Radar extends MapActivity implements ServiceConnection,
     public void onPause() {
     	super.onPause();
 		unbindService(this);
-    	pigeon_poll_timer.cancel();
     	stopNeighborReadTimer();
     	Log.i(appTag, "onPause yeah");
     }
@@ -285,6 +283,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	}
 	
 	public void startNeighborReadTimer() {
+		service_read_timer = new Timer();
 		service_read_timer.scheduleAtFixedRate(new TimerTask() {
 			public void run() {
 				Log.i(appTag, "startNeighborReadTimer");
