@@ -53,7 +53,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	private Timer pigeon_poll_timer = new Timer();
 	private Timer service_read_timer = new Timer();
 	SharedPreferences settings;
-	Overlay nearbys;
+	BirdOverlay nearbys;
 	EditText uuid_field;
 	MapView mapView;
 	
@@ -80,6 +80,11 @@ public class Radar extends MapActivity implements ServiceConnection,
     		mapController = mapView.getController();
 			Location fix = pigeon.getLastFix();
 			Log.i(appTag, "pigeon says last fix is "+fix);
+			try {
+				nearbys.setLast_fix(pigeon.getLastFix());
+			} catch (RemoteException e) {
+				nearbys.setLast_fix(null);
+			}
 			if(fix!=null) {
 				mapController.animateTo(new GeoPoint((int)(fix.getLatitude()*1000000),
 						                          (int)(fix.getLongitude()*1000000)));
@@ -221,9 +226,10 @@ public class Radar extends MapActivity implements ServiceConnection,
 	public void onServiceConnected(ComponentName className, IBinder service) {
 		Log.i(appTag, "onServiceConnected "+service);
 		pigeon = PigeonService.Stub.asInterface(service);
-        nearbys = new BirdOverlay(pigeon);
-        mapView.getOverlays().add(nearbys);
-
+		if(nearbys == null) {
+	        nearbys = new BirdOverlay(pigeon);
+	        mapView.getOverlays().add(nearbys);			
+		}
 	}
 
 	public void onServiceDisconnected(ComponentName className) {
@@ -272,6 +278,8 @@ public class Radar extends MapActivity implements ServiceConnection,
 	public void startNeighborReadTimer() {
 		service_read_timer.scheduleAtFixedRate(new TimerTask() {
 			public void run() {
+				Log.i(appTag, "startNeighborReadTimer");
+				scrollToLastFix();
 				getNearbys();
 			}
 		}, 0, ICECONDOR_READ_INTERVAL);

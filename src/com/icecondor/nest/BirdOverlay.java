@@ -14,6 +14,16 @@ import com.google.android.maps.Overlay;
 
 public class BirdOverlay extends Overlay {
 	PigeonService pigeon;
+	Location last_fix;
+	
+	public Location getLast_fix() {
+		return last_fix;
+	}
+	
+	public void setLast_fix(Location last_fix) {
+		this.last_fix = last_fix;
+	}
+	
 	BirdOverlay(PigeonService _pigeon) {
 		pigeon = _pigeon;
 	}
@@ -26,15 +36,12 @@ public class BirdOverlay extends Overlay {
 		int mid_x = w /2;
 		Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		
-		String msg = "";
-		try {
-			Location fix = pigeon.getLastFix();
-			if(fix == null) {
-				msg = "waiting for fix";
-			}
-		} catch (RemoteException e) {
-			msg = "pigeon not running";
+		String msg = null;
+		if (last_fix == null) {
+			msg = "waiting for fix";
+		} else {
+			msg = last_fix.getLatitude() + " " + last_fix.getLongitude();
 		}
-		canvas.drawText(msg, 3, h-53, mPaint);		
+		canvas.drawText(msg, 3, h - 53, mPaint);		
 	}
 }
