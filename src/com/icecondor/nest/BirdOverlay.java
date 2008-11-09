@@ -13,7 +13,6 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 
 public class BirdOverlay extends Overlay {
-	PigeonService pigeon;
 	Location last_fix;
 	
 	public Location getLast_fix() {
@@ -24,9 +23,9 @@ public class BirdOverlay extends Overlay {
 		this.last_fix = last_fix;
 	}
 	
-	BirdOverlay(PigeonService _pigeon) {
-		pigeon = _pigeon;
+	BirdOverlay() {
 	}
+
 	@Override
 	public void draw(Canvas canvas, MapView mapView, boolean shadow) {
 		super.draw(canvas, mapView, shadow);
