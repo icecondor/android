@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 
 public class Util {
 	public static String DateTimeIso8601(long offset) {
-		DateFormat datePattern =  new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:ss+00:00");
+		DateFormat datePattern =  new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:ssZ");
 		datePattern.setTimeZone(TimeZone.getTimeZone("GMT"));
 		String date = datePattern.format(new Date(offset));
 	    // remap the timezone from 0000 to 00:00 (starts at char 22)
