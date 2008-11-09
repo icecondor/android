@@ -82,11 +82,7 @@ public class Radar extends MapActivity implements ServiceConnection,
     		mapController = mapView.getController();
 			Location fix = pigeon.getLastFix();
 			Log.i(appTag, "pigeon says last fix is "+fix);
-			try {
-				nearbys.setLast_fix(pigeon.getLastFix());
-			} catch (RemoteException e) {
-				nearbys.setLast_fix(null);
-			}
+			refreshBirdLocation();
 			if(fix!=null) {
 				mapController.animateTo(new GeoPoint((int)(fix.getLatitude()*1000000),
 						                          (int)(fix.getLongitude()*1000000)));
@@ -96,6 +92,14 @@ public class Radar extends MapActivity implements ServiceConnection,
 			e.printStackTrace();
 		}
     }
+
+	private void refreshBirdLocation() {
+		try {
+			nearbys.setLast_fix(pigeon.getLastFix());
+		} catch (RemoteException e) {
+			nearbys.setLast_fix(null);
+		}
+	}
     
     @Override
     public void onResume() {
@@ -104,6 +108,7 @@ public class Radar extends MapActivity implements ServiceConnection,
         Intent pigeon_service = new Intent(this, Pigeon.class);
         boolean result = bindService(pigeon_service, this, 0); // 0 = do not auto-start
         Log.i(appTag, "pigeon bind result="+result);
+		refreshBirdLocation();
         startNeighborReadTimer();
     }
     
