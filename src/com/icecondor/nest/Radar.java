@@ -79,13 +79,16 @@ public class Radar extends MapActivity implements ServiceConnection,
     
     public void scrollToLastFix() {
     	try {
-    		mapController = mapView.getController();
-			Location fix = pigeon.getLastFix();
-			Log.i(appTag, "pigeon says last fix is "+fix);
-			refreshBirdLocation();
-			if(fix!=null) {
-				mapController.animateTo(new GeoPoint((int)(fix.getLatitude()*1000000),
-						                          (int)(fix.getLongitude()*1000000)));
+    		if (pigeon != null) {
+				mapController = mapView.getController();
+				Location fix = pigeon.getLastFix();
+				Log.i(appTag, "pigeon says last fix is " + fix);
+				refreshBirdLocation();
+				if (fix != null) {
+					mapController.animateTo(new GeoPoint((int) (fix
+							.getLatitude() * 1000000), (int) (fix
+							.getLongitude() * 1000000)));
+				}
 			}
 		} catch (RemoteException e) {
 			Log.e(appTag, "error reading fix from pigeon.");
@@ -95,7 +98,9 @@ public class Radar extends MapActivity implements ServiceConnection,
 
 	private void refreshBirdLocation() {
 		try {
-			nearbys.setLast_fix(pigeon.getLastFix());
+			if (pigeon!=null) {
+				nearbys.setLast_fix(pigeon.getLastFix());
+			}
 		} catch (RemoteException e) {
 			nearbys.setLast_fix(null);
 		}
@@ -108,7 +113,7 @@ public class Radar extends MapActivity implements ServiceConnection,
         Intent pigeon_service = new Intent(this, Pigeon.class);
         boolean result = bindService(pigeon_service, this, 0); // 0 = do not auto-start
         Log.i(appTag, "pigeon bind result="+result);
-		refreshBirdLocation();
+        scrollToLastFix();
         startNeighborReadTimer();
     }
     
@@ -233,8 +238,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	public void onServiceConnected(ComponentName className, IBinder service) {
 		Log.i(appTag, "onServiceConnected "+service);
 		pigeon = PigeonService.Stub.asInterface(service);
-		if(nearbys == null) {
-		}
+		scrollToLastFix();
 	}
 
 	public void onServiceDisconnected(ComponentName className) {
