@@ -40,8 +40,10 @@ public class BirdOverlay extends Overlay {
 		if (last_fix == null) {
 			msg = "waiting for fix";
 		} else {
-			msg = last_fix.getLatitude() + " " + last_fix.getLongitude();
+			java.text.DecimalFormat df = new java.text.DecimalFormat("###.######");
+			msg = df.format(last_fix.getLatitude()) + " " + df.format(last_fix.getLongitude()) +
+			      "    " + Util.timeAgoInWords(last_fix.getTime());
 		}
-		canvas.drawText(msg, 3, h - 53, mPaint);		
+		canvas.drawText(msg, 3, h - 53, mPaint);
 	}
 }
