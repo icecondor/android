@@ -1,8 +1,6 @@
 package com.icecondor.nest;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -43,7 +41,6 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
-import com.google.android.maps.Overlay;
 
 public class Radar extends MapActivity implements ServiceConnection,
 												  Constants {
@@ -251,7 +248,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 					+ settings.getString("uuid", "");
 			Log.i(appTag, "GET " + url_with_params);
 			HttpGet get = new HttpGet(url_with_params);
-			get.getParams().setIntParameter("http.socket.timeout", 1000);
+			get.getParams().setIntParameter("http.socket.timeout", 10000);
 			HttpResponse response;
 			response = client.execute(get);
 			Log.i(appTag, "http response: " + response.getStatusLine());
