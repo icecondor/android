@@ -139,7 +139,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 				}, 0, 60000);		
 	}
 	
-	private void removeUpdates() {
+	private void stopLocationUpdates() {
 		locationManager.removeUpdates(pigeon);
 	}
 
@@ -217,7 +217,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 			Log.i(appTag, "stopTransmitting");
 			on_switch = false;
 			settings.edit().putBoolean("pigeon_on",on_switch).commit();
-			removeUpdates();
+			stopLocationUpdates();
 			notificationManager.cancel(1);
 		}
 		public Location getLastFix() throws RemoteException {
