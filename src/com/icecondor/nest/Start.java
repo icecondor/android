@@ -10,7 +10,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.util.Log;
 
 public class Start extends Activity implements ServiceConnection,
@@ -44,20 +43,6 @@ public class Start extends Activity implements ServiceConnection,
 			editor.commit();
 			Log.i(appTag, "no UUID in preferences. generated "+uuid);
 		}
-		
-		// Start the Pigeon
-        boolean startPigeon = settings.getBoolean("pigeon_on", true);
-        try {
-			if (startPigeon) {
-				pigeon.startTransmitting();
-			} else {
-				pigeon.stopTransmitting();
-			}
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        
 	}
 
 	private void startPigeon() {

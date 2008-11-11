@@ -73,7 +73,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 		
 		/* Preferences */
 		settings = getSharedPreferences(PREFS_NAME, 0);
-		on_switch = settings.getBoolean("pigeon_on", true);
+		on_switch = settings.getBoolean(SETTING_PIGEON_TRANSMITTING, true);
 		if (on_switch) {
 			notificationStatusUpdate("Background task started, awating first fix.");
 			requestUpdates();
@@ -205,7 +205,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 			} else {
 				Log.i(appTag, "startTransmitting");
 				on_switch = true;
-				settings.edit().putBoolean("pigeon_on", on_switch).commit();
+				settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING, on_switch).commit();
 				requestUpdates();
 				notificationStatusUpdate("Background task activated.");
 			}
@@ -213,7 +213,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 		public void stopTransmitting() throws RemoteException {
 			Log.i(appTag, "stopTransmitting");
 			on_switch = false;
-			settings.edit().putBoolean("pigeon_on",on_switch).commit();
+			settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING,on_switch).commit();
 			stopLocationUpdates();
 			notificationManager.cancel(1);
 		}
