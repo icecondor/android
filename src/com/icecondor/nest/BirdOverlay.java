@@ -1,13 +1,8 @@
 package com.icecondor.nest;
 
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Picture;
-import android.graphics.RectF;
 import android.location.Location;
-import android.os.RemoteException;
 
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
