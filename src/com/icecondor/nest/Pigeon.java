@@ -56,7 +56,6 @@ public class Pigeon extends Service implements Constants, LocationListener {
 	public void onCreate() {
 		Log.i(appTag, "*** service created.");
 		pigeon = this;
-		settings = getSharedPreferences(PREFS_NAME, 0);
 		
 		/* GPS */
 		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -75,12 +74,11 @@ public class Pigeon extends Service implements Constants, LocationListener {
 				.currentTimeMillis());
 		notification.flags = notification.flags ^ Notification.FLAG_ONGOING_EVENT;
 		
+		/* Preferences */
+		settings = getSharedPreferences(PREFS_NAME, 0);
 		on_switch = settings.getBoolean("pigeon_on", true);
 		if (on_switch) {
-			notification.setLatestEventInfo(this, "IceCondor",
-					"Background task started, awating first fix.", contentIntent);
-			notification.when = System.currentTimeMillis();
-			notificationManager.notify(1, notification);
+			notificationStatusUpdate("Background task started, awating first fix.");
 			requestUpdates();
 		}
 
@@ -100,12 +98,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 						String ago = Util.timeAgoInWords(last_local_fix.getTime());
 						beat_part = "fix "+ago;
 					}
-					notification.setLatestEventInfo(pigeon, "IceCondor", 
-							             fix_part+" "+beat_part, 
-							             contentIntent);
-					notification.when = System.currentTimeMillis();
-
-					notificationManager.notify(1, notification);
+					notificationStatusUpdate(fix_part+" "+beat_part); 
 				}
 //
 //				private Location phoneyLocation() {
@@ -120,6 +113,13 @@ public class Pigeon extends Service implements Constants, LocationListener {
 //				}
 
 			}, 0, 30000);		
+	}
+
+	private void notificationStatusUpdate(String msg) {
+		notification.setLatestEventInfo(this, "IceCondor",
+				msg, contentIntent);
+		notification.when = System.currentTimeMillis();
+		notificationManager.notify(1, notification);
 	}
 
 	private void requestUpdates() {
@@ -210,10 +210,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 				on_switch = true;
 				settings.edit().putBoolean("pigeon_on", on_switch).commit();
 				requestUpdates();
-				notification.setLatestEventInfo(pigeon, "IceCondor",
-						"Background task activated.", contentIntent);
-				notification.when = System.currentTimeMillis();
-				notificationManager.notify(1, notification);
+				notificationStatusUpdate("Background task activated.");
 			}
 		}
 		public void stopTransmitting() throws RemoteException {
