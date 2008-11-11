@@ -259,7 +259,6 @@ public class Pigeon extends Service implements Constants, LocationListener {
 		if (status ==  LocationProvider.TEMPORARILY_UNAVAILABLE) {status_msg = "TEMPORARILY_UNAVAILABLE";}
 		if (status ==  LocationProvider.OUT_OF_SERVICE) {status_msg = "OUT_OF_SERVICE";}
 		if (status ==  LocationProvider.AVAILABLE) {status_msg = "AVAILABLE";}
-		Log.i(appTag, "provider "+provider+" status changed to "+status_msg+
-				" enabled: "+locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER));
+		Log.i(appTag, "provider "+provider+" status changed to "+status_msg);
 	}
 }
