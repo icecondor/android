@@ -61,7 +61,7 @@ public class Radar extends MapActivity implements ServiceConnection,
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setProgressBarIndeterminateVisibility(false);
         
-        setTitle(getString(R.string.app_name) + " " + getString(R.string.menu_version));
+        setTitle(getString(R.string.app_name) + " v" + ICECONDOR_VERSION);
                 
         setContentView(R.layout.radar);
         ViewGroup radar_zoom = (ViewGroup)findViewById(R.id.radar_mapview_zoom);

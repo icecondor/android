@@ -1,6 +1,18 @@
 package com.icecondor.nest;
 
+import java.io.IOException;
 import java.util.UUID;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -18,18 +30,58 @@ public class Start extends Activity implements ServiceConnection,
 
 	Intent pigeon_intent;
 	PigeonService pigeon;
+	SharedPreferences settings;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	Log.i(appTag, "onCreate");
         super.onCreate(savedInstanceState);
+		settings = getSharedPreferences(PREFS_NAME, 0);
         pigeon_intent = new Intent(this, Pigeon.class);
+    }
+    
+    @Override
+    public void onResume() {
+    	super.onResume();
         startPigeon();
+        check_for_new_version();
     }
 
+    private void check_for_new_version() {
+        long version_check_date = settings.getLong(SETTING_LAST_VERSION_CHECK, 0);
+        if (version_check_date < (System.currentTimeMillis() - DAY_IN_SECONDS)) {
+        	// request version data
+			HttpClient client = new DefaultHttpClient();
+			String url_with_params = ICECONDOR_VERSION_CHECK_URL;
+			Log.i(appTag, "GET " + url_with_params);
+			HttpGet get = new HttpGet(url_with_params);
+			HttpResponse response;
+			try {
+				response = client.execute(get);
+				HttpEntity entity = response.getEntity();
+				String json = EntityUtils.toString(entity);
+				Log.i(appTag, "http response: " + response.getStatusLine() +
+						      " "+json);
+				try {
+					JSONObject version_info = new JSONObject(json);
+					int remote_version = version_info.getInt("version");
+					if (ICECONDOR_VERSION < remote_version) {
+						Log.i(appTag, "Upgrade!");
+					}
+					Log.i(appTag, "current version "+ICECONDOR_VERSION+" remote version "+remote_version);
+				} catch (JSONException e) {
+				}
+
+			} catch (ClientProtocolException e) {
+			} catch (IOException e) {
+			}
+
+        }    	
+    }
+    
     private void restorePreferences() {
 		Log.i(appTag, "restorePreferences()");
-		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+
 		Editor editor = settings.edit();
 
         // Set the unique ID
