@@ -33,6 +33,7 @@ public class Start extends Activity implements ServiceConnection,
 	Intent pigeon_intent;
 	PigeonService pigeon;
 	SharedPreferences settings;
+	Intent next_intent;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,8 +71,7 @@ public class Start extends Activity implements ServiceConnection,
 					if (ICECONDOR_VERSION < remote_version) {
 						Uri new_version_url = Uri.parse(version_info.getString("url"));
 						Log.i(appTag, "Upgrade! -> "+new_version_url);
-					    Intent intent = new Intent(Intent.ACTION_VIEW, new_version_url);
-                        startActivity(intent);
+					    next_intent = new Intent(Intent.ACTION_VIEW, new_version_url);
 					}
 					Log.i(appTag, "current version "+ICECONDOR_VERSION+" remote version "+remote_version);
 				} catch (JSONException e) {
@@ -125,7 +125,10 @@ public class Start extends Activity implements ServiceConnection,
 		pigeon = PigeonService.Stub.asInterface(service);
         restorePreferences();
         // handoff to the Radar
-        startActivity(new Intent(this, Radar.class));
+        if(next_intent == null) {
+        	next_intent = new Intent(this, Radar.class);
+        }
+        startActivity(next_intent);
 	}
 
 	public void onServiceDisconnected(ComponentName className) {
