@@ -15,11 +15,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -66,7 +68,10 @@ public class Start extends Activity implements ServiceConnection,
 					JSONObject version_info = new JSONObject(json);
 					int remote_version = version_info.getInt("version");
 					if (ICECONDOR_VERSION < remote_version) {
-						Log.i(appTag, "Upgrade!");
+						Uri new_version_url = Uri.parse(version_info.getString("url"));
+						Log.i(appTag, "Upgrade! -> "+new_version_url);
+					    Intent intent = new Intent(Intent.ACTION_VIEW, new_version_url);
+                        startActivity(intent);
 					}
 					Log.i(appTag, "current version "+ICECONDOR_VERSION+" remote version "+remote_version);
 				} catch (JSONException e) {
