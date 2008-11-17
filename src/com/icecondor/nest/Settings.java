@@ -28,7 +28,7 @@ public class Settings extends PreferenceActivity implements ServiceConnection,
 															OnClickListener,
                                                             Constants {
 	TabHost myTabHost;
-	static final String appTag = "Nest";
+	static final String appTag = "Settings";
 	PigeonService pigeon;
 	SharedPreferences settings;
 	LinearLayout settings_layout;
