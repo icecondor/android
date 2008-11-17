@@ -1,6 +1,6 @@
 package com.icecondor.nest;
 
-import android.app.Activity;
+import android.preference.PreferenceActivity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -24,10 +24,9 @@ import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabSpec;
 import android.widget.LinearLayout;
 
-public class Settings extends Activity implements OnTabChangeListener,
-                                              ServiceConnection, 
-                                              OnClickListener,
-                                              Constants, OnKeyListener, OnFocusChangeListener {
+public class Settings extends PreferenceActivity implements ServiceConnection,    
+															OnClickListener,
+                                                            Constants {
 	TabHost myTabHost;
 	static final String appTag = "Nest";
 	PigeonService pigeon;
@@ -46,9 +45,6 @@ public class Settings extends Activity implements OnTabChangeListener,
 
 	private void uiSetup() {
         setContentView(R.layout.main);
-		this.myTabHost = (TabHost)this.findViewById(R.id.th_set_menu_tabhost);
-		this.myTabHost.setOnTabChangedListener(this);
-        this.myTabHost.setup();
         ((RadioButton) findViewById(R.id.ibtn_settings_pigeon_on)).setOnClickListener(this);
         TabSpec ts1 = myTabHost.newTabSpec("TAB1");
         ts1.setIndicator(getString(R.string.tab_title1), null);
@@ -141,7 +137,6 @@ public class Settings extends Activity implements OnTabChangeListener,
 			if(arg0.getClass() == TextView.class) {
 				EditText edit_uuid = new EditText(this);
 				edit_uuid.setId(R.id.settings_uuid_edit);
-				edit_uuid.setOnKeyListener(this);
 				edit_uuid.setText(settings.getString("uuid", "n/a"));
 				settings_layout.addView(edit_uuid, 2);
 			}

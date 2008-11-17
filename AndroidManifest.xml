@@ -12,6 +12,8 @@
         </activity>
         <activity android:name=".Radar" android:label="Radar">
         </activity>
+        <activity android:name=".Settings" android:label="Settings">
+        </activity>
         <service android:name=".Pigeon">
         </service>
         <uses-library android:name="com.google.android.maps" />
