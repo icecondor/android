@@ -2,12 +2,18 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" 
                   android:key="first_preferencescreen">  
   <EditTextPreference android:key="openid" 
-                      android:title="OpenID URL" />  
-  <CheckBoxPreference android:key="wifi enabled" 
-                      android:title="WiFi" />  
+                      android:title="OpenID URL" />
   <PreferenceScreen android:key="second_preferencescreen" 
-                    android:title="WiFi settings" >  
-    <CheckBoxPreference android:key="prefer wifi" 
-                        android:title="Prefer WiFi" />  
+                    android:title="Position Frequency" >
+    <EditTextPreference android:key="record frequency"
+                        android:title="Fixes Per Hour"
+                        android:digits="0123456789" />
+    <EditTextPreference android:key="transmission frequency"
+                        android:title="Transmissions Per Hour"
+                        android:digits="0123456789" />
   </PreferenceScreen>
+  <!-- <CheckBoxPreference android:key="wifi enabled" 
+                      android:title="Use WiFi Location" /> -->  
+       
+                                           
 </PreferenceScreen>
