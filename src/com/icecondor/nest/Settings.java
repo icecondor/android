@@ -40,13 +40,8 @@ public class Settings extends PreferenceActivity implements ServiceConnection,
     	Log.i(appTag, "onCreate");
         super.onCreate(savedInstanceState);
         settings = getSharedPreferences(PREFS_NAME, 0);
-        uiSetup();       
-    }
-
-	private void uiSetup() {
 		addPreferencesFromResource(R.layout.settings);
-        //setContentView(R.layout.main);
-	}
+    }
 
     @Override
     public void onStart() {
