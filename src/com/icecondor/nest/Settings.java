@@ -44,24 +44,8 @@ public class Settings extends PreferenceActivity implements ServiceConnection,
     }
 
 	private void uiSetup() {
-        setContentView(R.layout.main);
-        ((RadioButton) findViewById(R.id.ibtn_settings_pigeon_on)).setOnClickListener(this);
-        TabSpec ts1 = myTabHost.newTabSpec("TAB1");
-        ts1.setIndicator(getString(R.string.tab_title1), null);
-        ts1.setContent(R.id.grid_set_menu_radar);
-        this.myTabHost.addTab(ts1);
-        
-        ((TextView) findViewById(R.id.settings_uuid)).setText(settings.getString("uuid", "n/a"));
-        ((TextView) findViewById(R.id.settings_uuid)).setOnClickListener(this);
-        
-        TabSpec ts2 = myTabHost.newTabSpec("TAB2");
-        ts2.setIndicator(getString(R.string.tab_title2), null);
-        ts2.setContent(R.id.grid_set_menu_settings);
-        this.myTabHost.addTab(ts2);
-        
-        this.myTabHost.setCurrentTab(0);
-        
-        settings_layout = (LinearLayout) findViewById(R.id.grid_set_menu_radar);
+		addPreferencesFromResource(R.layout.settings);
+        //setContentView(R.layout.main);
 	}
 
     @Override
