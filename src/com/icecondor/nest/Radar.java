@@ -113,14 +113,14 @@ public class Radar extends MapActivity implements ServiceConnection,
         boolean result = bindService(pigeon_service, this, 0); // 0 = do not auto-start
         Log.i(appTag, "pigeon bind result="+result);
         scrollToLastFix();
-        startNeighborReadTimer();
+        //startNeighborReadTimer();
     }
     
     @Override
     public void onPause() {
     	super.onPause();
 		unbindService(this);
-    	stopNeighborReadTimer();
+    	//stopNeighborReadTimer();
     	Log.i(appTag, "onPause yeah");
     }
 
@@ -257,7 +257,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 		service_read_timer = new Timer();
 		service_read_timer.scheduleAtFixedRate(new TimerTask() {
 			public void run() {
-				Log.i(appTag, "startNeighborReadTimer");
+				Log.i(appTag, "NeighborReadTimer fired");
 				scrollToLastFix();
 				getNearbys();
 			}
