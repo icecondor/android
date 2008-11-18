@@ -158,7 +158,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 	public int pushLocation(Location fix) {
 		try {
 
-			Log.i(appTag, "sending id: "+settings.getString("uuid","")+ " fix: " 
+			Log.i(appTag, "sending id: "+settings.getString(SETTING_OPENID,"")+ " fix: " 
 					+fix.getLatitude()+" long: "+fix.getLongitude()+
 					" alt: "+fix.getAltitude() + " time: " + Util.DateTimeIso8601(fix.getTime()) +
 					" meters: "+fix.getAccuracy());
@@ -166,7 +166,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 			HttpPost post = new HttpPost(ICECONDOR_READ_URL);
 
 			post.addHeader("X_REQUESTED_WITH", "XMLHttpRequest");
-			post.setEntity(buildPostParameters(fix, settings.getString("uuid","")));
+			post.setEntity(buildPostParameters(fix, settings.getString(SETTING_OPENID,"")));
 			HttpResponse response;
 			response = client.execute(post);
 			Log.i(appTag, "http response: "+response.getStatusLine());

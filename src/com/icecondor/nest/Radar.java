@@ -219,7 +219,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 		try {
 			HttpClient client = new DefaultHttpClient();
 			String url_with_params = ICECONDOR_WRITE_URL + "?id="
-					+ settings.getString("uuid", "");
+					+ settings.getString(SETTING_OPENID, "");
 			Log.i(appTag, "GET " + url_with_params);
 			HttpGet get = new HttpGet(url_with_params);
 			get.getParams().setIntParameter("http.socket.timeout", 10000);

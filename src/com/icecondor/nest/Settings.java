@@ -117,7 +117,7 @@ public class Settings extends PreferenceActivity implements ServiceConnection,
 			if(arg0.getClass() == TextView.class) {
 				EditText edit_uuid = new EditText(this);
 				edit_uuid.setId(R.id.settings_uuid_edit);
-				edit_uuid.setText(settings.getString("uuid", "n/a"));
+				edit_uuid.setText(settings.getString(SETTING_OPENID, "n/a"));
 				settings_layout.addView(edit_uuid, 2);
 			}
 		}
@@ -153,12 +153,12 @@ public class Settings extends PreferenceActivity implements ServiceConnection,
 	}
 
 	private void add_uuid_display(View v) {
-		settings.edit().putString("uuid",((EditText)v).getText().toString()).commit();
+		settings.edit().putString(SETTING_OPENID,((EditText)v).getText().toString()).commit();
 		settings_layout.removeView(v);
 		TextView uuid = new TextView(this);
 		uuid.setId(R.id.settings_uuid);
 		uuid.setOnClickListener(this);
-		uuid.setText(settings.getString("uuid", "n/a"));
+		uuid.setText(settings.getString(SETTING_OPENID, "n/a"));
 		settings_layout.addView(uuid, 2);
 	}
 

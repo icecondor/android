@@ -90,17 +90,25 @@ public class Start extends Activity implements ServiceConnection,
 		Log.i(appTag, "restorePreferences()");
 
 		Editor editor = settings.edit();
+		
+		// Migrate the old UUID to the new prefs system. remove in future version
+		SharedPreferences old_settings = getSharedPreferences("IceNestPrefs", 0);
+		if (old_settings.contains("uuid")) {
+			Log.i(appTag, "migrating old uuid:"+old_settings.getString("uuid", ""));
+			editor.putString(SETTING_OPENID, old_settings.getString("uuid", "")).commit();
+			old_settings.edit().clear().commit();
+		}
 
         // Set the unique ID
 		String uuid;
-		if(settings.contains("uuid")) {
-			uuid = settings.getString("uuid", null);
-			Log.i(appTag, "retrieved UUID of "+uuid);
+		if(settings.contains(SETTING_OPENID)) {
+			uuid = settings.getString(SETTING_OPENID, null);
+			Log.i(appTag, "retrieved OpenID of "+uuid);
 		} else {
 			uuid = "urn:uuid:"+UUID.randomUUID().toString();
-			editor.putString("uuid", uuid);
+			editor.putString(SETTING_OPENID, uuid);
 			editor.commit();
-			Log.i(appTag, "no UUID in preferences. generated "+uuid);
+			Log.i(appTag, "no OpenID in preferences. generated "+uuid);
 		}
 	}
 
