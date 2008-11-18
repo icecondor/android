@@ -15,6 +15,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -35,11 +38,13 @@ public class Start extends Activity implements ServiceConnection,
 	PigeonService pigeon;
 	SharedPreferences settings;
 	Intent next_intent;
+	NotificationManager notificationManager;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	Log.i(appTag, "onCreate");
         super.onCreate(savedInstanceState);
+		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
         pigeon_intent = new Intent(this, Pigeon.class);
     }
@@ -52,7 +57,7 @@ public class Start extends Activity implements ServiceConnection,
     }
 
     private void check_for_new_version() {
-        long version_check_date = settings.getLong(SETTING_LAST_VERSION_CHECK, 0);
+        long version_check_date = 0;//settings.getLong(SETTING_LAST_VERSION_CHECK, 0);
         if (version_check_date < (System.currentTimeMillis() - DAY_IN_SECONDS)) {
 			settings.edit().putLong(SETTING_LAST_VERSION_CHECK, System.currentTimeMillis()).commit();
         	// request version data
@@ -73,7 +78,15 @@ public class Start extends Activity implements ServiceConnection,
 					if (ICECONDOR_VERSION < remote_version) {
 						Uri new_version_url = Uri.parse(version_info.getString("url"));
 						Log.i(appTag, "Upgrade! -> "+new_version_url);
-					    next_intent = new Intent(Intent.ACTION_VIEW, new_version_url);
+					    Intent upgrade_www_intent = new Intent(Intent.ACTION_VIEW, new_version_url);
+						PendingIntent upgradeIntent = PendingIntent.getActivity(this, 0, upgrade_www_intent, 
+								                                                PendingIntent.FLAG_ONE_SHOT);
+						Notification notification = new Notification(R.drawable.icecube_statusbar, 
+								"Upgrade Available!", System.currentTimeMillis());
+						notification.setLatestEventInfo(this, "IceCondor Upgrade", 
+								"Version "+remote_version+" is available.", upgradeIntent);
+						notification.flags = notification.flags ^ Intent.FLAG_ACTIVITY_NEW_TASK;
+						notificationManager.notify(2, notification);
 					}
 					Log.i(appTag, "current version "+ICECONDOR_VERSION+" remote version "+remote_version);
 				} catch (JSONException e) {
