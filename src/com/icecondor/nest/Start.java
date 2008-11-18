@@ -57,7 +57,7 @@ public class Start extends Activity implements ServiceConnection,
     }
 
     private void check_for_new_version() {
-        long version_check_date = 0;//settings.getLong(SETTING_LAST_VERSION_CHECK, 0);
+        long version_check_date = settings.getLong(SETTING_LAST_VERSION_CHECK, 0);
         if (version_check_date < (System.currentTimeMillis() - DAY_IN_SECONDS)) {
 			settings.edit().putLong(SETTING_LAST_VERSION_CHECK, System.currentTimeMillis()).commit();
         	// request version data
