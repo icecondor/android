@@ -8,9 +8,9 @@
                   android:entries="@+array/time_frequency"
                   android:entryValues="@+array/time_frequency_values" />
   <EditTextPreference android:key="transmission frequency"
-                      android:title="Transmissions Frequency"
+                      android:title="Upload Frequency"
                       android:entries="@+array/time_frequency"
                       android:entryValues="@+array/time_frequency_values" />
   <!-- <CheckBoxPreference android:key="wifi enabled" 
-                      android:title="Use WiFi Location" /> -->  
+                      android:title="Use WiFi Location" /> -->
 </PreferenceScreen>

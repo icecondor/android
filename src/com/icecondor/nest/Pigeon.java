@@ -31,6 +31,7 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 //look at android.permission.RECEIVE_BOOT_COMPLETED
@@ -72,7 +73,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 		notification.flags = notification.flags ^ Notification.FLAG_ONGOING_EVENT;
 		
 		/* Preferences */
-		settings = getSharedPreferences(PREFS_NAME, 0);
+		settings = PreferenceManager.getDefaultSharedPreferences(this);
 		on_switch = settings.getBoolean(SETTING_PIGEON_TRANSMITTING, true);
 		if (on_switch) {
 			notificationStatusUpdate("Background task started, awating first fix.");
@@ -120,20 +121,24 @@ public class Pigeon extends Service implements Constants, LocationListener {
 	}
 
 	private void requestUpdates() {
+		long record_frequency = Long.decode(settings.getString(SETTING_RECORD_FREQUENCY, "60000"));
+		Log.i(appTag, "requesting updates with frequency "+record_frequency);
 		locationManager.requestLocationUpdates(
-				LocationManager.GPS_PROVIDER, 60000L, 0.0F, pigeon);
+				LocationManager.GPS_PROVIDER, 
+				record_frequency, 
+				0.0F, pigeon);
 		// Network provider takes no extra power but the accuracy is
 		// too low to be useful.
 		//locationManager.requestLocationUpdates(
 		//		LocationManager.NETWORK_PROVIDER, 60000L, 0.0F, pigeon);
-		Log.i(appTag, "kicking off wifi scan timer");
-		wifi_scan_timer.scheduleAtFixedRate(
-				new TimerTask() {
-					public void run() {
-						Log.i(appTag, "wifi: start scan (enabled:"+wifiManager.isWifiEnabled()+")");
-						wifiManager.startScan();
-					}
-				}, 0, 60000);		
+//		Log.i(appTag, "kicking off wifi scan timer");
+//		wifi_scan_timer.scheduleAtFixedRate(
+//				new TimerTask() {
+//					public void run() {
+//						Log.i(appTag, "wifi: start scan (enabled:"+wifiManager.isWifiEnabled()+")");
+//						wifiManager.startScan();
+//					}
+//				}, 0, 60000);		
 	}
 	
 	private void stopLocationUpdates() {

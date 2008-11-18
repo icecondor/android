@@ -11,6 +11,8 @@ public interface Constants {
 	public static final String PREFS_NAME = "IceNestPrefs";
 	public static final String SETTING_PIGEON_TRANSMITTING = "pigeon_transmitting";
 	public static final String SETTING_LAST_VERSION_CHECK = "version_check_date";
+	public static final String SETTING_RECORD_FREQUENCY = "record frequency";
+	public static final String SETTING_TRANSMISSION_FREQUENCY = "transmission frequency";
 	
 	public static final long DAY_IN_SECONDS = 6000 *60*60*24;
 
