@@ -24,6 +24,7 @@ import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class Start extends Activity implements ServiceConnection,
@@ -39,7 +40,7 @@ public class Start extends Activity implements ServiceConnection,
     public void onCreate(Bundle savedInstanceState) {
     	Log.i(appTag, "onCreate");
         super.onCreate(savedInstanceState);
-		settings = getSharedPreferences(PREFS_NAME, 0);
+		settings = PreferenceManager.getDefaultSharedPreferences(this);
         pigeon_intent = new Intent(this, Pigeon.class);
     }
     

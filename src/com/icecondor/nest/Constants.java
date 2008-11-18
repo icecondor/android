@@ -8,7 +8,6 @@ public interface Constants {
 	public static final String ICECONDOR_READ_URL = "http://icecondor.com/locations"; // use preference
 	public static final long ICECONDOR_READ_INTERVAL = 60000;
 
-	public static final String PREFS_NAME = "IceNestPrefs";
 	public static final String SETTING_PIGEON_TRANSMITTING = "pigeon_transmitting";
 	public static final String SETTING_LAST_VERSION_CHECK = "version_check_date";
 	public static final String SETTING_RECORD_FREQUENCY = "record frequency";

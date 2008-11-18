@@ -27,6 +27,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -57,7 +58,7 @@ public class Radar extends MapActivity implements ServiceConnection,
     public void onCreate(Bundle savedInstanceState) {
     	Log.i(appTag, "onCreate");
         super.onCreate(savedInstanceState);
-        settings = getSharedPreferences(PREFS_NAME, 0);
+		settings = PreferenceManager.getDefaultSharedPreferences(this);
         settingsIntent = new Intent(this, Settings.class);
         
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);

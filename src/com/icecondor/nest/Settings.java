@@ -1,6 +1,7 @@
 package com.icecondor.nest;
 
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -39,7 +40,7 @@ public class Settings extends PreferenceActivity implements ServiceConnection,
     public void onCreate(Bundle savedInstanceState) {
     	Log.i(appTag, "onCreate");
         super.onCreate(savedInstanceState);
-        settings = getSharedPreferences(PREFS_NAME, 0);
+		settings = PreferenceManager.getDefaultSharedPreferences(this);
 		addPreferencesFromResource(R.layout.settings);
     }
 
