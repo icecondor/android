@@ -238,12 +238,13 @@ public class Pigeon extends Service implements Constants, LocationListener {
 			long last_time = 0;
 			if(last_fix != null) { last_time = last_fix.getTime(); }
 			long time_since_last_update = location.getTime() - last_time; 
-			if(time_since_last_update > PIGEON_LOCATION_POST_INTERVAL) { 
+			long record_frequency = Long.decode(settings.getString(SETTING_RECORD_FREQUENCY, "60000"));
+			if(time_since_last_update > record_frequency) { 
 				last_fix = location;
 				last_fix_http_status = pushLocation(location); 
 			} else {
-				Log.i(appTag, time_since_last_update/1000+" is less than "+
-						PIGEON_LOCATION_POST_INTERVAL/1000+ " server push skipped");
+				Log.i(appTag, time_since_last_update/1000+" sec. is less than "+
+						record_frequency/1000+ " sec. server push skipped");
 			}
 		}
 	}
