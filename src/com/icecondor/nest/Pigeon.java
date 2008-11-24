@@ -53,6 +53,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 	
 	public void onCreate() {
 		Log.i(appTag, "*** service created.");
+		super.onCreate();
 		pigeon = this;
 		
 		/* GPS */
@@ -145,7 +146,8 @@ public class Pigeon extends Service implements Constants, LocationListener {
 		locationManager.removeUpdates(pigeon);
 	}
 
-	public void onStart() {
+	public void onStart(Intent start, int key) {
+		super.onStart(start,key);
 		Log.i(appTag, "service started!");
 	}
 	
