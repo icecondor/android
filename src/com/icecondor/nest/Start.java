@@ -1,6 +1,7 @@
 package com.icecondor.nest;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.UUID;
 
 import org.apache.http.HttpEntity;
@@ -51,14 +52,18 @@ public class Start extends Activity implements ServiceConnection,
     
     @Override
     public void onResume() {
+    	Log.i(appTag, "onResume");
     	super.onResume();
         startPigeon();
-        check_for_new_version();
+        new Thread( new Runnable() {public void run() {check_for_new_version();} }).start();
     }
 
     private void check_for_new_version() {
-        long version_check_date = settings.getLong(SETTING_LAST_VERSION_CHECK, 0);
-        if (version_check_date < (System.currentTimeMillis() - DAY_IN_SECONDS)) {
+        long version_check_date_in_milliseconds = settings.getLong(SETTING_LAST_VERSION_CHECK, 0);
+        Calendar version_check_date = Calendar.getInstance();
+        version_check_date.setTimeInMillis(version_check_date_in_milliseconds);
+        Log.i(appTag, "date of last update check "+ version_check_date.getTime());
+        if (version_check_date_in_milliseconds < (System.currentTimeMillis() - DAY_IN_MILLISECONDS)) {
 			settings.edit().putLong(SETTING_LAST_VERSION_CHECK, System.currentTimeMillis()).commit();
         	// request version data
 			HttpClient client = new DefaultHttpClient();
