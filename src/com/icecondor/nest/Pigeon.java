@@ -36,7 +36,8 @@ import android.util.Log;
 
 //look at android.permission.RECEIVE_BOOT_COMPLETED
 
-public class Pigeon extends Service implements Constants, LocationListener {
+public class Pigeon extends Service implements Constants, LocationListener,
+                                               SharedPreferences.OnSharedPreferenceChangeListener {
 	private Timer heartbeat_timer = new Timer();
 	//private Timer wifi_scan_timer = new Timer();
 	static final String appTag = "Pigeon";
@@ -75,10 +76,11 @@ public class Pigeon extends Service implements Constants, LocationListener {
 		
 		/* Preferences */
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
+		settings.registerOnSharedPreferenceChangeListener(this);
 		on_switch = settings.getBoolean(SETTING_PIGEON_TRANSMITTING, true);
 		if (on_switch) {
 			notificationStatusUpdate("Background task started, awating first fix.");
-			requestUpdates();
+			startLocationUpdates();
 		}
 
 		heartbeat_timer.scheduleAtFixedRate(
@@ -126,9 +128,9 @@ public class Pigeon extends Service implements Constants, LocationListener {
 		notificationManager.notify(1, notification);
 	}
 
-	private void requestUpdates() {
+	private void startLocationUpdates() {
 		long record_frequency = Long.decode(settings.getString(SETTING_RECORD_FREQUENCY, "60000"));
-		Log.i(appTag, "requesting updates with frequency "+record_frequency);
+		Log.i(appTag, "requesting GPS updates with frequency "+record_frequency);
 		locationManager.requestLocationUpdates(
 				LocationManager.GPS_PROVIDER, 
 				record_frequency, 
@@ -148,6 +150,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 	}
 	
 	private void stopLocationUpdates() {
+		Log.i(appTag, "stopping GPS updates");		
 		locationManager.removeUpdates(pigeon);
 	}
 
@@ -218,7 +221,7 @@ public class Pigeon extends Service implements Constants, LocationListener {
 				Log.i(appTag, "startTransmitting");
 				on_switch = true;
 				settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING, on_switch).commit();
-				requestUpdates();
+				startLocationUpdates();
 				notificationStatusUpdate("Background task activated.");
 			}
 		}
@@ -270,5 +273,16 @@ public class Pigeon extends Service implements Constants, LocationListener {
 		if (status ==  LocationProvider.OUT_OF_SERVICE) {status_msg = "OUT_OF_SERVICE";}
 		if (status ==  LocationProvider.AVAILABLE) {status_msg = "AVAILABLE";}
 		Log.i(appTag, "provider "+provider+" status changed to "+status_msg);
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences arg0, String pref_name) {
+		Log.i(appTag, "shared preference changed: "+pref_name);		
+		if (pref_name.equals(SETTING_RECORD_FREQUENCY)) {
+			if (on_switch) {
+				stopLocationUpdates();
+				startLocationUpdates();
+			}
+		}
 	}
 }
