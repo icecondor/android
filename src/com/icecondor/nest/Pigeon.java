@@ -38,7 +38,7 @@ import android.util.Log;
 
 public class Pigeon extends Service implements Constants, LocationListener {
 	private Timer heartbeat_timer = new Timer();
-	private Timer wifi_scan_timer = new Timer();
+	//private Timer wifi_scan_timer = new Timer();
 	static final String appTag = "Pigeon";
 	boolean on_switch = false;
 	private Location last_fix, last_local_fix;

@@ -16,10 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.ComponentName;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -28,12 +25,9 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
-import android.text.Editable;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.EditText;
@@ -233,7 +227,6 @@ public class Radar extends MapActivity implements ServiceConnection,
 				Log.i(appTag, "parsed "+locations.length()+" locations");
 				for(int i=0; i < locations.length(); i++) {
 					JSONObject location = (JSONObject)locations.getJSONObject(i).get("location");
-					String timestamp = location.getString("timestamp");
 					double longitude = location.getJSONObject("geom").getDouble("x");
 					double latitude = location.getJSONObject("geom").getDouble("y");
 					Log.i(appTag, "#"+i+" longititude: "+longitude+" latitude: "+latitude);

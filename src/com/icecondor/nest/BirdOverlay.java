@@ -25,9 +25,9 @@ public class BirdOverlay extends Overlay {
 	public void draw(Canvas canvas, MapView mapView, boolean shadow) {
 		super.draw(canvas, mapView, shadow);
 		int h = canvas.getHeight();
-		int w = canvas.getWidth();
-		int mid_y = h /2;
-		int mid_x = w /2;
+		//int w = canvas.getWidth();
+		//int mid_y = h /2;
+		//int mid_x = w /2;
 		Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		
 		String msg = null;
