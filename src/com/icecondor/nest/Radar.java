@@ -43,7 +43,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	MapController mapController;
 	PigeonService pigeon;
 	private Timer service_read_timer;
-	Intent settingsIntent;
+	Intent settingsIntent, geoRssIntent;
 	SharedPreferences settings;
 	BirdOverlay nearbys;
 	EditText uuid_field;
@@ -54,6 +54,7 @@ public class Radar extends MapActivity implements ServiceConnection,
         super.onCreate(savedInstanceState);
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
         settingsIntent = new Intent(this, Settings.class);
+        geoRssIntent = new Intent(this, GeoRssList.class);
         
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setProgressBarIndeterminateVisibility(false);
@@ -130,7 +131,8 @@ public class Radar extends MapActivity implements ServiceConnection,
 		boolean result = super.onCreateOptionsMenu(menu);
 		menu.add(Menu.NONE, 1, Menu.NONE, R.string.menu_last_fix).setIcon(android.R.drawable.ic_menu_mylocation);
 		menu.add(Menu.NONE, 2, Menu.NONE, R.string.menu_settings).setIcon(android.R.drawable.ic_menu_preferences);
-		menu.add(Menu.NONE, 3, Menu.NONE, pigeonStatusTitle()).setIcon(android.R.drawable.presence_invisible);
+		menu.add(Menu.NONE, 3, Menu.NONE, R.string.menu_geo_rss).setIcon(android.R.drawable.ic_menu_preferences);
+		menu.add(Menu.NONE, 4, Menu.NONE, pigeonStatusTitle()).setIcon(android.R.drawable.presence_invisible);
 		return result;
 	}
 	
@@ -145,6 +147,9 @@ public class Radar extends MapActivity implements ServiceConnection,
 			startActivity(settingsIntent);
 			break;
 		case 3:
+			startActivity(geoRssIntent);
+			break;
+		case 4:
 			togglePigeon();
 			item.setIcon(pigeonStatusIcon()).setTitle(pigeonStatusTitle());
 			break;
@@ -155,7 +160,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		boolean result = super.onPrepareOptionsMenu(menu);
-		menu.findItem(3).setIcon(pigeonStatusIcon()).setTitle(pigeonStatusTitle());
+		menu.findItem(4).setIcon(pigeonStatusIcon()).setTitle(pigeonStatusTitle());
 		return result;
 	}
 	

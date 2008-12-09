@@ -14,6 +14,8 @@
         </activity>
         <activity android:name=".Settings" android:label="Settings">
         </activity>
+        <activity android:name=".GeoRssList" android:label="GeoRssList">
+        </activity>
         <service android:name=".Pigeon">
         </service>
         <uses-library android:name="com.google.android.maps" />
