@@ -23,6 +23,8 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -51,6 +53,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	Pigeon pigeon; // need 'this' for stub
 	PendingIntent contentIntent;
 	SharedPreferences settings;
+	Cursor geoRssUrls;
 	
 	public void onCreate() {
 		Log.i(appTag, "*** service created.");
@@ -119,6 +122,11 @@ public class Pigeon extends Service implements Constants, LocationListener,
 //				}
 
 			}, 0, 30000);		
+
+		// GeoRSS Database
+		GeoRssSqlite rssdb = new GeoRssSqlite(this, "georss", null, 1);
+		SQLiteDatabase db = rssdb.getWritableDatabase();
+		geoRssUrls = db.query("urls",null, null, null, null, null, null);
 	}
 
 	private void notificationStatusUpdate(String msg) {
