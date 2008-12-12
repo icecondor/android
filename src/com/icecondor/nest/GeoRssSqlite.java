@@ -16,7 +16,8 @@ public class GeoRssSqlite extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		db.execSQL("create table urls (_id integer primary key, name text, url text)");
+		db.execSQL("create table services (_id integer primary key, name text, url text)");
+		db.execSQL("create table shouts (_id integer primary key, guid text, name text, lat float, long float)");
 	}
 
 	@Override

@@ -27,6 +27,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -52,6 +53,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
+import android.sax.Element;
 import android.util.Log;
 
 //look at android.permission.RECEIVE_BOOT_COMPLETED
@@ -138,7 +140,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				new TimerTask() {
 					public void run() {
 						Log.i(appTag, "rss_timer fired");
-						Cursor geoRssUrls = geoRssDb.query("urls",null, null, null, null, null, null);
+						Cursor geoRssUrls = geoRssDb.query("services",null, null, null, null, null, null);
 						while (geoRssUrls.moveToNext()) {
 							try {
 								readGeoRss(geoRssUrls.getString(geoRssUrls.getColumnIndex(GeoRssSqlite.URL)));
@@ -161,8 +163,14 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			DocumentBuilder db = DocumentBuilderFactory.newInstance()
 					.newDocumentBuilder();
 			Document doc = db.parse(urlConn.getInputStream());
-			int shoutsSize = doc.getElementsByTagName("item").getLength();
-			Log.i(appTag, "i read "+shoutsSize+" shouts");
+			NodeList lats = doc.getElementsByTagName("geo:lat");
+			NodeList longs = doc.getElementsByTagName("geo:long");
+			NodeList guids = doc.getElementsByTagName("guid");
+			Log.i(appTag, "i read "+lats.getLength()+" shouts");
+			for (int i = 0; i < lats.getLength(); i++) {
+				Log.i(appTag, "item "+i+" lat:"+lats.item(i).getFirstChild().getNodeValue() +
+						"long:"+longs.item(i).getFirstChild().getNodeValue());
+			}
 		} catch (ParserConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
