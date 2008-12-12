@@ -259,7 +259,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 				scrollToLastFix();
 				//getNearbys();
 			}
-		}, 0, ICECONDOR_READ_INTERVAL);
+		}, 0, RADAR_REFRESH_INTERVAL);
 	}
 
 	public void stopNeighborReadTimer() {

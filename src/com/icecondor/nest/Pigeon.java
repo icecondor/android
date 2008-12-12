@@ -2,20 +2,38 @@ package com.icecondor.nest;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.FactoryConfigurationError;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -41,6 +59,7 @@ import android.util.Log;
 public class Pigeon extends Service implements Constants, LocationListener,
                                                SharedPreferences.OnSharedPreferenceChangeListener {
 	private Timer heartbeat_timer = new Timer();
+	private Timer rss_timer = new Timer();
 	//private Timer wifi_scan_timer = new Timer();
 	static final String appTag = "Pigeon";
 	boolean on_switch = false;
@@ -53,7 +72,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	Pigeon pigeon; // need 'this' for stub
 	PendingIntent contentIntent;
 	SharedPreferences settings;
-	Cursor geoRssUrls;
+	SQLiteDatabase geoRssDb;
 	
 	public void onCreate() {
 		Log.i(appTag, "*** service created.");
@@ -109,24 +128,51 @@ public class Pigeon extends Service implements Constants, LocationListener,
 					}
 					notificationStatusUpdate(fix_part+" "+beat_part); 
 				}
-//
-//				private Location phoneyLocation() {
-//					Location fix;
-//					fix = new Location("phoney");
-//					// simulation
-//					Random rand = new Random();
-//					fix.setLatitude(45+rand.nextFloat());
-//					fix.setLongitude(-122-rand.nextFloat());
-//					fix.setTime(Calendar.getInstance().getTimeInMillis());
-//					return fix;
-//				}
-
 			}, 0, 30000);		
 
 		// GeoRSS Database
 		GeoRssSqlite rssdb = new GeoRssSqlite(this, "georss", null, 1);
-		SQLiteDatabase db = rssdb.getWritableDatabase();
-		geoRssUrls = db.query("urls",null, null, null, null, null, null);
+		geoRssDb = rssdb.getWritableDatabase();
+
+		rss_timer.scheduleAtFixedRate(
+				new TimerTask() {
+					public void run() {
+						Log.i(appTag, "rss_timer fired");
+						Cursor geoRssUrls = geoRssDb.query("urls",null, null, null, null, null, null);
+						while (geoRssUrls.moveToNext()) {
+							try {
+								readGeoRss(geoRssUrls.getString(geoRssUrls.getColumnIndex(GeoRssSqlite.URL)));
+							} catch (ClientProtocolException e) {
+								Log.i(appTag, "http protocol exception "+e);
+							} catch (IOException e) {
+								Log.i(appTag, "io error "+e);
+							}
+						}
+					}
+				}, 0, ICECONDOR_READ_INTERVAL);
+}
+
+	protected void readGeoRss(String urlString) throws ClientProtocolException, IOException {
+		Log.i(appTag, "readGeoRss "+urlString);
+		URL url = new URL(urlString);
+		URLConnection urlConn = url.openConnection();
+		urlConn.setReadTimeout(15000);
+		try {
+			DocumentBuilder db = DocumentBuilderFactory.newInstance()
+					.newDocumentBuilder();
+			Document doc = db.parse(urlConn.getInputStream());
+			int shoutsSize = doc.getElementsByTagName("item").getLength();
+			Log.i(appTag, "i read "+shoutsSize+" shouts");
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FactoryConfigurationError e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 	}
 
 	private void notificationStatusUpdate(String msg) {

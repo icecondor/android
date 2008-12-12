@@ -5,7 +5,8 @@ public interface Constants {
 	public static final String ICECONDOR_VERSION_CHECK_URL = "http://icecondor.com/version"; // use preference
 	public static final String ICECONDOR_WRITE_URL = "http://icecondor.com/locations.json"; // use preference
 	public static final String ICECONDOR_READ_URL = "http://icecondor.com/locations.json"; // use preference
-	public static final long ICECONDOR_READ_INTERVAL = 15000;
+	public static final long ICECONDOR_READ_INTERVAL = 60000;
+	public static final long RADAR_REFRESH_INTERVAL = 15000;
 
 	public static final String SETTING_PIGEON_TRANSMITTING = "pigeon_transmitting";
 	public static final String SETTING_LAST_VERSION_CHECK = "version_check_date";
