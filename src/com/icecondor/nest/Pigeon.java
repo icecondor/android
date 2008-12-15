@@ -27,6 +27,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -40,6 +41,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -140,7 +142,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				new TimerTask() {
 					public void run() {
 						Log.i(appTag, "rss_timer fired");
-						Cursor geoRssUrls = geoRssDb.query("services",null, null, null, null, null, null);
+						Cursor geoRssUrls = geoRssDb.query(GeoRssSqlite.SERVICES_TABLE,null, null, null, null, null, null);
 						while (geoRssUrls.moveToNext()) {
 							try {
 								readGeoRss(geoRssUrls.getString(geoRssUrls.getColumnIndex(GeoRssSqlite.URL)));
@@ -163,13 +165,36 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			DocumentBuilder db = DocumentBuilderFactory.newInstance()
 					.newDocumentBuilder();
 			Document doc = db.parse(urlConn.getInputStream());
-			NodeList lats = doc.getElementsByTagName("geo:lat");
-			NodeList longs = doc.getElementsByTagName("geo:long");
-			NodeList guids = doc.getElementsByTagName("guid");
-			Log.i(appTag, "i read "+lats.getLength()+" shouts");
-			for (int i = 0; i < lats.getLength(); i++) {
-				Log.i(appTag, "item "+i+" lat:"+lats.item(i).getFirstChild().getNodeValue() +
-						"long:"+longs.item(i).getFirstChild().getNodeValue());
+			NodeList items = doc.getElementsByTagName("item");
+
+			Log.i(appTag, "i read "+items.getLength()+" shouts");
+			for (int i = 0; i < items.getLength(); i++) {
+				String guid = null, name = null, date =null;
+				float latitude = -100, longitude = -200;
+				NodeList item_elements = items.item(i).getChildNodes();
+				for(int j=0; j < item_elements.getLength(); j++) {
+					Node sub_item = item_elements.item(j);
+					if(sub_item.getNodeName().equals("guid")) {
+						guid = sub_item.getFirstChild().getNodeValue();
+					}
+					if(sub_item.getNodeName().equals("pubDate")) {
+						date = sub_item.getFirstChild().getNodeValue();
+					}
+					if(sub_item.getNodeName().equals("geo:lat")) {
+						latitude = Float.parseFloat(sub_item.getFirstChild().getNodeValue());
+					}
+					if(sub_item.getNodeName().equals("geo:long")) {
+						longitude = Float.parseFloat(sub_item.getFirstChild().getNodeValue());
+					}
+				}
+				Log.i(appTag, "item #"+i+" guid:"+ guid+" lat:"+
+						latitude + " long:"+longitude +" date:"+date);
+				ContentValues cv = new ContentValues(2);
+				cv.put("guid", guid);
+				cv.put("lat", latitude);
+				cv.put("long", longitude);
+				cv.put("date", date);
+				geoRssDb.insert("shouts", null, cv);
 			}
 		} catch (ParserConfigurationException e) {
 			// TODO Auto-generated catch block
