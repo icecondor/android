@@ -197,7 +197,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				cv.put("lat", latitude);
 				cv.put("long", longitude);
 				cv.put("date", date);
-				cv.put("title", date);
+				cv.put("title", title);
 				geoRssDb.insert("shouts", null, cv);
 			}
 		} catch (ParserConfigurationException e) {
