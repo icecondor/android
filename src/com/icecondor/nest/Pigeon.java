@@ -169,13 +169,16 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
 			Log.i(appTag, "i read "+items.getLength()+" shouts");
 			for (int i = 0; i < items.getLength(); i++) {
-				String guid = null, name = null, date =null;
+				String guid = null, title = null, date =null;
 				float latitude = -100, longitude = -200;
 				NodeList item_elements = items.item(i).getChildNodes();
 				for(int j=0; j < item_elements.getLength(); j++) {
 					Node sub_item = item_elements.item(j);
 					if(sub_item.getNodeName().equals("guid")) {
 						guid = sub_item.getFirstChild().getNodeValue();
+					}
+					if(sub_item.getNodeName().equals("title")) {
+						title = sub_item.getFirstChild().getNodeValue();
 					}
 					if(sub_item.getNodeName().equals("pubDate")) {
 						date = sub_item.getFirstChild().getNodeValue();
@@ -194,6 +197,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				cv.put("lat", latitude);
 				cv.put("long", longitude);
 				cv.put("date", date);
+				cv.put("title", date);
 				geoRssDb.insert("shouts", null, cv);
 			}
 		} catch (ParserConfigurationException e) {
