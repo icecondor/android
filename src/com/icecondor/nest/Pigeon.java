@@ -145,7 +145,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 						Cursor geoRssUrls = geoRssDb.query(GeoRssSqlite.SERVICES_TABLE,null, null, null, null, null, null);
 						while (geoRssUrls.moveToNext()) {
 							try {
-								readGeoRss(geoRssUrls.getString(geoRssUrls.getColumnIndex(GeoRssSqlite.URL)));
+								readGeoRss(geoRssUrls);
 							} catch (ClientProtocolException e) {
 								Log.i(appTag, "http protocol exception "+e);
 							} catch (IOException e) {
@@ -156,7 +156,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				}, 0, ICECONDOR_READ_INTERVAL);
 }
 
-	protected void readGeoRss(String urlString) throws ClientProtocolException, IOException {
+	protected void readGeoRss(Cursor geoRssUrls) throws ClientProtocolException, IOException {
+		String urlString = geoRssUrls.getString(geoRssUrls.getColumnIndex(GeoRssSqlite.URL));
 		Log.i(appTag, "readGeoRss "+urlString);
 		URL url = new URL(urlString);
 		URLConnection urlConn = url.openConnection();
@@ -198,6 +199,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				cv.put("long", longitude);
 				cv.put("date", date);
 				cv.put("title", title);
+				cv.put("service_id", geoRssUrls.getInt(geoRssUrls.getColumnIndex("_id")));
 				geoRssDb.insert("shouts", null, cv);
 			}
 		} catch (ParserConfigurationException e) {
