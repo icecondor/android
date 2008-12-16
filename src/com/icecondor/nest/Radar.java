@@ -288,6 +288,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 		}
 		geoRssUrls.close();
 		geoRssDb.close();
+		rssdb.close();
 	}
 
 	public void stopNeighborReadTimer() {
