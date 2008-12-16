@@ -131,7 +131,6 @@ public class Radar extends MapActivity implements ServiceConnection,
 		return false;
 	}
 	
-	// copy/pasted from nest.java. extract into superclass?
 	public boolean onCreateOptionsMenu(Menu menu) {
 		Log.i(appTag, "onCreateOptionsMenu");
 		boolean result = super.onCreateOptionsMenu(menu);
