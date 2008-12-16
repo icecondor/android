@@ -3,6 +3,7 @@ package com.icecondor.nest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
@@ -12,17 +13,24 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.SimpleCursorAdapter;
+import android.widget.AdapterView.OnItemSelectedListener;
 
-public class GeoRssList extends ListActivity {
+public class GeoRssList extends ListActivity implements OnItemSelectedListener {
 	static final String appTag = "GeoRssList";
 	Intent settingsIntent, radarIntent;
+	EditText url_field;
+	SQLiteDatabase geoRssDb;
+	GeoRssList me;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        
+		getListView().setOnItemSelectedListener(this);
+		me=this;
+
 		GeoRssSqlite rssdb = new GeoRssSqlite(this, "georss", null, 1);
 		SQLiteDatabase db = rssdb.getWritableDatabase();
 		//db.execSQL("insert into urls values (null, 'service', 'https://service.com'");
@@ -79,7 +87,8 @@ public class GeoRssList extends ListActivity {
 			.setTitle(R.string.menu_geo_rss_add)
 			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int whichbutton) {
-					// create
+					insert_service(url_field.getText().toString());
+					me.onContentChanged();
 				}
 			})
 			.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -90,8 +99,31 @@ public class GeoRssList extends ListActivity {
 			.create();
 	}
 
+	protected void insert_service(String url) {
+		// GeoRSS Database
+		GeoRssSqlite rssdb = new GeoRssSqlite(this, "georss", null, 1);
+		geoRssDb = rssdb.getWritableDatabase();
+		ContentValues cv = new ContentValues(2);
+		cv.put("name", "Service");
+		cv.put("url", url);
+		geoRssDb.insert(GeoRssSqlite.SERVICES_TABLE, null, cv);
+		geoRssDb.close();
+		rssdb.close();
+
+	}
 	protected void onPrepareDialog(int id, Dialog dialog) {
-		EditText url_field = (EditText) dialog.findViewById(R.id.url_edit);
-        url_field.setText("url here");
+		url_field = (EditText) dialog.findViewById(R.id.url_edit);
+        url_field.setText(""); // initial value
+	}
+	@Override
+	public void onItemSelected(AdapterView<?> parent, View view, int position,
+			long id) {
+		Log.i(appTag, "position:"+position);
+		
+	}
+	@Override
+	public void onNothingSelected(AdapterView<?> arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 }
