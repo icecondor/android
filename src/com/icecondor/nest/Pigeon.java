@@ -200,7 +200,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				cv.put("date", date);
 				cv.put("title", title);
 				cv.put("service_id", geoRssUrls.getInt(geoRssUrls.getColumnIndex("_id")));
-				geoRssDb.insert("shouts", null, cv);
+				geoRssDb.insert(GeoRssSqlite.SHOUTS_TABLE, null, cv);
 			}
 		} catch (ParserConfigurationException e) {
 			// TODO Auto-generated catch block

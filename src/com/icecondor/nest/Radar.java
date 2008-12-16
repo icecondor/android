@@ -20,6 +20,9 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -46,6 +49,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	Intent settingsIntent, geoRssIntent;
 	SharedPreferences settings;
 	BirdOverlay nearbys;
+	FlockOverlay flock;
 	EditText uuid_field;
 	MapView mapView;
 	
@@ -69,6 +73,8 @@ public class Radar extends MapActivity implements ServiceConnection,
         mapController.setZoom(15);
         nearbys = new BirdOverlay();
         mapView.getOverlays().add(nearbys);
+        flock = new FlockOverlay(Resources.getSystem().getDrawable(android.R.drawable.arrow_down_float));
+        mapView.getOverlays().add(flock);
     }
     
     public void scrollToLastFix() {
@@ -257,9 +263,25 @@ public class Radar extends MapActivity implements ServiceConnection,
 			public void run() {
 				Log.i(appTag, "NeighborReadTimer fired");
 				scrollToLastFix();
+				updateBirds();
 				//getNearbys();
 			}
 		}, 0, RADAR_REFRESH_INTERVAL);
+	}
+
+	protected void updateBirds() {
+		GeoRssSqlite rssdb = new GeoRssSqlite(this, "georss", null, 1);
+		SQLiteDatabase geoRssDb = rssdb.getWritableDatabase();
+		Cursor geoRssUrls = geoRssDb.query(GeoRssSqlite.SHOUTS_TABLE,null, null, null, null, null, null);
+		while (geoRssUrls.moveToNext()) {
+			GeoPoint point = new GeoPoint(
+					(int)(geoRssUrls.getFloat(geoRssUrls.getColumnIndex("title"))*1000000),
+			        (int)(geoRssUrls.getFloat(geoRssUrls.getColumnIndex("latitude"))*1000000));
+			BirdItem test_bird = new BirdItem(point, 
+					geoRssUrls.getString(geoRssUrls.getColumnIndex("guid")), 
+					geoRssUrls.getString(geoRssUrls.getColumnIndex("title")));
+			flock.add(test_bird);
+		}
 	}
 
 	public void stopNeighborReadTimer() {

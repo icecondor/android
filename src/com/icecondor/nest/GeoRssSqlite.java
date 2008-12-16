@@ -9,6 +9,7 @@ public class GeoRssSqlite extends SQLiteOpenHelper {
 	public static final String NAME = "name";
 	public static final String URL = "url";
 	public static final String SERVICES_TABLE = "services";
+	public static final String SHOUTS_TABLE = "shouts";
 
 	public GeoRssSqlite(Context context, String name, CursorFactory factory,
 			int version) {
