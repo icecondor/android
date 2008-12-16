@@ -115,17 +115,20 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				public void run() {
 					Log.i(appTag, "heartbeat. last_fix is "+last_fix);
 					String fix_part;
-					if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-						fix_part = "No fix yet.";
+					if (on_switch) {
+						if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+							fix_part = "No fix yet.";
+						} else {
+							fix_part = "Warning: GPS set to disabled";
+						}
+						if (last_fix != null) {
+							String ago = Util.timeAgoInWords(last_fix.getTime());
+							fix_part = last_fix.getProvider()+" push("+last_fix_http_status+") "+
+							           ago;
+						}
 					} else {
-						fix_part = "Warning: GPS set to disabled";
+						fix_part = "Recording turned off.";
 					}
-					if (last_fix != null) {
-						String ago = Util.timeAgoInWords(last_fix.getTime());
-						fix_part = last_fix.getProvider()+" push("+last_fix_http_status+") "+
-						           ago;
-					}					
-
 					String beat_part = "";
 					if (last_local_fix != null) {
 						String ago = Util.timeAgoInWords(last_local_fix.getTime());
