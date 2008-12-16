@@ -123,7 +123,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 						}
 						if (last_fix != null) {
 							String ago = Util.timeAgoInWords(last_fix.getTime());
-							fix_part = last_fix.getProvider()+" push("+last_fix_http_status+") "+
+							String http_status = "";
+							if (last_fix_http_status != 200) 
+								http_status = "("+last_fix_http_status+")";
+							fix_part = last_fix.getProvider()+" push"+http_status+" "+
 							           ago;
 						}
 					} else {
