@@ -1,12 +1,18 @@
 package com.icecondor.nest;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.SimpleCursorAdapter;
 
@@ -39,6 +45,7 @@ public class GeoRssList extends ListActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		Log.i(appTag, "onCreateOptionsMenu");
 		boolean result = super.onCreateOptionsMenu(menu);
+		menu.add(Menu.NONE, 1, Menu.NONE, R.string.menu_geo_rss_add).setIcon(android.R.drawable.ic_menu_add);
 		menu.add(Menu.NONE, 2, Menu.NONE, R.string.menu_settings).setIcon(android.R.drawable.ic_menu_preferences);
 		menu.add(Menu.NONE, 3, Menu.NONE, R.string.menu_radar).setIcon(android.R.drawable.ic_menu_compass);
 		return result;
@@ -48,6 +55,9 @@ public class GeoRssList extends ListActivity {
 		Log.i(appTag, "menu:"+item.getItemId());
 		
 		switch (item.getItemId()) {
+		case 1:
+			showDialog(1);
+			break;
 		case 2:
 			startActivity(settingsIntent);
 			break;
@@ -59,5 +69,29 @@ public class GeoRssList extends ListActivity {
 		return false;
 	}
 
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		LayoutInflater factory = LayoutInflater.from(this);
+        View settings_view = factory.inflate(R.layout.georsslist, null);
 
+		return new AlertDialog.Builder(this)
+			.setView(settings_view)
+			.setTitle(R.string.menu_geo_rss_add)
+			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichbutton) {
+					// create
+				}
+			})
+			.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichbutton) {
+
+				}
+			})
+			.create();
+	}
+
+	protected void onPrepareDialog(int id, Dialog dialog) {
+		EditText url_field = (EditText) dialog.findViewById(R.id.url_edit);
+        url_field.setText("url here");
+	}
 }

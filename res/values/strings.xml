@@ -12,4 +12,5 @@
 	<string name="status_error">Pigeon Error</string>
 	<string name="menu_last_fix">Last Fix</string>
 	<string name="menu_geo_rss">GeoRSS</string>
+	<string name="menu_geo_rss_add">Add URL</string>
 </resources>
