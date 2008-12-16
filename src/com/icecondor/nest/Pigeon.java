@@ -135,6 +135,13 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				}
 			}, 0, 30000);		
 
+		start_rss_timer();
+}
+	public void onDestroy() {
+		stop_rss_timer();
+	}
+	
+	private void start_rss_timer() {
 		// GeoRSS Database
 		GeoRssSqlite rssdb = new GeoRssSqlite(this, "georss", null, 1);
 		geoRssDb = rssdb.getWritableDatabase();
@@ -153,9 +160,15 @@ public class Pigeon extends Service implements Constants, LocationListener,
 								Log.i(appTag, "io error "+e);
 							}
 						}
+						geoRssUrls.close();
 					}
 				}, 0, ICECONDOR_READ_INTERVAL);
-}
+	}
+	
+	private void stop_rss_timer() {
+		rss_timer.cancel();
+		geoRssDb.close();
+	}
 
 	protected void readGeoRss(Cursor geoRssUrls) throws ClientProtocolException, IOException {
 		String urlString = geoRssUrls.getString(geoRssUrls.getColumnIndex(GeoRssSqlite.URL));

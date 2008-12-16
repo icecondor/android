@@ -286,6 +286,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 				flock.add(test_bird);
 			} 
 		}
+		geoRssUrls.close();
 		geoRssDb.close();
 	}
 
