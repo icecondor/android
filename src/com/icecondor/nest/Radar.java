@@ -271,17 +271,22 @@ public class Radar extends MapActivity implements ServiceConnection,
 
 	protected void updateBirds() {
 		GeoRssSqlite rssdb = new GeoRssSqlite(this, "georss", null, 1);
-		SQLiteDatabase geoRssDb = rssdb.getWritableDatabase();
+		SQLiteDatabase geoRssDb = rssdb.getReadableDatabase();
 		Cursor geoRssUrls = geoRssDb.query(GeoRssSqlite.SHOUTS_TABLE,null, null, null, null, null, null);
 		while (geoRssUrls.moveToNext()) {
-			GeoPoint point = new GeoPoint(
-					(int)(geoRssUrls.getFloat(geoRssUrls.getColumnIndex("title"))*1000000),
-			        (int)(geoRssUrls.getFloat(geoRssUrls.getColumnIndex("latitude"))*1000000));
-			BirdItem test_bird = new BirdItem(point, 
-					geoRssUrls.getString(geoRssUrls.getColumnIndex("guid")), 
-					geoRssUrls.getString(geoRssUrls.getColumnIndex("title")));
-			flock.add(test_bird);
+			String guid = geoRssUrls.getString(geoRssUrls.getColumnIndex("guid"));
+			if (!flock.contains(guid)) {
+				Log.i(appTag, "adding bird to overlay:" + guid);
+				GeoPoint point = new GeoPoint((int) (geoRssUrls
+						.getFloat(geoRssUrls.getColumnIndex("lat")) * 1000000),
+						(int) (geoRssUrls.getFloat(geoRssUrls
+								.getColumnIndex("long")) * 1000000));
+				BirdItem test_bird = new BirdItem(point, guid, geoRssUrls
+						.getString(geoRssUrls.getColumnIndex("title")));
+				flock.add(test_bird);
+			} 
 		}
+		geoRssDb.close();
 	}
 
 	public void stopNeighborReadTimer() {

@@ -1,6 +1,7 @@
 package com.icecondor.nest;
 
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 import android.graphics.drawable.Drawable;
 
@@ -29,4 +30,13 @@ public class FlockOverlay extends ItemizedOverlay<BirdItem> {
 		return birds.size();
 	}
 
+	public boolean contains(String guid) {
+		ListIterator<BirdItem> list = birds.listIterator();
+		while(list.hasNext()) {
+			BirdItem bird = list.next();
+			if(bird.getTitle().equals(guid))
+				return true;
+		}
+		return false;
+	}
 }
