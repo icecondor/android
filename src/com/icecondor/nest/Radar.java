@@ -73,7 +73,7 @@ public class Radar extends MapActivity implements ServiceConnection,
         mapController.setZoom(15);
         nearbys = new BirdOverlay();
         mapView.getOverlays().add(nearbys);
-        flock = new FlockOverlay(Resources.getSystem().getDrawable(android.R.drawable.arrow_down_float));
+        flock = new FlockOverlay(getResources().getDrawable(R.drawable.red_dot_12x20));
         mapView.getOverlays().add(flock);
     }
     

@@ -4,12 +4,16 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
+import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
+import com.google.android.maps.MapView;
 
 public class FlockOverlay extends ItemizedOverlay<BirdItem> {
 
 	private ArrayList<BirdItem> birds = new ArrayList<BirdItem>();
+	private String appTag = "FlockOverlay";
 	
 	public FlockOverlay(Drawable defaultMarker) {
 		super(boundCenterBottom(defaultMarker));
@@ -19,7 +23,7 @@ public class FlockOverlay extends ItemizedOverlay<BirdItem> {
 		birds.add(bird);
 		populate();
 	}
-
+	
 	@Override
 	protected BirdItem createItem(int i) {
 		return birds.get(i);
@@ -38,5 +42,14 @@ public class FlockOverlay extends ItemizedOverlay<BirdItem> {
 				return true;
 		}
 		return false;
+	}
+	public boolean onTap(GeoPoint p, MapView mapView) {
+		Log.i(appTag, "got TAP for map location "+p);
+		return true;
+	}
+	
+	public boolean onTap(int index) {
+		Log.i(appTag, "got TAP on item#"+index);
+		return true;
 	}
 }
