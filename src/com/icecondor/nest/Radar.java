@@ -281,7 +281,8 @@ public class Radar extends MapActivity implements ServiceConnection,
 						(int) (geoRssUrls.getFloat(geoRssUrls
 								.getColumnIndex("long")) * 1000000));
 				BirdItem test_bird = new BirdItem(point, guid, geoRssUrls
-						.getString(geoRssUrls.getColumnIndex("title")));
+						.getString(geoRssUrls.getColumnIndex("title")) + " " +
+						geoRssUrls.getString(geoRssUrls.getColumnIndex("date")));
 				flock.add(test_bird);
 			} 
 		}
