@@ -140,7 +140,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 					}
 					notificationStatusUpdate(fix_part+" "+beat_part); 
 				}
-			}, 0, 30000);		
+			}, 0, 20000);		
 
 		start_rss_timer();
 }
