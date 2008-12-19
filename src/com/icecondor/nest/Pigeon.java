@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -202,12 +203,13 @@ public class Pigeon extends Service implements Constants, LocationListener,
 						title = sub_item.getFirstChild().getNodeValue();
 					}
 					if(sub_item.getNodeName().equals("pubDate")) {
-						date = sub_item.getFirstChild().getNodeValue();
+						date = Util.DateTimeIso8601(Util.DateRfc822(sub_item.getFirstChild().getNodeValue()));
 					}
 					if(sub_item.getNodeName().equals("geo:lat")) {
 						latitude = Float.parseFloat(sub_item.getFirstChild().getNodeValue());
 					}
 					if(sub_item.getNodeName().equals("geo:long")) {
+						DateFormat date_format = DateFormat.getInstance();
 						longitude = Float.parseFloat(sub_item.getFirstChild().getNodeValue());
 					}
 				}
