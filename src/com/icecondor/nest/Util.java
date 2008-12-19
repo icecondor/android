@@ -31,6 +31,7 @@ public class Util {
 		 for(int i=0; i < rfc822DateFormats.length; i++) {
 			 try {
 				parsed = rfc822DateFormats[i].parse(date);
+				break;
 			} catch (ParseException e) {
 				// not this one
 			}
