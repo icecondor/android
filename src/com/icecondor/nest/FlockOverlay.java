@@ -7,6 +7,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
@@ -64,6 +65,13 @@ public class FlockOverlay extends ItemizedOverlay<BirdItem> {
 		setFocus(last_bird);
 		Toast.makeText(app, last_bird.getSnippet(), Toast.LENGTH_SHORT).show();
 		return true;
+	}
+	
+	public boolean onTouchEvent(MotionEvent event, MapView mapView) {
+		// Android Bug - app crashes if this method does not exist
+		// Tries to load an element from array when array is empty
+		return false;
+		
 	}
 	
 	public void draw(Canvas canvas, MapView view, boolean shadow ) {
