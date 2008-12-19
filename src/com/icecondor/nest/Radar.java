@@ -261,7 +261,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 		service_read_timer.scheduleAtFixedRate(new TimerTask() {
 			public void run() {
 				Log.i(appTag, "NeighborReadTimer fired");
-				scrollToLastFix();
+				//scrollToLastFix();
 				updateBirds();
 				//getNearbys();
 			}
