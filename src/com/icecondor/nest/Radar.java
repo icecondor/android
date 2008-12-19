@@ -271,22 +271,30 @@ public class Radar extends MapActivity implements ServiceConnection,
 	protected void updateBirds() {
 		GeoRssSqlite rssdb = new GeoRssSqlite(this, "georss", null, 1);
 		SQLiteDatabase geoRssDb = rssdb.getReadableDatabase();
-		Cursor geoRssUrls = geoRssDb.query(GeoRssSqlite.SHOUTS_TABLE, null, null, null, null, null, "date desc", "1");
-		while (geoRssUrls.moveToNext()) {
-			String guid = geoRssUrls.getString(geoRssUrls.getColumnIndex("guid"));
-			if (!flock.contains(guid)) {
-				Log.i(appTag, "adding bird to overlay:" + guid);
-				GeoPoint point = new GeoPoint((int) (geoRssUrls
-						.getFloat(geoRssUrls.getColumnIndex("lat")) * 1000000),
-						(int) (geoRssUrls.getFloat(geoRssUrls
-								.getColumnIndex("long")) * 1000000));
-				BirdItem test_bird = new BirdItem(point, guid, geoRssUrls
-						.getString(geoRssUrls.getColumnIndex("title")) + " " +
-						geoRssUrls.getString(geoRssUrls.getColumnIndex("date")));
-				flock.add(test_bird);
-			} 
+		
+		Cursor Urls = geoRssDb.query(GeoRssSqlite.SERVICES_TABLE, null, null, null, null, null, null);
+		while(Urls.moveToNext()) {
+			long url_id = Urls.getLong(Urls.getColumnIndex("_id"));
+			Log.i(appTag, "reading shouts db for "+url_id);
+			Cursor shouts = geoRssDb.query(GeoRssSqlite.SHOUTS_TABLE, null, "service_id = ?", 
+					new String[] {String.valueOf(url_id)}, null, null, "date desc", "1");
+			while (shouts.moveToNext()) {
+				String guid = shouts.getString(shouts.getColumnIndex("guid"));
+				if (!flock.contains(guid)) {
+					Log.i(appTag, "adding bird to overlay:" + guid);
+					GeoPoint point = new GeoPoint((int) (shouts
+							.getFloat(shouts.getColumnIndex("lat")) * 1000000),
+							(int) (shouts.getFloat(shouts
+									.getColumnIndex("long")) * 1000000));
+					BirdItem test_bird = new BirdItem(point, guid, shouts
+							.getString(shouts.getColumnIndex("title")) + " " +
+							shouts.getString(shouts.getColumnIndex("date")));
+					flock.add(test_bird);
+				} 
+			}
+			shouts.close();
 		}
-		geoRssUrls.close();
+		Urls.close();
 		geoRssDb.close();
 		rssdb.close();
 	}
