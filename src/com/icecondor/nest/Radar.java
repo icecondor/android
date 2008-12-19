@@ -271,7 +271,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	protected void updateBirds() {
 		GeoRssSqlite rssdb = new GeoRssSqlite(this, "georss", null, 1);
 		SQLiteDatabase geoRssDb = rssdb.getReadableDatabase();
-		Cursor geoRssUrls = geoRssDb.query(GeoRssSqlite.SHOUTS_TABLE,null, null, null, null, null, null);
+		Cursor geoRssUrls = geoRssDb.query(GeoRssSqlite.SHOUTS_TABLE, null, null, null, null, null, "date desc", "1");
 		while (geoRssUrls.moveToNext()) {
 			String guid = geoRssUrls.getString(geoRssUrls.getColumnIndex("guid"));
 			if (!flock.contains(guid)) {
