@@ -67,13 +67,6 @@ public class FlockOverlay extends ItemizedOverlay<BirdItem> {
 		return true;
 	}
 	
-	public boolean onTouchEvent(MotionEvent event, MapView mapView) {
-		// Android Bug - app crashes if this method does not exist
-		// Tries to load an element from array when array is empty
-		return false;
-		
-	}
-	
 	public void draw(Canvas canvas, MapView view, boolean shadow ) {
 		super.draw(canvas, view, shadow);
 		//draw other stuffs...
