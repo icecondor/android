@@ -152,7 +152,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		// GeoRSS Database
 		GeoRssSqlite rssdb = new GeoRssSqlite(this, "georss", null, 1);
 		geoRssDb = rssdb.getWritableDatabase();
-
+		long rss_read_frequency = Long.decode(settings.getString(SETTING_RSS_READ_FREQUENCY, "60000"));
+		Log.i(appTag, "starting rss timer at frequency "+rss_read_frequency);
 		rss_timer.scheduleAtFixedRate(
 				new TimerTask() {
 					public void run() {
@@ -169,7 +170,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 						}
 						geoRssUrls.close();
 					}
-				}, 0, ICECONDOR_READ_INTERVAL);
+				}, 0, rss_read_frequency);
 	}
 	
 	private void stop_rss_timer() {

@@ -4,7 +4,11 @@
   <EditTextPreference android:key="openid" 
                       android:title="OpenID URL" />
   <ListPreference android:key="record frequency"
-                  android:title="Position Frequency"
+                  android:title="Reporting Frequency"
+                  android:entries="@+array/time_frequency"
+                  android:entryValues="@+array/time_frequency_values" />
+  <ListPreference android:key="rss read frequency"
+                  android:title="RSS Read Frequency"
                   android:entries="@+array/time_frequency"
                   android:entryValues="@+array/time_frequency_values" />
   <!-- <EditTextPreference android:key="transmission frequency"
