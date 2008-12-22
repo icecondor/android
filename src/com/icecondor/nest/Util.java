@@ -40,15 +40,18 @@ public class Util {
 	}
 	public static String timeAgoInWords(long mark) {
 		String ago="none";
-		String unit="";
 		long seconds_ago = (Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis() - mark)/1000;
-		unit = "sec.";
-		if (seconds_ago > 60) {
-			seconds_ago = seconds_ago / 60;
-			unit = "min.";
-		}
-		ago = ""+seconds_ago+" "+unit+" ago";
+		ago = millisecondsToWords(seconds_ago)+" ago";
 		return ago;
 	}
 
+	public static String millisecondsToWords(long duration) {
+		long count = duration / 1000;
+		String unit = "sec.";
+		if (count > 60) {
+			count = count / 60;
+			unit = "min.";
+		}
+		return ""+count+" "+unit;
+	}
 }

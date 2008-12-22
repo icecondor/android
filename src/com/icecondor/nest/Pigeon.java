@@ -71,7 +71,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	boolean on_switch = false;
 	private Location last_fix, last_local_fix;
 	int last_fix_http_status;
-	Notification notification;
+	Notification ongoing_notification;
 	NotificationManager notificationManager;
 	LocationManager locationManager;
 	WifiManager wifiManager;
@@ -97,10 +97,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		contentIntent = PendingIntent.getActivity(this, 0, new Intent(this,
 				Start.class), 0);
-		CharSequence text = getText(R.string.status_transmitting);
-		notification = new Notification(R.drawable.icecube_statusbar, text, System
+		CharSequence text = getText(R.string.status_started);
+		ongoing_notification = new Notification(R.drawable.icecube_statusbar, text, System
 				.currentTimeMillis());
-		notification.flags = notification.flags ^ Notification.FLAG_ONGOING_EVENT;
+		ongoing_notification.flags = ongoing_notification.flags ^ Notification.FLAG_ONGOING_EVENT;
 		
 		/* Preferences */
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -239,10 +239,23 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 
 	private void notificationStatusUpdate(String msg) {
-		notification.setLatestEventInfo(this, "IceCondor",
+		ongoing_notification.setLatestEventInfo(this, "IceCondor",
 				msg, contentIntent);
-		notification.when = System.currentTimeMillis();
-		notificationManager.notify(1, notification);
+		ongoing_notification.when = System.currentTimeMillis();
+		notificationManager.notify(1, ongoing_notification);
+	}
+	
+	private void notification(String msg) {
+		Notification notification = new Notification(R.drawable.icecube_statusbar, msg,
+				System.currentTimeMillis());
+		// a contentView error is thrown if this line is not here
+		notification.setLatestEventInfo(this, "IceCondor Notice", msg, contentIntent);
+		notificationManager.notify(2, notification);
+	}
+	
+	private void notificationFlash(String msg) {
+		notification(msg);
+		notificationManager.cancel(2);
 	}
 
 	private void startLocationUpdates() {
@@ -399,14 +412,16 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			if (on_switch) {
 				stopLocationUpdates();
 				startLocationUpdates();
-				notificationStatusUpdate("Record frequency changed to "+prefs.getString(pref_name, "N/A"));
+				notificationFlash("Position reporting frequency now "+Util.millisecondsToWords(
+						Long.parseLong(prefs.getString(pref_name, "N/A"))));
 			}
 		}
 		if (pref_name.equals(SETTING_RSS_READ_FREQUENCY)) {
 			if (on_switch) {
 				stop_rss_timer();
 				start_rss_timer();
-				notificationStatusUpdate("RSS Readfrequency changed to "+prefs.getString(pref_name, "N/A"));
+				notificationFlash("RSS Read frequency now "+Util.millisecondsToWords(
+						Long.parseLong(prefs.getString(pref_name, "N/A"))));
 			}
 		}
 	}
