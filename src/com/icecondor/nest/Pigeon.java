@@ -65,7 +65,7 @@ import android.util.Log;
 public class Pigeon extends Service implements Constants, LocationListener,
                                                SharedPreferences.OnSharedPreferenceChangeListener {
 	private Timer heartbeat_timer = new Timer();
-	private Timer rss_timer = new Timer();
+	private Timer rss_timer;
 	//private Timer wifi_scan_timer = new Timer();
 	static final String appTag = "Pigeon";
 	boolean on_switch = false;
@@ -149,6 +149,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
 	private void start_rss_timer() {
+		rss_timer = new Timer();
 		// GeoRSS Database
 		GeoRssSqlite rssdb = new GeoRssSqlite(this, "georss", null, 1);
 		geoRssDb = rssdb.getWritableDatabase();
@@ -392,12 +393,20 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 
 	@Override
-	public void onSharedPreferenceChanged(SharedPreferences arg0, String pref_name) {
+	public void onSharedPreferenceChanged(SharedPreferences prefs, String pref_name) {
 		Log.i(appTag, "shared preference changed: "+pref_name);		
 		if (pref_name.equals(SETTING_RECORD_FREQUENCY)) {
 			if (on_switch) {
 				stopLocationUpdates();
 				startLocationUpdates();
+				notificationStatusUpdate("Record frequency changed to "+prefs.getString(pref_name, "N/A"));
+			}
+		}
+		if (pref_name.equals(SETTING_RSS_READ_FREQUENCY)) {
+			if (on_switch) {
+				stop_rss_timer();
+				start_rss_timer();
+				notificationStatusUpdate("RSS Readfrequency changed to "+prefs.getString(pref_name, "N/A"));
 			}
 		}
 	}
