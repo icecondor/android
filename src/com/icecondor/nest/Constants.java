@@ -13,6 +13,7 @@ public interface Constants {
 	public static final String SETTING_RSS_READ_FREQUENCY = "rss read frequency";
 	public static final String SETTING_TRANSMISSION_FREQUENCY = "transmission frequency";
 	public static final String SETTING_OPENID = "openid";
+	public static final String SETTING_LICENSE_AGREE = "licence agree";
 	
 	public static final long DAY_IN_MILLISECONDS = 1000*60*60*24;
 

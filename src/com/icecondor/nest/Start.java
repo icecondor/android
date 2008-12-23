@@ -16,11 +16,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -30,6 +32,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 
 public class Start extends Activity implements ServiceConnection,
 												Constants {
@@ -56,6 +60,30 @@ public class Start extends Activity implements ServiceConnection,
     	super.onResume();
         startPigeon();
         new Thread( new Runnable() {public void run() {check_for_new_version();} }).start();
+        if(!settings.contains(SETTING_LICENSE_AGREE)) {
+        	Log.i(appTag,"No licence agree");
+    		LayoutInflater factory = LayoutInflater.from(this);
+            View settings_view = factory.inflate(R.layout.georsslist, null);
+
+    		new AlertDialog.Builder(this)
+    			.setView(settings_view)
+    			.setTitle(R.string.menu_geo_rss_add)
+    			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+    				public void onClick(DialogInterface dialog, int whichbutton) {
+    				}
+    			})
+    			.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+    				public void onClick(DialogInterface dialog, int whichbutton) {
+
+    				}
+    			})
+    			.create().show();
+        	
+        }
+        if(!settings.contains(SETTING_OPENID)) {
+        	// Prompt for a unique identifier
+        	
+        }
     }
 
     private void check_for_new_version() {
