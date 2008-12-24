@@ -16,6 +16,8 @@
         </activity>
         <activity android:name=".GeoRssList" android:label="GeoRssList">
         </activity>
+        <activity android:name=".GeoRssDetail" android:label="GeoRssDetail">
+        </activity>
         <service android:name=".Pigeon">
         </service>
         <uses-library android:name="com.google.android.maps" />

@@ -16,10 +16,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.AdapterView.OnItemSelectedListener;
 
-public class GeoRssList extends ListActivity implements OnItemSelectedListener {
+public class GeoRssList extends ListActivity {
 	static final String appTag = "GeoRssList";
 	Intent settingsIntent, radarIntent;
 	EditText url_field;
@@ -27,7 +28,6 @@ public class GeoRssList extends ListActivity implements OnItemSelectedListener {
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		getListView().setOnItemSelectedListener(this);
 
 		GeoRssSqlite rssdb = new GeoRssSqlite(this, "georss", null, 1);
 		SQLiteDatabase db = rssdb.getWritableDatabase();
@@ -41,13 +41,14 @@ public class GeoRssList extends ListActivity implements OnItemSelectedListener {
 
         // Bind to our new adapter.
         setListAdapter(adapter);
-        
+		
         // Jump Points
         settingsIntent = new Intent(this, Settings.class);
         radarIntent = new Intent(this, Radar.class);
 
 
 	}
+	
 	public boolean onCreateOptionsMenu(Menu menu) {
 		Log.i(appTag, "onCreateOptionsMenu");
 		boolean result = super.onCreateOptionsMenu(menu);
@@ -113,17 +114,11 @@ public class GeoRssList extends ListActivity implements OnItemSelectedListener {
 		url_field = (EditText) dialog.findViewById(R.id.url_edit);
         url_field.setText(""); // initial value
 	}
-	
-	@Override
-	public void onItemSelected(AdapterView<?> parent, View view, int position,
-			long id) {
-		Log.i(appTag, "Item selected position: "+position);
-		//startActivity(new Intent(this, GeoRssDetail.class));
-	}
-	
-	@Override
-	public void onNothingSelected(AdapterView<?> arg0) {
-		// TODO Auto-generated method stub
 		
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id){
+		Log.i(appTag, "Item clicked position: "+position);
+		startActivity(new Intent(this, GeoRssDetail.class));
 	}
+	
 }
