@@ -109,18 +109,20 @@ public class GeoRssList extends ListActivity implements OnItemSelectedListener {
 		geoRssDb.insert(GeoRssSqlite.SERVICES_TABLE, null, cv);
 		geoRssDb.close();
 		rssdb.close();
-
 	}
+	
 	protected void onPrepareDialog(int id, Dialog dialog) {
 		url_field = (EditText) dialog.findViewById(R.id.url_edit);
         url_field.setText(""); // initial value
 	}
+	
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position,
 			long id) {
-		Log.i(appTag, "position:"+position);
-		
+		Log.i(appTag, "Item selected position: "+position);
+		//startActivity(new Intent(this, GeoRssDetail.class));
 	}
+	
 	@Override
 	public void onNothingSelected(AdapterView<?> arg0) {
 		// TODO Auto-generated method stub

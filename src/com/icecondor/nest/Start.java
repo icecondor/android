@@ -60,30 +60,6 @@ public class Start extends Activity implements ServiceConnection,
     	super.onResume();
         startPigeon();
         new Thread( new Runnable() {public void run() {check_for_new_version();} }).start();
-        if(!settings.contains(SETTING_LICENSE_AGREE)) {
-        	Log.i(appTag,"No licence agree");
-    		LayoutInflater factory = LayoutInflater.from(this);
-            View settings_view = factory.inflate(R.layout.georsslist, null);
-
-    		new AlertDialog.Builder(this)
-    			.setView(settings_view)
-    			.setTitle(R.string.menu_geo_rss_add)
-    			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-    				public void onClick(DialogInterface dialog, int whichbutton) {
-    				}
-    			})
-    			.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-    				public void onClick(DialogInterface dialog, int whichbutton) {
-
-    				}
-    			})
-    			.create().show();
-        	
-        }
-        if(!settings.contains(SETTING_OPENID)) {
-        	// Prompt for a unique identifier
-        	
-        }
     }
 
     private void check_for_new_version() {
@@ -145,17 +121,44 @@ public class Start extends Activity implements ServiceConnection,
 			old_settings.edit().clear().commit();
 		}
 
+		if(!settings.contains(SETTING_LICENSE_AGREE)) {
+        	Log.i(appTag,"No licence agree");
+    		LayoutInflater factory = LayoutInflater.from(this);
+            View settings_view = factory.inflate(R.layout.georsslist, null);
+
+    		new AlertDialog.Builder(this)
+    			.setView(settings_view)
+    			.setTitle(R.string.menu_geo_rss_add)
+    			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+    				public void onClick(DialogInterface dialog, int whichbutton) {
+    			        jumpToNextActivity();
+    			        
+    				}
+    			})
+    			.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+    				public void onClick(DialogInterface dialog, int whichbutton) {
+    			        jumpToNextActivity();
+    				}
+    			})
+    			.create().show();
+        	
+        }
+
         // Set the unique ID
-		String uuid;
+		String openid;
 		if(settings.contains(SETTING_OPENID)) {
-			uuid = settings.getString(SETTING_OPENID, null);
-			Log.i(appTag, "retrieved OpenID of "+uuid);
+			openid = settings.getString(SETTING_OPENID, null);
+			Log.i(appTag, "retrieved OpenID of "+openid);
 		} else {
-			uuid = "urn:uuid:"+UUID.randomUUID().toString();
-			editor.putString(SETTING_OPENID, uuid);
+        	// Prompt for a unique identifier
+
+			// On cancel
+			openid = "urn:uuid:"+UUID.randomUUID().toString();
+			editor.putString(SETTING_OPENID, openid);
 			editor.commit();
-			Log.i(appTag, "no OpenID in preferences. generated "+uuid);
+			Log.i(appTag, "no OpenID in preferences. generated "+openid);
 		}
+		
 	}
 
 	private void startPigeon() {
@@ -180,7 +183,11 @@ public class Start extends Activity implements ServiceConnection,
 		Log.i(appTag, "onServiceConnected "+service);
 		pigeon = PigeonService.Stub.asInterface(service);
         restorePreferences();
-        // handoff to the Radar
+        
+	}
+
+	private void jumpToNextActivity() {
+		// handoff to the Radar
         if(next_intent == null) {
         	next_intent = new Intent(this, Radar.class);
         }
