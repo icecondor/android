@@ -1,21 +1,21 @@
 <resources>
     <string-array name="time_frequency">
-        <item>10 seconds</item>
         <item>30 seconds</item>
         <item>1 minute</item>
         <item>3 minutes</item>
+        <item>5 minutes</item>
         <item>15 minutes</item>
         <item>30 minutes</item>
         <item>60 minutes</item>
     </string-array>
     <!--  milliseconds -->
     <string-array name="time_frequency_values">
-        <item>10000</item>
         <item>30000</item>
         <item>60000</item>
         <item>180000</item>
-        <item>450000</item>
+        <item>300000</item>
         <item>900000</item>
         <item>1800000</item>
+        <item>3600000</item>
     </string-array>
 </resources>
