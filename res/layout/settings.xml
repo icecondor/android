@@ -3,7 +3,7 @@
                   android:key="first_preferencescreen">  
   <EditTextPreference android:key="openid" 
                       android:title="OpenID URL" />
-  <ListPreference android:key="record frequency"
+  <ListPreference android:key="transmission frequency"
                   android:title="Reporting Frequency"
                   android:entries="@+array/time_frequency"
                   android:entryValues="@+array/time_frequency_values" />

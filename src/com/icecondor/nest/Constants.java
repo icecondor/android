@@ -9,7 +9,7 @@ public interface Constants {
 
 	public static final String SETTING_PIGEON_TRANSMITTING = "pigeon_transmitting";
 	public static final String SETTING_LAST_VERSION_CHECK = "version_check_date";
-	public static final String SETTING_RECORD_FREQUENCY = "record frequency";
+	//public static final String SETTING_RECORD_FREQUENCY = "record frequency";
 	public static final String SETTING_RSS_READ_FREQUENCY = "rss read frequency";
 	public static final String SETTING_TRANSMISSION_FREQUENCY = "transmission frequency";
 	public static final String SETTING_OPENID = "openid";

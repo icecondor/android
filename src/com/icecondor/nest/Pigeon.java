@@ -259,7 +259,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 
 	private void startLocationUpdates() {
-		long record_frequency = Long.decode(settings.getString(SETTING_RECORD_FREQUENCY, "60000"));
+		long record_frequency = Long.decode(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "60000"));
 		Log.i(appTag, "requesting GPS updates with frequency "+record_frequency);
 		locationManager.requestLocationUpdates(
 				LocationManager.GPS_PROVIDER, 
@@ -378,7 +378,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			long last_time = 0;
 			if(last_fix != null) { last_time = last_fix.getTime(); }
 			long time_since_last_update = location.getTime() - last_time; 
-			long record_frequency = Long.decode(settings.getString(SETTING_RECORD_FREQUENCY, "60000"));
+			long record_frequency = Long.decode(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "60000"));
 			if(time_since_last_update > record_frequency) { 
 				last_fix = location;
 				last_fix_http_status = pushLocation(location); 
@@ -408,7 +408,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences prefs, String pref_name) {
 		Log.i(appTag, "shared preference changed: "+pref_name);		
-		if (pref_name.equals(SETTING_RECORD_FREQUENCY)) {
+		if (pref_name.equals(SETTING_TRANSMISSION_FREQUENCY)) {
 			if (on_switch) {
 				stopLocationUpdates();
 				startLocationUpdates();
