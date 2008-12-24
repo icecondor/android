@@ -159,6 +159,8 @@ public class Start extends Activity implements ServiceConnection,
 			.setMessage(R.string.license)
 			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int whichbutton) {
+					Editor editor = settings.edit();
+					editor.putInt(SETTING_LICENSE_AGREE, ICECONDOR_VERSION).commit();
 			        continueOnResume();
 				}
 			})
