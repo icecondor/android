@@ -85,7 +85,7 @@ public class GeoRssList extends ListActivity implements OnItemSelectedListener {
 		return new AlertDialog.Builder(this)
 			.setView(settings_view)
 			.setTitle(R.string.menu_geo_rss_add)
-			.setPositiveButton("Agree", new DialogInterface.OnClickListener() {
+			.setPositiveButton("Add", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int whichbutton) {
 					insert_service(url_field.getText().toString());
 					me.onContentChanged();
