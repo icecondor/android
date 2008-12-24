@@ -128,16 +128,14 @@ public class Start extends Activity implements ServiceConnection,
 
     		new AlertDialog.Builder(this)
     			.setView(settings_view)
-    			.setTitle(R.string.menu_geo_rss_add)
+    			.setTitle(R.string.dialog_openid)
     			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
     				public void onClick(DialogInterface dialog, int whichbutton) {
-    			        jumpToNextActivity();
     			        
     				}
     			})
     			.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
     				public void onClick(DialogInterface dialog, int whichbutton) {
-    			        jumpToNextActivity();
     				}
     			})
     			.create().show();
@@ -183,7 +181,7 @@ public class Start extends Activity implements ServiceConnection,
 		Log.i(appTag, "onServiceConnected "+service);
 		pigeon = PigeonService.Stub.asInterface(service);
         restorePreferences();
-        
+        jumpToNextActivity();
 	}
 
 	private void jumpToNextActivity() {
