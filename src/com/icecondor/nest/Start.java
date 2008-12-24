@@ -148,6 +148,24 @@ public class Start extends Activity implements ServiceConnection,
 			Log.i(appTag, "no OpenID in preferences. generated "+openid);
 		}
 		
+		// Set the default Record On/Off
+		if(!settings.contains(SETTING_PIGEON_TRANSMITTING)) {
+			// default to OFF
+			editor.putBoolean(SETTING_PIGEON_TRANSMITTING, true).commit();
+		}
+
+		// Set the default position update frequency
+		if(!settings.contains(SETTING_TRANSMISSION_FREQUENCY)) {
+			// default to 5 minutes
+			editor.putString(SETTING_TRANSMISSION_FREQUENCY, "300000").commit();
+		}
+		
+		// Set the default RSS read frequency
+		if(!settings.contains(SETTING_RSS_READ_FREQUENCY)) {
+			// default to 30 minutes
+			editor.putString(SETTING_RSS_READ_FREQUENCY, "1800000").commit();
+		}
+
 	}
 
 	@Override
