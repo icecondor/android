@@ -6,6 +6,7 @@ import android.app.ListActivity;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,6 +26,7 @@ public class GeoRssList extends ListActivity {
 	Intent settingsIntent, radarIntent;
 	EditText url_field;
 	SQLiteDatabase geoRssDb;
+	Cursor rsses;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -32,10 +34,11 @@ public class GeoRssList extends ListActivity {
 		GeoRssSqlite rssdb = new GeoRssSqlite(this, "georss", null, 1);
 		SQLiteDatabase db = rssdb.getWritableDatabase();
 		//db.execSQL("insert into urls values (null, 'service', 'https://service.com'");
+		rsses = db.query(GeoRssSqlite.SERVICES_TABLE,null, null, null, null, null, null);
         ListAdapter adapter = new SimpleCursorAdapter(
                 this, // Context
                 android.R.layout.two_line_list_item,  // Specify the row template to use (here, two columns bound to the two retrieved cursor rows)
-                db.query(GeoRssSqlite.SERVICES_TABLE,null, null, null, null, null, null),  // Pass in the cursor to bind to.
+                rsses,  // Pass in the cursor to bind to.
                 new String[] {GeoRssSqlite.NAME, GeoRssSqlite.URL}, // Array of cursor columns to bind to.
                 new int[] {android.R.id.text1, android.R.id.text2});      // Parallel array of which template objects to bind to those columns.
 
@@ -118,7 +121,10 @@ public class GeoRssList extends ListActivity {
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id){
 		Log.i(appTag, "Item clicked position: "+position);
-		startActivity(new Intent(this, GeoRssDetail.class));
+		Intent itemIntent = new Intent(this, GeoRssDetail.class);
+		rsses.moveToPosition(position);
+		itemIntent.putExtra(GeoRssSqlite.ID, rsses.getInt(rsses.getColumnIndex(GeoRssSqlite.ID)));
+		startActivity(itemIntent);
 	}
 	
 }
