@@ -17,6 +17,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -44,6 +45,7 @@ public class Start extends Activity implements ServiceConnection,
 	SharedPreferences settings;
 	Intent next_intent;
 	NotificationManager notificationManager;
+	boolean pigeon_bound = false;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,16 @@ public class Start extends Activity implements ServiceConnection,
     public void onResume() {
     	Log.i(appTag, "onResume");
     	super.onResume();
+		if(!settings.contains(SETTING_LICENSE_AGREE)) {
+        	Log.i(appTag,"No licence agree");
+        	showDialog(1);
+        } else {
+        	continueOnResume();
+        }
+
+    }
+    
+    public void continueOnResume() {
         startPigeon();
         new Thread( new Runnable() {public void run() {check_for_new_version();} }).start();
     }
@@ -121,27 +133,6 @@ public class Start extends Activity implements ServiceConnection,
 			old_settings.edit().clear().commit();
 		}
 
-		if(!settings.contains(SETTING_LICENSE_AGREE)) {
-        	Log.i(appTag,"No licence agree");
-    		LayoutInflater factory = LayoutInflater.from(this);
-            View settings_view = factory.inflate(R.layout.georsslist, null);
-
-    		new AlertDialog.Builder(this)
-    			.setView(settings_view)
-    			.setTitle(R.string.dialog_openid)
-    			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-    				public void onClick(DialogInterface dialog, int whichbutton) {
-    			        
-    				}
-    			})
-    			.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-    				public void onClick(DialogInterface dialog, int whichbutton) {
-    				}
-    			})
-    			.create().show();
-        	
-        }
-
         // Set the unique ID
 		String openid;
 		if(settings.contains(SETTING_OPENID)) {
@@ -159,22 +150,47 @@ public class Start extends Activity implements ServiceConnection,
 		
 	}
 
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		Log.i(appTag, "Creating Dialog "+id);
+
+		return new AlertDialog.Builder(this)
+			.setTitle("License")
+			.setMessage(R.string.license)
+			.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichbutton) {
+			        continueOnResume();
+				}
+			})
+			.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichbutton) {
+					finish();
+				}
+			})
+			.create();
+	}
+
 	private void startPigeon() {
 		// Start the pigeon service
     	Intent pigeon_service = new Intent(this, Pigeon.class);
         startService(pigeon_service);
-        bindService(pigeon_intent, this, 0); // 0 = do not auto-start
+        pigeon_bound = bindService(pigeon_intent, this, 0); // 0 = do not auto-start
 	}
 	
 	private void stopPigeon() {
 		Log.i(appTag, "stopPigeon");
-		unbindService(this);
-		stopService(new Intent(this, Pigeon.class));
+		if(pigeon_bound) {
+			unbindService(this);
+			stopService(new Intent(this, Pigeon.class));
+		}
 	}
 	
 	public void onPause() {
 		super.onPause();
-		unbindService(this);
+		if(pigeon_bound) {
+			// its possible to pause before binding to pigeon
+			unbindService(this);
+		}
 		finish();
 	}
 	public void onServiceConnected(ComponentName className, IBinder service) {
