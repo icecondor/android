@@ -41,10 +41,10 @@ public class GeoRssDetail extends Activity {
 	private void removeServiceFromDatabase() {
 		GeoRssSqlite rssdb = new GeoRssSqlite(this, "georss", null, 1);
 		SQLiteDatabase db = rssdb.getWritableDatabase();
+		// the parameter substitution form of execSQL wasnt working. yuk.
 		db.execSQL("DELETE from "+GeoRssSqlite.SERVICES_TABLE+" where "+GeoRssSqlite.ID+ " = "+row_id);
 		db.close();
-		Log.i(appTag, "removed entry. jumping.");
-		finish();
+		finish(); // don't come back here
 		startActivity(new Intent(this, GeoRssList.class));
 	}
 
