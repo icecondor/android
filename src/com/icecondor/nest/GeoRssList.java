@@ -24,12 +24,10 @@ public class GeoRssList extends ListActivity implements OnItemSelectedListener {
 	Intent settingsIntent, radarIntent;
 	EditText url_field;
 	SQLiteDatabase geoRssDb;
-	GeoRssList me;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		getListView().setOnItemSelectedListener(this);
-		me=this;
 
 		GeoRssSqlite rssdb = new GeoRssSqlite(this, "georss", null, 1);
 		SQLiteDatabase db = rssdb.getWritableDatabase();
@@ -88,7 +86,7 @@ public class GeoRssList extends ListActivity implements OnItemSelectedListener {
 			.setPositiveButton("Add", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int whichbutton) {
 					insert_service(url_field.getText().toString());
-					me.onContentChanged();
+					GeoRssList.this.onContentChanged();
 				}
 			})
 			.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
