@@ -25,16 +25,17 @@ public class GeoRssList extends ListActivity {
 	static final String appTag = "GeoRssList";
 	Intent settingsIntent, radarIntent;
 	EditText url_field;
+	GeoRssSqlite rssdb;
 	SQLiteDatabase geoRssDb;
 	Cursor rsses;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		GeoRssSqlite rssdb = new GeoRssSqlite(this, "georss", null, 1);
-		SQLiteDatabase db = rssdb.getWritableDatabase();
+		rssdb = new GeoRssSqlite(this, "georss", null, 1);
+		geoRssDb = rssdb.getReadableDatabase();
 		//db.execSQL("insert into urls values (null, 'service', 'https://service.com'");
-		rsses = db.query(GeoRssSqlite.SERVICES_TABLE,null, null, null, null, null, null);
+		rsses = geoRssDb.query(GeoRssSqlite.SERVICES_TABLE,null, null, null, null, null, null);
         ListAdapter adapter = new SimpleCursorAdapter(
                 this, // Context
                 android.R.layout.two_line_list_item,  // Specify the row template to use (here, two columns bound to the two retrieved cursor rows)
@@ -48,8 +49,6 @@ public class GeoRssList extends ListActivity {
         // Jump Points
         settingsIntent = new Intent(this, Settings.class);
         radarIntent = new Intent(this, Radar.class);
-
-
 	}
 	
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -103,18 +102,16 @@ public class GeoRssList extends ListActivity {
 
 	protected void insert_service(String url) {
 		// GeoRSS Database
-		GeoRssSqlite rssdb = new GeoRssSqlite(this, "georss", null, 1);
-		geoRssDb = rssdb.getWritableDatabase();
+		SQLiteDatabase db = rssdb.getWritableDatabase();
 		ContentValues cv = new ContentValues(2);
 		cv.put("name", "Service");
 		cv.put("url", url);
-		geoRssDb.insert(GeoRssSqlite.SERVICES_TABLE, null, cv);
-		geoRssDb.close();
-		rssdb.close();
+		db.insert(GeoRssSqlite.SERVICES_TABLE, null, cv);
+		db.close();
 	}
 	
 	protected void onPrepareDialog(int id, Dialog dialog) {
-		url_field = (EditText) dialog.findViewById(R.id.url_edit);
+		url_field = (EditText) dialog.findViewById(R.id.rss_url_edit);
         url_field.setText(""); // initial value
 	}
 		
