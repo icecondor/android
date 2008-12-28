@@ -75,7 +75,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	NotificationManager notificationManager;
 	LocationManager locationManager;
 	WifiManager wifiManager;
-	Pigeon pigeon; // need 'this' for stub
 	PendingIntent contentIntent;
 	SharedPreferences settings;
 	SQLiteDatabase geoRssDb;
@@ -83,7 +82,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	public void onCreate() {
 		Log.i(appTag, "*** service created.");
 		super.onCreate();
-		pigeon = this;
 		
 		/* GPS */
 		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -261,7 +259,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		locationManager.requestLocationUpdates(
 				LocationManager.GPS_PROVIDER, 
 				record_frequency, 
-				0.0F, pigeon);
+				0.0F, this);
 		// Network provider takes no extra power but the accuracy is
 		// too low to be useful.
 		//locationManager.requestLocationUpdates(
@@ -278,7 +276,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	
 	private void stopLocationUpdates() {
 		Log.i(appTag, "stopping GPS updates");		
-		locationManager.removeUpdates(pigeon);
+		locationManager.removeUpdates(this);
 	}
 
 	public void onStart(Intent start, int key) {
