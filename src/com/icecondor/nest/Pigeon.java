@@ -378,7 +378,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			long last_time = 0;
 			if(last_fix != null) { last_time = last_fix.getTime(); }
 			long time_since_last_update = location.getTime() - last_time; 
-			long record_frequency = Long.decode(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "60000"));
+			long record_frequency = Long.decode(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "180000"));
 			if(time_since_last_update > record_frequency) { 
 				last_fix = location;
 				last_fix_http_status = pushLocation(location); 
