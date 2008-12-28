@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/georssdetail"
+    android:orientation="vertical"
     android:layout_width="fill_parent" 
     android:layout_height="fill_parent">
+    
     <TextView
         android:layout_width="fill_parent" 
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/georssdetail_header"
+        android:textSize="18.0sp"
         />
-</RelativeLayout>
+    <TextView
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content"
+        android:id="@+id/georssdetail_url"
+        android:textSize="12.0sp"
+        />
+    <TextView
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content"
+        android:id="@+id/georssdetail_lastupdate_label"
+        android:textSize="14.0sp"
+        android:text="Last update:"
+        />
+    <TextView
+        android:layout_width="fill_parent" 
+        android:layout_height="wrap_content"
+        android:id="@+id/georssdetail_lastupdate"
+        android:textSize="14.0sp"
+        />
+        
+</LinearLayout>
