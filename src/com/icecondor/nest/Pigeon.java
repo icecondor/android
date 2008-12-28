@@ -330,6 +330,13 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		if(fix.hasAccuracy()) {
 			dict.add(new BasicNameValuePair("location[accuracy]", Double.toString(fix.getAccuracy())));
 		}
+		if(fix.hasBearing()) {
+			dict.add(new BasicNameValuePair("location[heading]", Double.toString(fix.getBearing())));
+		}
+		if(fix.hasSpeed()) {
+			dict.add(new BasicNameValuePair("location[velocity]", Double.toString(fix.getSpeed())));
+		}
+		
 		dict.add(new BasicNameValuePair("location[timestamp]", Util.DateTimeIso8601(fix.getTime())));
 		return new UrlEncodedFormEntity(dict, HTTP.UTF_8);
 	}
