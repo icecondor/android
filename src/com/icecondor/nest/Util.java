@@ -40,8 +40,8 @@ public class Util {
 	}
 	public static String timeAgoInWords(long mark) {
 		String ago="none";
-		long seconds_ago = (Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis() - mark)/1000;
-		ago = millisecondsToWords(seconds_ago)+" ago";
+		long milliseconds_ago = (Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis() - mark);
+		ago = millisecondsToWords(milliseconds_ago)+" ago";
 		return ago;
 	}
 
