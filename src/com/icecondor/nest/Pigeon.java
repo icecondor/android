@@ -105,7 +105,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		settings.registerOnSharedPreferenceChangeListener(this);
 		on_switch = settings.getBoolean(SETTING_PIGEON_TRANSMITTING, true);
 		if (on_switch) {
-			notificationStatusUpdate("Background task started, awating first fix.");
 			startLocationUpdates();
 		}
 
