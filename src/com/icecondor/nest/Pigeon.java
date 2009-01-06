@@ -116,7 +116,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 					String fix_part;
 					if (on_switch) {
 						if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-							fix_part = "No fix yet.";
+							fix_part = "Waiting for first fix.";
 						} else {
 							fix_part = "Warning: GPS set to disabled";
 						}
