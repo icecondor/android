@@ -103,7 +103,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		/* Preferences */
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
 		settings.registerOnSharedPreferenceChangeListener(this);
-		on_switch = settings.getBoolean(SETTING_PIGEON_TRANSMITTING, true);
+		on_switch = settings.getBoolean(SETTING_PIGEON_TRANSMITTING, false);
 		if (on_switch) {
 			startLocationUpdates();
 		}
