@@ -128,7 +128,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 							           ago;
 						}
 					} else {
-						fix_part = "Recording turned off.";
+						fix_part = "Location reporting is off.";
 					}
 					String beat_part = "";
 					if (last_local_fix != null) {
