@@ -353,7 +353,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				on_switch = true;
 				settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING, on_switch).commit();
 				startLocationUpdates();
-				notificationStatusUpdate("Background task activated.");
+				notificationStatusUpdate("Waiting for fix.");				
+				notificationFlash("Location reporting ON.");
 			}
 		}
 		public void stopTransmitting() throws RemoteException {
@@ -361,7 +362,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			on_switch = false;
 			settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING,on_switch).commit();
 			stopLocationUpdates();
-			notificationManager.cancel(1);
+			notificationStatusUpdate("Location reporting is off.");				
+			notificationFlash("Location reporting OFF.");
 		}
 		public Location getLastFix() throws RemoteException {
 			return last_fix;
