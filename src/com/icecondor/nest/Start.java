@@ -125,14 +125,6 @@ public class Start extends Activity implements ServiceConnection,
 
 		Editor editor = settings.edit();
 		
-		// Migrate the old UUID to the new prefs system. remove in future version
-		SharedPreferences old_settings = getSharedPreferences("IceNestPrefs", 0);
-		if (old_settings.contains("uuid")) {
-			Log.i(appTag, "migrating old uuid:"+old_settings.getString("uuid", ""));
-			editor.putString(SETTING_OPENID, old_settings.getString("uuid", "")).commit();
-			old_settings.edit().clear().commit();
-		}
-
         // Set the unique ID
 		String openid;
 		if(settings.contains(SETTING_OPENID)) {
