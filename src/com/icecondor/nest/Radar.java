@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import net.oauth.OAuth;
+import net.oauth.OAuthAccessor;
+import net.oauth.OAuthServiceProvider;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -16,6 +20,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -175,6 +180,12 @@ public class Radar extends MapActivity implements ServiceConnection,
 				pigeon.stopTransmitting();
 				return false;
 			} else {
+					// get the OAUTH request token
+					OAuthAccessor reqtoken = LocationRepositoriesSqlite.defaultClient(this);
+					Log.i(appTag, "OAUTH request token key "+reqtoken.accessToken);
+					Log.i(appTag, "OAUTH request token key "+reqtoken.tokenSecret);
+					// Alert the user that login is required
+					(new AlertDialog.Builder(this)).setMessage("Booya").show();
 				pigeon.startTransmitting();
 				return true;
 			}
