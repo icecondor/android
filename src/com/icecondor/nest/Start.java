@@ -64,7 +64,7 @@ public class Start extends Activity implements ServiceConnection,
     	Uri uri = this.getIntent().getData();
     	if(uri != null) {
     		String access_token = uri.getQueryParameter("oauth_token");
-    		LocationRepositoriesSqlite.setDefaultAccessToken(access_token);
+    		LocationRepositoriesSqlite.setDefaultAccessToken(access_token, this);
     	}
     		
 		if(!settings.contains(SETTING_LICENSE_AGREE)) {
