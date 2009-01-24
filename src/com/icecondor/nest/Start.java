@@ -60,6 +60,13 @@ public class Start extends Activity implements ServiceConnection,
     public void onResume() {
     	Log.i(appTag, "onResume");
     	super.onResume();
+    	// extract the OAUTH access token if it exists
+    	Uri uri = this.getIntent().getData();
+    	if(uri != null) {
+    		String access_token = uri.getQueryParameter("oauth_token");
+    		LocationRepositoriesSqlite.setDefaultAccessToken(access_token);
+    	}
+    		
 		if(!settings.contains(SETTING_LICENSE_AGREE)) {
         	Log.i(appTag,"No licence agree");
         	showDialog(1);

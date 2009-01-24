@@ -89,4 +89,8 @@ public class LocationRepositoriesSqlite extends SQLiteOpenHelper implements Cons
 		}
 		return accessor;
 	}
+
+	public static void setDefaultAccessToken(String access_token) {
+		Log.i("OAUTH", "access token = "+access_token);
+	}
 }

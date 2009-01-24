@@ -184,8 +184,6 @@ public class Radar extends MapActivity implements ServiceConnection,
 			} else {
 					// get the OAUTH request token
 					final OAuthAccessor reqtoken = LocationRepositoriesSqlite.defaultClient(this);
-					Log.i(appTag, "OAUTH request token key "+reqtoken.requestToken);
-					Log.i(appTag, "OAUTH request token secret "+reqtoken.tokenSecret);
 					// Alert the user that login is required
 					(new AlertDialog.Builder(this)).setMessage("Press OK to login to your location storage provider.")
 												   .setPositiveButton("OK", 
