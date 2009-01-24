@@ -22,6 +22,7 @@ import org.json.JSONObject;
 
 import android.app.AlertDialog;
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -29,6 +30,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -182,10 +184,27 @@ public class Radar extends MapActivity implements ServiceConnection,
 			} else {
 					// get the OAUTH request token
 					OAuthAccessor reqtoken = LocationRepositoriesSqlite.defaultClient(this);
-					Log.i(appTag, "OAUTH request token key "+reqtoken.accessToken);
-					Log.i(appTag, "OAUTH request token key "+reqtoken.tokenSecret);
+					Log.i(appTag, "OAUTH request token key "+reqtoken.requestToken);
+					Log.i(appTag, "OAUTH request token secret "+reqtoken.tokenSecret);
 					// Alert the user that login is required
-					(new AlertDialog.Builder(this)).setMessage("Booya").show();
+					(new AlertDialog.Builder(this)).setMessage("Press OK to login to your location storage provider.")
+												   .setPositiveButton("OK", 
+														              new DialogInterface.OnClickListener() {
+                                                                          public void onClick(DialogInterface dialog, int whichButton) {
+                                                                              Intent i = new Intent(Intent.ACTION_VIEW);
+                                                                              i.setData(Uri.parse(ICECONDOR_OAUTH_AUTHORIZATION_URL+"?oauth_token="+"token"));
+                                                                              startActivity(i);
+                                                                          }
+                                                                       })
+												   .setNegativeButton("Cancel", 
+														              new DialogInterface.OnClickListener() {
+                                                                          public void onClick(DialogInterface dialog, int whichButton) {
+                                                                           /* User clicked Cancel so do some stuff */
+                                                                          }
+                                                                       })
+
+					                               .show();
+					
 				pigeon.startTransmitting();
 				return true;
 			}

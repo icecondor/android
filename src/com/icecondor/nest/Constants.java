@@ -7,7 +7,7 @@ public interface Constants {
 	public static final String ICECONDOR_WRITE_URL = "http://icecondor.com/locations.json"; // use preference
 	public static final String ICECONDOR_READ_URL = "http://icecondor.com/locations.json"; // use preference
 	public static final String ICECONDOR_OAUTH_REQUEST_URL = "http://icecondor.com/oauth/request_token";
-	public static final String ICECONDOR_OAUTH_AUTHORIZATION_URL = "http://icecondor.com/oauth/authorization_token";
+	public static final String ICECONDOR_OAUTH_AUTHORIZATION_URL = "http://icecondor.com/oauth/authorize";
 	public static final String ICECONDOR_OAUTH_ACCESS_URL = "http://icecondor.com/oauth/access_token";
 	public static final long RADAR_REFRESH_INTERVAL = 15000;
 
