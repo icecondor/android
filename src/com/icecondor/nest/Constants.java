@@ -9,6 +9,7 @@ public interface Constants {
 	public static final String ICECONDOR_OAUTH_REQUEST_URL = "http://icecondor.com/oauth/request_token";
 	public static final String ICECONDOR_OAUTH_AUTHORIZATION_URL = "http://icecondor.com/oauth/authorize";
 	public static final String ICECONDOR_OAUTH_ACCESS_URL = "http://icecondor.com/oauth/access_token";
+	public static final String ICECONDOR_OAUTH_CALLBACK = "icecondor-android-app://";
 	public static final long RADAR_REFRESH_INTERVAL = 15000;
 
 	public static final String SETTING_PIGEON_TRANSMITTING = "pigeon_transmitting";

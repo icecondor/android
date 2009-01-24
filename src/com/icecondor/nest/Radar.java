@@ -183,7 +183,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 				return false;
 			} else {
 					// get the OAUTH request token
-					OAuthAccessor reqtoken = LocationRepositoriesSqlite.defaultClient(this);
+					final OAuthAccessor reqtoken = LocationRepositoriesSqlite.defaultClient(this);
 					Log.i(appTag, "OAUTH request token key "+reqtoken.requestToken);
 					Log.i(appTag, "OAUTH request token secret "+reqtoken.tokenSecret);
 					// Alert the user that login is required
@@ -192,7 +192,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 														              new DialogInterface.OnClickListener() {
                                                                           public void onClick(DialogInterface dialog, int whichButton) {
                                                                               Intent i = new Intent(Intent.ACTION_VIEW);
-                                                                              i.setData(Uri.parse(ICECONDOR_OAUTH_AUTHORIZATION_URL+"?oauth_token="+"token"));
+                                                                              i.setData(Uri.parse(ICECONDOR_OAUTH_AUTHORIZATION_URL+"?oauth_token="+reqtoken.requestToken+"&oauth_callback="+ICECONDOR_OAUTH_CALLBACK));
                                                                               startActivity(i);
                                                                           }
                                                                        })
