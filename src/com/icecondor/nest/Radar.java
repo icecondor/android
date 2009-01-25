@@ -178,13 +178,13 @@ public class Radar extends MapActivity implements ServiceConnection,
 				pigeon.stopTransmitting();
 				return false;
 			} else {
-					// get the OAUTH request token
-					final OAuthAccessor reqtoken = LocationRepositoriesSqlite.defaultClient(this);
 					// Alert the user that login is required
 					(new AlertDialog.Builder(this)).setMessage("Press OK to login to your location storage provider.")
 												   .setPositiveButton("OK", 
 														              new DialogInterface.OnClickListener() {
                                                                           public void onClick(DialogInterface dialog, int whichButton) {
+                                                          					  // get the OAUTH request token
+                                                          					  OAuthAccessor reqtoken = LocationRepositoriesSqlite.defaultClient(Radar.this);
                                                                               Intent i = new Intent(Intent.ACTION_VIEW);
                                                                               i.setData(Uri.parse(ICECONDOR_OAUTH_AUTHORIZATION_URL+"?oauth_token="+reqtoken.requestToken+"&oauth_callback="+ICECONDOR_OAUTH_CALLBACK));
                                                                               startActivity(i);
