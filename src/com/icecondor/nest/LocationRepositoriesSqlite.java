@@ -28,9 +28,10 @@ public class LocationRepositoriesSqlite extends SQLiteOpenHelper implements Cons
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		db.execSQL("CREATE TABLE repositories (_id integer primary key, name text, url text, request_url text, authorization_url text, access_url text, access_token text)");
+		db.execSQL("CREATE TABLE repositories (_id integer primary key, type text, name text, url text, request_url text, authorization_url text, access_url text, access_token text)");
 		// insert default location provider
 		ContentValues values = new ContentValues();
+		values.put("type", "icecondor");
 		values.put("name", "IceCondor.com");
 		values.put("url", ICECONDOR_URL);
 		values.put("request_url", ICECONDOR_OAUTH_REQUEST_URL);
