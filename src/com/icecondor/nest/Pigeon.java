@@ -298,9 +298,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 					" meters: "+fix.getAccuracy());
 			HttpClient client = new DefaultHttpClient();
 			HttpPost post = new HttpPost(ICECONDOR_READ_URL);
-
+			ArrayList <NameValuePair> params = new ArrayList <NameValuePair>();
+			addPostParameters(params, fix, settings.getString(SETTING_OPENID,""));
 			post.addHeader("X_REQUESTED_WITH", "XMLHttpRequest");
-			post.setEntity(buildPostParameters(fix, settings.getString(SETTING_OPENID,"")));
+			post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
 			HttpResponse response;
 			response = client.execute(post);
 			Log.i(appTag, "http response: "+response.getStatusLine());
@@ -319,8 +320,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		return 0;
 	}
 	
-	private UrlEncodedFormEntity buildPostParameters(Location fix, String uuid) throws UnsupportedEncodingException {
-		ArrayList <NameValuePair> dict = new ArrayList <NameValuePair>();
+	private void addPostParameters(ArrayList <NameValuePair> dict, Location fix, String uuid) throws UnsupportedEncodingException {
+
 		dict.add(new BasicNameValuePair("location[latitude]", Double.toString(fix.getLatitude())));
 		dict.add(new BasicNameValuePair("location[longitude]", Double.toString(fix.getLongitude())));
 		dict.add(new BasicNameValuePair("location[altitude]", Double.toString(fix.getAltitude())));
@@ -337,9 +338,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		}
 		
 		dict.add(new BasicNameValuePair("location[timestamp]", Util.DateTimeIso8601(fix.getTime())));
-		return new UrlEncodedFormEntity(dict, HTTP.UTF_8);
 	}
-	
+				
     private final PigeonService.Stub pigeonBinder = new PigeonService.Stub() {
 		public boolean isTransmitting() throws RemoteException {
 			Log.i(appTag, "isTransmitting => "+on_switch);
