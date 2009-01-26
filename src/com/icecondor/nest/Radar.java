@@ -184,16 +184,16 @@ public class Radar extends MapActivity implements ServiceConnection,
 														              new DialogInterface.OnClickListener() {
                                                                           public void onClick(DialogInterface dialog, int whichButton) {
                                                           					  // get the OAUTH request token
-                                                          					  OAuthAccessor reqtoken = LocationRepositoriesSqlite.defaultClient(Radar.this);
+                                                          					  OAuthAccessor client = LocationRepositoriesSqlite.defaultClient(Radar.this);
                                                                               Intent i = new Intent(Intent.ACTION_VIEW);
-                                                                              i.setData(Uri.parse(ICECONDOR_OAUTH_AUTHORIZATION_URL+"?oauth_token="+reqtoken.requestToken+"&oauth_callback="+ICECONDOR_OAUTH_CALLBACK));
+                                                                              i.setData(Uri.parse(client.consumer.serviceProvider.userAuthorizationURL+"?oauth_token="+client.requestToken+"&oauth_callback="+client.consumer.callbackURL));
                                                                               startActivity(i);
                                                                           }
                                                                        })
 												   .setNegativeButton("Cancel", 
 														              new DialogInterface.OnClickListener() {
                                                                           public void onClick(DialogInterface dialog, int whichButton) {
-                                                                           /* User clicked Cancel so do some stuff */
+                                                                              /* User clicked Cancel so do some stuff */
                                                                           }
                                                                        })
 
