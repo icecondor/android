@@ -8,8 +8,12 @@ import java.net.URLConnection;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -17,6 +21,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
+import net.oauth.OAuth;
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthException;
 import net.oauth.OAuthMessage;
@@ -298,63 +303,50 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		return pigeonBinder;
 	}
 	
-	public void pushLocation(Location fix) {
+	public int pushLocation(Location fix) {
+		Log.i(appTag, "sending id: "+settings.getString(SETTING_OPENID,"")+ " fix: " 
+				+fix.getLatitude()+" long: "+fix.getLongitude()+
+				" alt: "+fix.getAltitude() + " time: " + Util.DateTimeIso8601(fix.getTime()) +
+				" meters: "+fix.getAccuracy());
+		//ArrayList <NameValuePair> params = new ArrayList <NameValuePair>();
+		ArrayList<Map.Entry<String, String>> params = new ArrayList<Map.Entry<String, String>>();
+		addPostParameters(params, fix);
+		OAuthClient oclient = new OAuthClient(new HttpClient4());
+		OAuthAccessor accessor = LocationRepositoriesSqlite.defaultAccessor(this);
+		accessor.tokenSecret = LocationRepositoriesSqlite.getDefaultAccessToken(this);
 		try {
-
-			Log.i(appTag, "sending id: "+settings.getString(SETTING_OPENID,"")+ " fix: " 
-					+fix.getLatitude()+" long: "+fix.getLongitude()+
-					" alt: "+fix.getAltitude() + " time: " + Util.DateTimeIso8601(fix.getTime()) +
-					" meters: "+fix.getAccuracy());
-			HttpClient client = new DefaultHttpClient();
-			HttpPost post = new HttpPost(ICECONDOR_READ_URL);
-			ArrayList <NameValuePair> params = new ArrayList <NameValuePair>();
-			addPostParameters(params, fix, settings.getString(SETTING_OPENID,""));
-			post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
-			HttpResponse response;
-			//response = client.execute(post);
-			OAuthClient oclient = new OAuthClient(new HttpClient4());
-			OAuthAccessor accessor = LocationRepositoriesSqlite.defaultAccessor(this);
-			try {
-				OAuthMessage omessage;
-				omessage = oclient.invoke(accessor, "POST",  ICECONDOR_READ_URL, (Collection<? extends Entry>) params);
-			} catch (OAuthException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} catch (NullPointerException t) {
-			Log.i(appTag,"no data in location record "+t);
-		} catch (ClientProtocolException e) {
-			Log.i(appTag, "client protocol exception "+e);
+			OAuthMessage omessage;
+			Log.d(appTag, "invoke("+accessor+", POST, "+ICECONDOR_READ_URL+", "+params);
+			omessage = oclient.invoke(accessor, "POST",  ICECONDOR_READ_URL, params);
+			omessage.getHeader("Result");
+			return 200;
+		} catch (OAuthException e) {
 			e.printStackTrace();
-		} catch (HttpHostConnectException e) {
-			Log.i(appTag, "connection failed "+e);
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
 		} catch (IOException e) {
-			Log.i(appTag, "IO exception "+e);
 			e.printStackTrace();
 		}
+		return 500; // something went wrong
 	}
 	
-	private void addPostParameters(ArrayList <NameValuePair> dict, Location fix, String uuid) throws UnsupportedEncodingException {
+	private void addPostParameters(ArrayList<Map.Entry<String, String>> dict, Location fix) {
 
-		dict.add(new BasicNameValuePair("location[latitude]", Double.toString(fix.getLatitude())));
-		dict.add(new BasicNameValuePair("location[longitude]", Double.toString(fix.getLongitude())));
-		dict.add(new BasicNameValuePair("location[altitude]", Double.toString(fix.getAltitude())));
-		dict.add(new BasicNameValuePair("location[guid]", uuid));
-		dict.add(new BasicNameValuePair("client[version]", ""+ICECONDOR_VERSION));
+		dict.add(new OAuth.Parameter("location[latitude]", Double.toString(fix.getLatitude())));
+		dict.add(new OAuth.Parameter("location[longitude]", Double.toString(fix.getLongitude())));
+		dict.add(new OAuth.Parameter("location[altitude]", Double.toString(fix.getAltitude())));
+		dict.add(new OAuth.Parameter("client[version]", ""+ICECONDOR_VERSION));
 		if(fix.hasAccuracy()) {
-			dict.add(new BasicNameValuePair("location[accuracy]", Double.toString(fix.getAccuracy())));
+			dict.add(new OAuth.Parameter("location[accuracy]", Double.toString(fix.getAccuracy())));
 		}
 		if(fix.hasBearing()) {
-			dict.add(new BasicNameValuePair("location[heading]", Double.toString(fix.getBearing())));
+			dict.add(new OAuth.Parameter("location[heading]", Double.toString(fix.getBearing())));
 		}
 		if(fix.hasSpeed()) {
-			dict.add(new BasicNameValuePair("location[velocity]", Double.toString(fix.getSpeed())));
+			dict.add(new OAuth.Parameter("location[velocity]", Double.toString(fix.getSpeed())));
 		}
 		
-		dict.add(new BasicNameValuePair("location[timestamp]", Util.DateTimeIso8601(fix.getTime())));
+		dict.add(new OAuth.Parameter("location[timestamp]", Util.DateTimeIso8601(fix.getTime())));
 	}
 				
     private final PigeonService.Stub pigeonBinder = new PigeonService.Stub() {
