@@ -80,11 +80,20 @@ public class LocationRepositoriesSqlite extends SQLiteOpenHelper implements Cons
 	public static void setDefaultAccessToken(String access_token, Context ctx) {
 		Log.i("OAUTH", "access token = "+access_token);
 		LocationRepositoriesSqlite locRepoDb = new LocationRepositoriesSqlite(ctx, "locationrepositories", null, 1);
-		SQLiteDatabase repoDb = locRepoDb.getReadableDatabase();
+		SQLiteDatabase repoDb = locRepoDb.getWritableDatabase();
 		ContentValues values = new ContentValues();
 		values.put("access_token", access_token);
 		repoDb.update(LOCATION_REPOSITORIES_TABLE, values, null, null);
 		repoDb.close();
 
+	}
+	public static String getDefaultAccessToken(Context ctx) {
+		LocationRepositoriesSqlite locRepoDb = new LocationRepositoriesSqlite(ctx, "locationrepositories", null, 1);
+		SQLiteDatabase repoDb = locRepoDb.getReadableDatabase();
+		Cursor repos = repoDb.query(LocationRepositoriesSqlite.LOCATION_REPOSITORIES_TABLE, null, null, null, null, null, "_id asc");
+		repos.moveToFirst();
+		String token = repos.getString(repos.getColumnIndex("access_token"));
+		repoDb.close();
+		return token;
 	}
 }
