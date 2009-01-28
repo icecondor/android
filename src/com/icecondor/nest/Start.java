@@ -35,6 +35,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Toast;
 
 public class Start extends Activity implements ServiceConnection,
 												Constants {
@@ -65,6 +66,8 @@ public class Start extends Activity implements ServiceConnection,
     	if(uri != null) {
     		String access_token = uri.getQueryParameter("oauth_token");
     		LocationRepositoriesSqlite.setDefaultAccessToken(access_token, this);
+    		Log.i(appTag,"OAUTH access token captured: "+access_token);
+    		Toast.makeText(this, "OAUTH token captured", Toast.LENGTH_SHORT).show();
     	}
     		
 		if(!settings.contains(SETTING_LICENSE_AGREE)) {

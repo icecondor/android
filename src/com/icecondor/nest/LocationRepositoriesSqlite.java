@@ -66,7 +66,7 @@ public class LocationRepositoriesSqlite extends SQLiteOpenHelper implements Cons
 		return provider;                
 	}
 	
-	public static OAuthAccessor defaultClient(Context ctx) {
+	public static OAuthAccessor defaultAccessor(Context ctx) {
 		String consumerKey = "icecondor-nest-"+ICECONDOR_VERSION;
 		String consumerSecret = "";
 		OAuthServiceProvider provider =  defaultProvider(ctx);
@@ -74,19 +74,6 @@ public class LocationRepositoriesSqlite extends SQLiteOpenHelper implements Cons
 		OAuthConsumer consumer = new OAuthConsumer(ICECONDOR_OAUTH_CALLBACK, consumerKey,
                                                    consumerSecret, provider);
 		OAuthAccessor accessor = new OAuthAccessor(consumer);
-		OAuthClient client = new OAuthClient(new HttpClient4());
-		try {
-			client.getRequestToken(accessor);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (OAuthException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		return accessor;
 	}
 

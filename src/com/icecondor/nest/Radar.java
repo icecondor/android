@@ -1,10 +1,15 @@
 package com.icecondor.nest;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import net.oauth.OAuthAccessor;
+import net.oauth.OAuthException;
+import net.oauth.client.OAuthClient;
+import net.oauth.client.httpclient4.HttpClient4;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -184,10 +189,23 @@ public class Radar extends MapActivity implements ServiceConnection,
 														              new DialogInterface.OnClickListener() {
                                                                           public void onClick(DialogInterface dialog, int whichButton) {
                                                           					  // get the OAUTH request token
-                                                          					  OAuthAccessor client = LocationRepositoriesSqlite.defaultClient(Radar.this);
-                                                                              Intent i = new Intent(Intent.ACTION_VIEW);
-                                                                              i.setData(Uri.parse(client.consumer.serviceProvider.userAuthorizationURL+"?oauth_token="+client.requestToken+"&oauth_callback="+client.consumer.callbackURL));
-                                                                              startActivity(i);
+                                                          					  OAuthAccessor accessor = LocationRepositoriesSqlite.defaultAccessor(Radar.this);
+                                                          					OAuthClient client = new OAuthClient(new HttpClient4());
+                                                          					try {
+                                                          						client.getRequestToken(accessor);
+                                                                                Intent i = new Intent(Intent.ACTION_VIEW);
+                                                                                i.setData(Uri.parse(accessor.consumer.serviceProvider.userAuthorizationURL+"?oauth_token="+accessor.requestToken+"&oauth_callback="+accessor.consumer.callbackURL));
+                                                                                startActivity(i);
+                                                          					} catch (IOException e) {
+                                                          						// TODO Auto-generated catch block
+                                                          						e.printStackTrace();
+                                                          					} catch (OAuthException e) {
+                                                          						// TODO Auto-generated catch block
+                                                          						e.printStackTrace();
+                                                          					} catch (URISyntaxException e) {
+                                                          						// TODO Auto-generated catch block
+                                                          						e.printStackTrace();
+                                                          					}
                                                                           }
                                                                        })
 												   .setNegativeButton("Cancel", 
