@@ -2,10 +2,14 @@ package com.icecondor.nest;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Map;
 
+import net.oauth.OAuth;
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthConsumer;
 import net.oauth.OAuthException;
+import net.oauth.OAuthMessage;
 import net.oauth.OAuthServiceProvider;
 import net.oauth.client.OAuthClient;
 import net.oauth.client.httpclient4.HttpClient4;
@@ -95,5 +99,24 @@ public class LocationRepositoriesSqlite extends SQLiteOpenHelper implements Cons
 		String token = repos.getString(repos.getColumnIndex("access_token"));
 		repoDb.close();
 		return token;
+	}
+	
+	public static String convertToAccessToken(String request_token, Context ctx) {
+		ArrayList<Map.Entry<String, String>> params = new ArrayList<Map.Entry<String, String>>();
+		OAuthClient oclient = new OAuthClient(new HttpClient4());
+		OAuthAccessor accessor = LocationRepositoriesSqlite.defaultAccessor(ctx);
+		params.add(new OAuth.Parameter("oauth_token", request_token));
+		try {
+			OAuthMessage omessage = oclient.invoke(accessor, "POST",  
+					                               accessor.consumer.serviceProvider.accessTokenURL, params);
+			return omessage.getParameter("oauth_token");
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (OAuthException e) {
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

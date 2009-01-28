@@ -61,13 +61,22 @@ public class Start extends Activity implements ServiceConnection,
     public void onResume() {
     	Log.i(appTag, "onResume");
     	super.onResume();
-    	// extract the OAUTH access token if it exists
+    	// extract the OAUTH request token if it exists
     	Uri uri = this.getIntent().getData();
     	if(uri != null) {
-    		String access_token = uri.getQueryParameter("oauth_token");
-    		LocationRepositoriesSqlite.setDefaultAccessToken(access_token, this);
-    		Log.i(appTag,"OAUTH access token captured: "+access_token);
-    		Toast.makeText(this, "OAUTH token captured", Toast.LENGTH_SHORT).show();
+    		String blessed_request_token = uri.getQueryParameter("oauth_token");
+    		String access_token;
+    		Toast.makeText(this, "Requesting OAUTH access", Toast.LENGTH_SHORT).show();
+    		access_token = LocationRepositoriesSqlite.convertToAccessToken(blessed_request_token, this);
+    		Log.i(appTag, "OAUTH access token: "+access_token);
+    		String msg;
+    		if(access_token == null) {
+    			msg = "OAUTH authentication failed.";
+    		} else {
+    			LocationRepositoriesSqlite.setDefaultAccessToken(access_token, this);
+    			msg = "OAUTH token captured.";
+    		}
+			Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     	}
     		
 		if(!settings.contains(SETTING_LICENSE_AGREE)) {
