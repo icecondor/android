@@ -313,7 +313,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		addPostParameters(params, fix);
 		OAuthClient oclient = new OAuthClient(new HttpClient4());
 		OAuthAccessor accessor = LocationRepositoriesSqlite.defaultAccessor(this);
-		accessor.tokenSecret = LocationRepositoriesSqlite.getDefaultAccessToken(this);
+		params.add(new OAuth.Parameter("oauth_token", LocationRepositoriesSqlite.getDefaultAccessToken(this)));
 		try {
 			OAuthMessage omessage;
 			Log.d(appTag, "invoke("+accessor+", POST, "+ICECONDOR_READ_URL+", "+params);
