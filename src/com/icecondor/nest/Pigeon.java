@@ -2,17 +2,26 @@ package com.icecondor.nest;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
+
+import net.oauth.OAuthAccessor;
+import net.oauth.OAuthException;
+import net.oauth.OAuthMessage;
+import net.oauth.client.OAuthClient;
+import net.oauth.client.httpclient4.HttpClient4;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -289,7 +298,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		return pigeonBinder;
 	}
 	
-	public int pushLocation(Location fix) {
+	public void pushLocation(Location fix) {
 		try {
 
 			Log.i(appTag, "sending id: "+settings.getString(SETTING_OPENID,"")+ " fix: " 
@@ -300,12 +309,21 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			HttpPost post = new HttpPost(ICECONDOR_READ_URL);
 			ArrayList <NameValuePair> params = new ArrayList <NameValuePair>();
 			addPostParameters(params, fix, settings.getString(SETTING_OPENID,""));
-			post.addHeader("X_REQUESTED_WITH", "XMLHttpRequest");
 			post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
 			HttpResponse response;
-			response = client.execute(post);
-			Log.i(appTag, "http response: "+response.getStatusLine());
-			return response.getStatusLine().getStatusCode();
+			//response = client.execute(post);
+			OAuthClient oclient = new OAuthClient(new HttpClient4());
+			OAuthAccessor accessor = LocationRepositoriesSqlite.defaultAccessor(this);
+			try {
+				OAuthMessage omessage;
+				omessage = oclient.invoke(accessor, "POST",  ICECONDOR_READ_URL, (Collection<? extends Entry>) params);
+			} catch (OAuthException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} catch (NullPointerException t) {
 			Log.i(appTag,"no data in location record "+t);
 		} catch (ClientProtocolException e) {
@@ -317,7 +335,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			Log.i(appTag, "IO exception "+e);
 			e.printStackTrace();
 		}
-		return 0;
 	}
 	
 	private void addPostParameters(ArrayList <NameValuePair> dict, Location fix, String uuid) throws UnsupportedEncodingException {
@@ -384,7 +401,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			long record_frequency = Long.decode(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "180000"));
 			if(time_since_last_update > record_frequency) { 
 				last_fix = location;
-				last_fix_http_status = pushLocation(location); 
+				last_fix_http_status = 0;
+				pushLocation(location);  
 			} else {
 				Log.i(appTag, time_since_last_update/1000+" sec. is less than "+
 						record_frequency/1000+ " sec. server push skipped");
