@@ -325,28 +325,28 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
+			// includes host not found
 			e.printStackTrace();
 		}
 		return 500; // something went wrong
 	}
 	
 	private void addPostParameters(ArrayList<Map.Entry<String, String>> dict, Location fix) {
-
-		dict.add(new OAuth.Parameter("location[latitude]", Double.toString(fix.getLatitude())));
-		dict.add(new OAuth.Parameter("location[longitude]", Double.toString(fix.getLongitude())));
-		dict.add(new OAuth.Parameter("location[altitude]", Double.toString(fix.getAltitude())));
-		dict.add(new OAuth.Parameter("client[version]", ""+ICECONDOR_VERSION));
+		dict.add(new Util.Parameter("location[latitude]", Double.toString(fix.getLatitude())));
+		dict.add(new Util.Parameter("location[longitude]", Double.toString(fix.getLongitude())));
+		dict.add(new Util.Parameter("location[altitude]", Double.toString(fix.getAltitude())));
+		dict.add(new Util.Parameter("client[version]", ""+ICECONDOR_VERSION));
 		if(fix.hasAccuracy()) {
-			dict.add(new OAuth.Parameter("location[accuracy]", Double.toString(fix.getAccuracy())));
+			dict.add(new Util.Parameter("location[accuracy]", Double.toString(fix.getAccuracy())));
 		}
 		if(fix.hasBearing()) {
-			dict.add(new OAuth.Parameter("location[heading]", Double.toString(fix.getBearing())));
+			dict.add(new Util.Parameter("location[heading]", Double.toString(fix.getBearing())));
 		}
 		if(fix.hasSpeed()) {
-			dict.add(new OAuth.Parameter("location[velocity]", Double.toString(fix.getSpeed())));
+			dict.add(new Util.Parameter("location[velocity]", Double.toString(fix.getSpeed())));
 		}
 		
-		dict.add(new OAuth.Parameter("location[timestamp]", Util.DateTimeIso8601(fix.getTime())));
+		dict.add(new Util.Parameter("location[timestamp]", Util.DateTimeIso8601(fix.getTime())));
 	}
 				
     private final PigeonService.Stub pigeonBinder = new PigeonService.Stub() {
@@ -393,8 +393,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			long record_frequency = Long.decode(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "180000"));
 			if(time_since_last_update > record_frequency) { 
 				last_fix = location;
-				last_fix_http_status = 0;
-				pushLocation(location);  
+				last_fix_http_status = pushLocation(location);  
 			} else {
 				Log.i(appTag, time_since_last_update/1000+" sec. is less than "+
 						record_frequency/1000+ " sec. server push skipped");
