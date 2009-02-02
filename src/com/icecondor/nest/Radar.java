@@ -264,7 +264,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 		setProgressBarIndeterminateVisibility(true);
 		try {
 			HttpClient client = new DefaultHttpClient();
-			String url_with_params = ICECONDOR_WRITE_URL + "?id="
+			String url_with_params = ICECONDOR_READ_URL + "?id="
 					+ settings.getString(SETTING_OPENID, "");
 			Log.i(appTag, "GET " + url_with_params);
 			HttpGet get = new HttpGet(url_with_params);

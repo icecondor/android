@@ -32,7 +32,7 @@ public class LocationRepositoriesSqlite extends SQLiteOpenHelper implements Cons
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		db.execSQL("CREATE TABLE repositories (_id integer primary key, type text, name text, url text, request_url text, authorization_url text, access_url text, access_token text)");
+		db.execSQL("CREATE TABLE repositories (_id integer primary key, type text, name text, url text, request_url text, authorization_url text, access_url text, access_token text, access_token_secret text)");
 		// insert default location provider
 		ContentValues values = new ContentValues();
 		values.put("type", "icecondor");
@@ -81,27 +81,29 @@ public class LocationRepositoriesSqlite extends SQLiteOpenHelper implements Cons
 		return accessor;
 	}
 
-	public static void setDefaultAccessToken(String access_token, Context ctx) {
-		Log.i("OAUTH", "access token = "+access_token);
+	public static void setDefaultAccessToken(String[] access_token_and_secret, Context ctx) {
+		Log.i("OAUTH", "access token = "+access_token_and_secret);
 		LocationRepositoriesSqlite locRepoDb = new LocationRepositoriesSqlite(ctx, "locationrepositories", null, 1);
 		SQLiteDatabase repoDb = locRepoDb.getWritableDatabase();
 		ContentValues values = new ContentValues();
-		values.put("access_token", access_token);
+		values.put("access_token", access_token_and_secret[0]);
+		values.put("access_token_secret", access_token_and_secret[1]);
 		repoDb.update(LOCATION_REPOSITORIES_TABLE, values, null, null);
 		repoDb.close();
 
 	}
-	public static String getDefaultAccessToken(Context ctx) {
+	public static String[] getDefaultAccessToken(Context ctx) {
 		LocationRepositoriesSqlite locRepoDb = new LocationRepositoriesSqlite(ctx, "locationrepositories", null, 1);
 		SQLiteDatabase repoDb = locRepoDb.getReadableDatabase();
 		Cursor repos = repoDb.query(LocationRepositoriesSqlite.LOCATION_REPOSITORIES_TABLE, null, null, null, null, null, "_id asc");
 		repos.moveToFirst();
 		String token = repos.getString(repos.getColumnIndex("access_token"));
+		String secret = repos.getString(repos.getColumnIndex("access_token_secret"));		
 		repoDb.close();
-		return token;
+		return new String[] {token, secret};
 	}
 	
-	public static String convertToAccessToken(String request_token, Context ctx) {
+	public static String[] convertToAccessTokenAndSecret(String request_token, Context ctx) {
 		ArrayList<Map.Entry<String, String>> params = new ArrayList<Map.Entry<String, String>>();
 		OAuthClient oclient = new OAuthClient(new HttpClient4());
 		OAuthAccessor accessor = LocationRepositoriesSqlite.defaultAccessor(ctx);
@@ -109,7 +111,8 @@ public class LocationRepositoriesSqlite extends SQLiteOpenHelper implements Cons
 		try {
 			OAuthMessage omessage = oclient.invoke(accessor, "POST",  
 					                               accessor.consumer.serviceProvider.accessTokenURL, params);
-			return omessage.getParameter("oauth_token");
+			return new String[] {omessage.getParameter("oauth_token"), 
+					             omessage.getParameter("oauth_token_secret")};
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (OAuthException e) {

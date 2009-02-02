@@ -65,15 +65,15 @@ public class Start extends Activity implements ServiceConnection,
     	Uri uri = this.getIntent().getData();
     	if(uri != null) {
     		String blessed_request_token = uri.getQueryParameter("oauth_token");
-    		String access_token;
+    		String access_token_and_secret[];
     		Toast.makeText(this, "Requesting OAUTH access", Toast.LENGTH_SHORT).show();
-    		access_token = LocationRepositoriesSqlite.convertToAccessToken(blessed_request_token, this);
-    		Log.i(appTag, "OAUTH access token: "+access_token);
+    		access_token_and_secret = LocationRepositoriesSqlite.convertToAccessTokenAndSecret(blessed_request_token, this);
+    		Log.i(appTag, "OAUTH access token: "+access_token_and_secret);
     		String msg;
-    		if(access_token == null) {
+    		if(access_token_and_secret == null) {
     			msg = "OAUTH authentication failed.";
     		} else {
-    			LocationRepositoriesSqlite.setDefaultAccessToken(access_token, this);
+    			LocationRepositoriesSqlite.setDefaultAccessToken(access_token_and_secret, this);
     			msg = "OAUTH token captured.";
     		}
 			Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
