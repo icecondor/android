@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" 
                   android:key="first_preferencescreen">  
-  <EditTextPreference android:key="openid" 
-                      android:title="OpenID URL" />
+  <DialogPreference android:key="authentication" 
+                      android:title="Authentication"
+                      android:dialogTitle="Authentication"
+                      android:dialogMessage=""
+                      android:negativeButtonText="Clear"
+                      android:persistent="false"
+                       />
   <ListPreference android:key="transmission frequency"
                   android:title="Reporting Frequency"
                   android:entries="@+array/time_frequency"

@@ -7,8 +7,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,6 +53,13 @@ public class Settings extends PreferenceActivity implements ServiceConnection,
         boolean result = bindService(pigeon_service, this, 0); // 0 = do not auto-start
         Log.i(appTag, "pigeon bind result="+result);
     	Log.i(appTag, "onResume yeah");
+    	Preference auth_pref = getPreferenceScreen().findPreference("authentication");
+    	if (LocationRepositoriesSqlite.has_access_token(this)) {
+    		auth_pref.setSummary("Access token present.");
+    	} else {
+    		auth_pref.setSummary("Access token missing.");
+    	}
+    	
     }
     
     @Override
@@ -87,8 +96,6 @@ public class Settings extends PreferenceActivity implements ServiceConnection,
 		}
 		return false;
 	}
-
-
 
 	public void onFocusChange(View arg0, boolean arg1) {
 		// TODO Auto-generated method stub

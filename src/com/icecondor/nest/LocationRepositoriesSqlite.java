@@ -151,4 +151,13 @@ public class LocationRepositoriesSqlite extends SQLiteOpenHelper implements Cons
 		}
 		return null;
 	}
+	
+	public static boolean has_access_token(Context ctx) {
+		String[] token_and_secret = getDefaultAccessToken(ctx);
+		if(token_and_secret[0] != null && token_and_secret[1] != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
