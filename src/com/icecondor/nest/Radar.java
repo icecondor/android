@@ -183,7 +183,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 				pigeon.stopTransmitting();
 				return false;
 			} else {
-				if(LocationRepositoriesSqlite.has_access_token(this)) {
+				if(!LocationRepositoriesSqlite.has_access_token(this)) {
 					// Alert the user that login is required
 					(new AlertDialog.Builder(this)).setMessage(
 							"Login to the location storage provider at "
@@ -193,6 +193,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 									new DialogInterface.OnClickListener() {
 										public void onClick(DialogInterface dialog,
 												int whichButton) {
+											Log.i(appTag,"OAUTH request token retrieval");
 											// get the OAUTH request token
 											OAuthAccessor accessor = LocationRepositoriesSqlite
 													.defaultAccessor(Radar.this);
@@ -213,11 +214,13 @@ public class Radar extends MapActivity implements ServiceConnection,
 																Radar.this);
 												Intent i = new Intent(
 														Intent.ACTION_VIEW);
-												i.setData(Uri.parse(accessor.consumer.serviceProvider.userAuthorizationURL
-																		+ "?oauth_token="
-																		+ accessor.requestToken
-																		+ "&oauth_callback="
-																		+ accessor.consumer.callbackURL));
+												String url = accessor.consumer.serviceProvider.userAuthorizationURL
+												+ "?oauth_token="
+												+ accessor.requestToken
+												+ "&oauth_callback="
+												+ accessor.consumer.callbackURL;
+												Log.i(appTag, "sending to "+url);
+												i.setData(Uri.parse(url));
 												startActivity(i);
 											} catch (IOException e) {
 												// TODO Auto-generated catch block
