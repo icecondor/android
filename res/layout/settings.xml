@@ -2,10 +2,9 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" 
                   android:key="first_preferencescreen">  
   <DialogPreference android:key="authentication" 
-                      android:title="Authentication"
-                      android:dialogTitle="Authentication"
-                      android:dialogMessage=""
-                      android:negativeButtonText="Clear"
+                      android:title="Reporting Authentication"
+                      android:dialogTitle="Authentication Token"
+                      android:dialogMessage="The authentication token allows position updates to be sent to a location storage provider."
                       android:persistent="false"
                        />
   <ListPreference android:key="transmission frequency"
@@ -13,7 +12,7 @@
                   android:entries="@+array/time_frequency"
                   android:entryValues="@+array/time_frequency_values" />
   <ListPreference android:key="rss read frequency"
-                  android:title="RSS Read Frequency"
+                  android:title="GeoRSS Read Frequency"
                   android:entries="@+array/time_frequency"
                   android:entryValues="@+array/time_frequency_values" />
   <!-- <EditTextPreference android:key="transmission frequency"
