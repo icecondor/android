@@ -184,7 +184,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 				return false;
 			} else {
 					// Alert the user that login is required
-					(new AlertDialog.Builder(this)).setMessage("Press OK to login to your location storage provider.")
+					(new AlertDialog.Builder(this)).setMessage("Login to the location storage provider at "+ICECONDOR_URL_SHORTNAME+" to activate position recording.")
 												   .setPositiveButton("OK", 
 														              new DialogInterface.OnClickListener() {
                                                                           public void onClick(DialogInterface dialog, int whichButton) {
