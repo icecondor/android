@@ -193,6 +193,9 @@ public class Radar extends MapActivity implements ServiceConnection,
                                                           					OAuthClient client = new OAuthClient(new HttpClient4());
                                                           					try {
                                                           						client.getRequestToken(accessor);
+                                                          						String[] token_and_secret = new String[] {accessor.requestToken, accessor.tokenSecret};
+                                                          						Log.i(appTag, "request token: "+token_and_secret[0]+" secret:"+token_and_secret[1]);
+                                                          						LocationRepositoriesSqlite.setDefaultRequestToken(token_and_secret, Radar.this);
                                                                                 Intent i = new Intent(Intent.ACTION_VIEW);
                                                                                 i.setData(Uri.parse(accessor.consumer.serviceProvider.userAuthorizationURL+"?oauth_token="+accessor.requestToken+"&oauth_callback="+accessor.consumer.callbackURL));
                                                                                 startActivity(i);
