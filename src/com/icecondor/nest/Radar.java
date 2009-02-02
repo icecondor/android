@@ -183,64 +183,67 @@ public class Radar extends MapActivity implements ServiceConnection,
 				pigeon.stopTransmitting();
 				return false;
 			} else {
-				// Alert the user that login is required
-				(new AlertDialog.Builder(this)).setMessage(
-						"Login to the location storage provider at "
-								+ ICECONDOR_URL_SHORTNAME
-								+ " to activate position recording.")
-						.setPositiveButton("OK",
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int whichButton) {
-										// get the OAUTH request token
-										OAuthAccessor accessor = LocationRepositoriesSqlite
-												.defaultAccessor(Radar.this);
-										OAuthClient client = new OAuthClient(
-												new HttpClient4());
-										try {
-											client.getRequestToken(accessor);
-											String[] token_and_secret = new String[] {
-													accessor.requestToken,
-													accessor.tokenSecret };
-											Log.i(appTag, "request token: "
-													+ token_and_secret[0]
-													+ " secret:"
-													+ token_and_secret[1]);
-											LocationRepositoriesSqlite
-													.setDefaultRequestToken(
-															token_and_secret,
-															Radar.this);
-											Intent i = new Intent(
-													Intent.ACTION_VIEW);
-											i.setData(Uri.parse(accessor.consumer.serviceProvider.userAuthorizationURL
-																	+ "?oauth_token="
-																	+ accessor.requestToken
-																	+ "&oauth_callback="
-																	+ accessor.consumer.callbackURL));
-											startActivity(i);
-										} catch (IOException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										} catch (OAuthException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										} catch (URISyntaxException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
+				if(LocationRepositoriesSqlite.has_access_token(this)) {
+					// Alert the user that login is required
+					(new AlertDialog.Builder(this)).setMessage(
+							"Login to the location storage provider at "
+									+ ICECONDOR_URL_SHORTNAME
+									+ " to activate position recording.")
+							.setPositiveButton("OK",
+									new DialogInterface.OnClickListener() {
+										public void onClick(DialogInterface dialog,
+												int whichButton) {
+											// get the OAUTH request token
+											OAuthAccessor accessor = LocationRepositoriesSqlite
+													.defaultAccessor(Radar.this);
+											OAuthClient client = new OAuthClient(
+													new HttpClient4());
+											try {
+												client.getRequestToken(accessor);
+												String[] token_and_secret = new String[] {
+														accessor.requestToken,
+														accessor.tokenSecret };
+												Log.i(appTag, "request token: "
+														+ token_and_secret[0]
+														+ " secret:"
+														+ token_and_secret[1]);
+												LocationRepositoriesSqlite
+														.setDefaultRequestToken(
+																token_and_secret,
+																Radar.this);
+												Intent i = new Intent(
+														Intent.ACTION_VIEW);
+												i.setData(Uri.parse(accessor.consumer.serviceProvider.userAuthorizationURL
+																		+ "?oauth_token="
+																		+ accessor.requestToken
+																		+ "&oauth_callback="
+																		+ accessor.consumer.callbackURL));
+												startActivity(i);
+											} catch (IOException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											} catch (OAuthException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											} catch (URISyntaxException e) {
+												// TODO Auto-generated catch block
+												e.printStackTrace();
+											}
 										}
-									}
-								}).setNegativeButton("Cancel",
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int whichButton) {
-										/* User clicked Cancel so do some stuff */
-									}
-								})
-
-						.show();
-
-				pigeon.startTransmitting();
-				return true;
+									}).setNegativeButton("Cancel",
+									new DialogInterface.OnClickListener() {
+										public void onClick(DialogInterface dialog,
+												int whichButton) {
+											/* User clicked Cancel so do some stuff */
+										}
+									})
+	
+							.show();
+					return false;
+				} else {
+					pigeon.startTransmitting();	
+					return true;
+				}
 			}
 		} catch (RemoteException e) {
 			Log.e(appTag, "togglePigeon: pigeon communication error");

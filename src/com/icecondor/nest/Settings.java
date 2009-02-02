@@ -59,7 +59,6 @@ public class Settings extends PreferenceActivity implements ServiceConnection,
     	} else {
     		auth_pref.setSummary("Access token missing.");
     	}
-    	
     }
     
     @Override
