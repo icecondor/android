@@ -16,5 +16,5 @@
 	<string name="menu_geo_rss_add">Add URL</string>
 	<string name="menu_geo_rss_detail_delete">Delete</string>
 	<string name="dialog_openid">Enter a descriptive name or OpenID URL</string>
-	<string name="license">IceCondor may publish your location to a public service. No warranty.</string>
+	<string name="license">IceCondor may publish your location to a public service. Heavy data usage is possible - an unlimited data plan is recommended. No warranty.</string>
 </resources>
