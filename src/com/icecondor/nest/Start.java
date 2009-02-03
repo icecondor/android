@@ -71,14 +71,16 @@ public class Start extends Activity implements ServiceConnection,
 	    		access_token_and_secret = LocationRepositoriesSqlite.getDefaultRequestToken(this);
 	    		Log.i(appTag, "Returned token (ignored): "+blessed_request_token+" Access token: "+access_token_and_secret[0]+" secret:"+access_token_and_secret[1]);
 	    		access_token_and_secret = LocationRepositoriesSqlite.convertToAccessTokenAndSecret(access_token_and_secret, this);
+				String openid = uri.getQueryParameter("openid");
 	    		String msg;
 	    		if(access_token_and_secret == null) {
 	    			msg = "OAUTH authentication failed.";
 	    		} else {
 	    			LocationRepositoriesSqlite.setDefaultAccessToken(access_token_and_secret, this);
-	    			msg = "OAUTH token captured.";
+	    			msg = "OAUTH token acquired for "+openid+".";
 	    		}
 				Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+				settings.edit().putString(SETTING_OPENID, openid).commit();
     		}
     	}
     		

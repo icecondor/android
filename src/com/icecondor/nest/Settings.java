@@ -55,7 +55,8 @@ public class Settings extends PreferenceActivity implements ServiceConnection,
     	Log.i(appTag, "onResume yeah");
     	Preference auth_pref = getPreferenceScreen().findPreference("authentication");
     	if (LocationRepositoriesSqlite.has_access_token(this)) {
-    		auth_pref.setSummary("Access token present.");
+    		String openid = settings.getString(SETTING_OPENID, null);
+    		auth_pref.setSummary(openid);
     	} else {
     		auth_pref.setSummary("Access token missing.");
     	}
