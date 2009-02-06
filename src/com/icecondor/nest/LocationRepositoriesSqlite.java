@@ -75,7 +75,7 @@ public class LocationRepositoriesSqlite extends SQLiteOpenHelper implements Cons
 	}
 	
 	public static OAuthAccessor defaultAccessor(Context ctx) {
-		String consumerKey = "icecondor-nest-"+ICECONDOR_VERSION;
+		String consumerKey = "icecondor-nest-2009-01";
 		String consumerSecret = "";
 		OAuthServiceProvider provider =  defaultProvider(ctx);
 		Log.i("OAUTH", provider.requestTokenURL);
