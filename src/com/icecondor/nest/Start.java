@@ -31,6 +31,7 @@ import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -61,7 +62,17 @@ public class Start extends Activity implements ServiceConnection,
     public void onResume() {
     	Log.i(appTag, "onResume");
     	super.onResume();
-    	// extract the OAUTH request token if it exists
+    		
+		if(!settings.contains(SETTING_LICENSE_AGREE)) {
+        	Log.i(appTag,"No licence agree");
+        	showDialog(1);
+        } else {
+        	continueOnResume();
+        }
+    }
+
+	private void processOauthToken() throws RemoteException {
+		// extract the OAUTH request token if it exists
     	Uri uri = this.getIntent().getData();
     	if(uri != null) {
     		String blessed_request_token = uri.getQueryParameter("oauth_token");
@@ -78,20 +89,13 @@ public class Start extends Activity implements ServiceConnection,
 	    		} else {
 	    			LocationRepositoriesSqlite.setDefaultAccessToken(access_token_and_secret, this);
 	    			msg = "OAUTH token acquired for "+openid+".";
+					settings.edit().putString(SETTING_OPENID, openid).commit();
+					pigeon.startTransmitting();
 	    		}
 				Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-				settings.edit().putString(SETTING_OPENID, openid).commit();
     		}
     	}
-    		
-		if(!settings.contains(SETTING_LICENSE_AGREE)) {
-        	Log.i(appTag,"No licence agree");
-        	showDialog(1);
-        } else {
-        	continueOnResume();
-        }
-
-    }
+	}
     
     public void continueOnResume() {
         startPigeon();
@@ -149,20 +153,7 @@ public class Start extends Activity implements ServiceConnection,
 
 		Editor editor = settings.edit();
 		
-        // Set the unique ID
-		String openid;
-		if(settings.contains(SETTING_OPENID)) {
-			openid = settings.getString(SETTING_OPENID, null);
-			Log.i(appTag, "retrieved OpenID of "+openid);
-		} else {
-        	// Prompt for a unique identifier
-
-			// On cancel
-			openid = "urn:uuid:"+UUID.randomUUID().toString();
-			editor.putString(SETTING_OPENID, openid);
-			editor.commit();
-			Log.i(appTag, "no OpenID in preferences. generated "+openid);
-		}
+        // No default for OpenID - it exists on OAUTH success
 		
 		// Set the default Record On/Off
 		if(!settings.contains(SETTING_PIGEON_TRANSMITTING)) {
@@ -232,6 +223,11 @@ public class Start extends Activity implements ServiceConnection,
 	public void onServiceConnected(ComponentName className, IBinder service) {
 		Log.i(appTag, "onServiceConnected "+service);
 		pigeon = PigeonService.Stub.asInterface(service);
+    	try {
+			processOauthToken();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
         restorePreferences();
         jumpToNextActivity();
 	}
