@@ -160,4 +160,8 @@ public class LocationRepositoriesSqlite extends SQLiteOpenHelper implements Cons
 			return false;
 		}
 	}
+	
+	public static void clearDefaultAccessToken(Context ctx) {
+		setDefaultAccessToken(new String[] {null, null}, ctx);
+	}
 }
