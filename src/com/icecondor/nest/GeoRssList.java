@@ -31,7 +31,7 @@ public class GeoRssList extends ListActivity {
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		setContentView(R.layout.georsslist);
 		rssdb = new GeoRssSqlite(this, "georss", null, 1);
 		geoRssDb = rssdb.getReadableDatabase();
 		//db.execSQL("insert into urls values (null, 'service', 'https://service.com'");
