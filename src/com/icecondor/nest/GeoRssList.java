@@ -89,7 +89,7 @@ public class GeoRssList extends ListActivity {
 			.setPositiveButton("Add", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int whichbutton) {
 					insert_service(url_field.getText().toString());
-					// not sure if this is the right way to get the list to refresh
+					// not of the right way to get the list to refresh
 					finish();
 					Intent refresh = new Intent(GeoRssList.this, GeoRssList.class);
 					startActivity(refresh);
