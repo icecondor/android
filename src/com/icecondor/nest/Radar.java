@@ -144,7 +144,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 		boolean result = super.onCreateOptionsMenu(menu);
 		menu.add(Menu.NONE, 1, Menu.NONE, R.string.menu_last_fix).setIcon(android.R.drawable.ic_menu_mylocation);
 		menu.add(Menu.NONE, 2, Menu.NONE, R.string.menu_settings).setIcon(android.R.drawable.ic_menu_preferences);
-		menu.add(Menu.NONE, 3, Menu.NONE, R.string.menu_geo_rss).setIcon(android.R.drawable.ic_menu_preferences);
+		menu.add(Menu.NONE, 3, Menu.NONE, R.string.menu_geo_rss).setIcon(R.drawable.rsslogo);
 		menu.add(Menu.NONE, 4, Menu.NONE, pigeonStatusTitle()).setIcon(android.R.drawable.presence_invisible);
 		return result;
 	}
