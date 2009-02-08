@@ -81,7 +81,7 @@ public class GeoRssList extends ListActivity {
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		LayoutInflater factory = LayoutInflater.from(this);
-        View settings_view = factory.inflate(R.layout.georsslist, null);
+        View settings_view = factory.inflate(R.layout.georssadd, null);
 
 		return new AlertDialog.Builder(this)
 			.setView(settings_view)
