@@ -125,7 +125,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		heartbeat_timer.scheduleAtFixedRate(
 			new TimerTask() {
 				public void run() {
-					Log.i(appTag, "heartbeat. last_fix is "+last_fix);
 					String fix_part;
 					if (on_switch) {
 						if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
