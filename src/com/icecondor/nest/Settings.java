@@ -60,6 +60,12 @@ public class Settings extends PreferenceActivity implements ServiceConnection,
     	} else {
     		auth_pref.setSummary("Access token missing.");
     	}
+    	Preference xmit_pref = getPreferenceScreen().findPreference("transmission frequency");
+    	String minutes = Util.millisecondsToWords(Long.parseLong(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "")));
+    	xmit_pref.setSummary("every "+minutes);    	
+    	Preference rss_pref = getPreferenceScreen().findPreference("rss read frequency");
+    	minutes = Util.millisecondsToWords(Long.parseLong(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "")));
+    	rss_pref.setSummary("every "+minutes);    	
     }
     
     @Override
