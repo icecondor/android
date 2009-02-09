@@ -27,6 +27,7 @@ public class GeoRssList extends ListActivity {
 	static final String appTag = "GeoRssList";
 	Intent settingsIntent, radarIntent;
 	EditText url_field;
+	Spinner service_spinner;
 	GeoRssSqlite rssdb;
 	SQLiteDatabase geoRssDb;
 	Cursor rsses;
@@ -84,18 +85,30 @@ public class GeoRssList extends ListActivity {
 	protected Dialog onCreateDialog(int id) {
 		LayoutInflater factory = LayoutInflater.from(this);
         View add_url_dialog = factory.inflate(R.layout.georssadd, null);
-        Spinner ss = (Spinner) add_url_dialog.findViewById(R.id.serviceselect);
+        service_spinner = (Spinner) add_url_dialog.findViewById(R.id.serviceselect);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this, R.array.location_service_reader_values, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        ss.setAdapter(adapter);
+        service_spinner.setAdapter(adapter);
 
 		return new AlertDialog.Builder(this)
 			.setView(add_url_dialog)
 			.setTitle(R.string.menu_geo_rss_add)
 			.setPositiveButton("Add", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int whichbutton) {
-					insert_service(url_field.getText().toString());
+					String service = (String)service_spinner.getSelectedItem();
+					String url = url_field.getText().toString();
+					if(service.equals("RSS")) {
+						// nothing left to do
+					}else if (service.equals("Brightkite")) {
+						service = service + " " + url;
+						url = "http://brightkite.com/people/"+url+"/objects.rss";
+					}else if (service.equals("Shizzow")) {
+						service = service + " " + url;
+						url = "http://shizzow.com/"+url+"/rss";
+					}
+					insert_service(service, url);
+					
 					// not of the right way to get the list to refresh
 					finish();
 					Intent refresh = new Intent(GeoRssList.this, GeoRssList.class);
@@ -110,11 +123,11 @@ public class GeoRssList extends ListActivity {
 			.create();
 	}
 
-	protected void insert_service(String url) {
+	protected void insert_service(String service, String url) {
 		// GeoRSS Database
 		SQLiteDatabase db = rssdb.getWritableDatabase();
 		ContentValues cv = new ContentValues(2);
-		cv.put("name", "Service");
+		cv.put("name", service);
 		cv.put("url", url);
 		db.insert(GeoRssSqlite.SERVICES_TABLE, null, cv);
 		db.close();
