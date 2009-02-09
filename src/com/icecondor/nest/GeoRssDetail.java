@@ -52,6 +52,9 @@ public class GeoRssDetail extends Activity {
 		}
 		TextView dateTextView = (TextView)findViewById(R.id.georssdetail_lastupdate);
 		dateTextView.setText(date);
+		last_update.close();
+		service.close();
+		geoRssDb.close();
     }
     
 	public boolean onCreateOptionsMenu(Menu menu) {
