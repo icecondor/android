@@ -8,15 +8,16 @@
          android:layout_width="fill_parent"
          android:layout_height="wrap_content"/>
  
-     <TextView android:id="@+id/text2"
-         android:layout_width="fill_parent"
-         android:layout_height="wrap_content"/>
          
      <Spinner android:id="@+id/serviceselect"
               android:layout_width="fill_parent"
      		  android:layout_height="wrap_content"
               android:drawSelectorOnTop="true"
               android:prompt="@string/spinner_location_service_prompt" />
+              
+     <TextView android:id="@+id/rss_field_title"
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"/>
        
      <EditText
             android:id="@+id/rss_url_edit"

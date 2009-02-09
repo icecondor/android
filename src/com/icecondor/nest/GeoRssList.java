@@ -21,9 +21,11 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 
-public class GeoRssList extends ListActivity {
+public class GeoRssList extends ListActivity implements OnItemSelectedListener {
 	static final String appTag = "GeoRssList";
 	Intent settingsIntent, radarIntent;
 	EditText url_field;
@@ -31,6 +33,7 @@ public class GeoRssList extends ListActivity {
 	GeoRssSqlite rssdb;
 	SQLiteDatabase geoRssDb;
 	Cursor rsses;
+	View add_url_dialog;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -84,12 +87,13 @@ public class GeoRssList extends ListActivity {
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		LayoutInflater factory = LayoutInflater.from(this);
-        View add_url_dialog = factory.inflate(R.layout.georssadd, null);
+        add_url_dialog = factory.inflate(R.layout.georssadd, null);
         service_spinner = (Spinner) add_url_dialog.findViewById(R.id.serviceselect);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this, R.array.location_service_reader_values, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         service_spinner.setAdapter(adapter);
+        service_spinner.setOnItemSelectedListener(this);
 
 		return new AlertDialog.Builder(this)
 			.setView(add_url_dialog)
@@ -145,6 +149,26 @@ public class GeoRssList extends ListActivity {
 		rsses.moveToPosition(position);
 		itemIntent.putExtra(GeoRssSqlite.ID, rsses.getInt(rsses.getColumnIndex(GeoRssSqlite.ID)));
 		startActivity(itemIntent);
+	}
+
+	@Override
+	public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
+			long arg3) {
+		String service = (String)service_spinner.getSelectedItem();
+		TextView title = (TextView) add_url_dialog.findViewById(R.id.rss_field_title);
+		if(service.equals("RSS")) {
+			title.setText("");
+		}else if (service.equals("Brightkite")) {
+			title.setText("Username");			
+		}else if (service.equals("Shizzow")) {
+			title.setText("Username");			
+		}
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
