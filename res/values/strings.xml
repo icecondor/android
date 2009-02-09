@@ -18,5 +18,5 @@
 	<string name="dialog_openid">Enter a descriptive name or OpenID URL</string>
 	<string name="license">"IceCondor is capable of continuously tracking and publishing the phone's GPS location. Heavy data usage is possible - an unlimited data plan is recommended. Use at own Risk. No warranty."</string>
 	<string name="spinner_location_service_prompt">Choose a service</string>
-	
+	<string name="about">Thank you for using IceCondor - a GeoRSS reader and continuous location tracking tool for android. (C) 2009 Don Park</string>	
 </resources>

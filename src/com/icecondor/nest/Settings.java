@@ -1,6 +1,9 @@
 package com.icecondor.nest;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -89,7 +92,7 @@ public class Settings extends PreferenceActivity implements ServiceConnection,
 	public boolean onCreateOptionsMenu(Menu menu) {
 		Log.i(appTag, "onCreateOptionsMenu");
 		boolean result = super.onCreateOptionsMenu(menu);
-		menu.add(0, Menu.FIRST, 0, ""+ICECONDOR_VERSION);
+		menu.add(0, Menu.FIRST, 0, "About").setIcon(android.R.drawable.star_on);
 		menu.add(0, R.string.menu_radar, 0, R.string.menu_radar).setIcon(android.R.drawable.ic_menu_compass);
 		return result;
 	}
@@ -100,11 +103,25 @@ public class Settings extends PreferenceActivity implements ServiceConnection,
 		if (item.getItemId() == R.string.menu_radar) {
 			startActivity(new Intent(this, Radar.class));
 		}
+		if (item.getItemId() == Menu.FIRST) {
+			showDialog(1);
+		}
 		return false;
 	}
 
 	public void onFocusChange(View arg0, boolean arg1) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	protected Dialog onCreateDialog(int id) {
+		return new AlertDialog.Builder(this)
+		.setTitle("About IceCondor ")
+		.setMessage(R.string.about)
+		.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int whichbutton) {
+
+				}})
+		.create();
 	}
 }
