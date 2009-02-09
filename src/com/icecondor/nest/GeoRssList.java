@@ -15,10 +15,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
 
 public class GeoRssList extends ListActivity {
@@ -81,10 +83,15 @@ public class GeoRssList extends ListActivity {
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		LayoutInflater factory = LayoutInflater.from(this);
-        View settings_view = factory.inflate(R.layout.georssadd, null);
+        View add_url_dialog = factory.inflate(R.layout.georssadd, null);
+        Spinner ss = (Spinner) add_url_dialog.findViewById(R.id.serviceselect);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                this, R.array.location_service_reader_values, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ss.setAdapter(adapter);
 
 		return new AlertDialog.Builder(this)
-			.setView(settings_view)
+			.setView(add_url_dialog)
 			.setTitle(R.string.menu_geo_rss_add)
 			.setPositiveButton("Add", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int whichbutton) {

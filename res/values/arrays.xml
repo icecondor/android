@@ -18,4 +18,9 @@
         <item>1800000</item>
         <item>3600000</item>
     </string-array>
+    <string-array name="location_service_reader_values">
+        <item>RSS</item>
+        <item>Brightkite</item>
+        <item>Shizzow</item>
+    </string-array>
 </resources>
