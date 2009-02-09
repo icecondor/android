@@ -42,6 +42,7 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -121,7 +122,6 @@ public class Radar extends MapActivity implements ServiceConnection,
         Intent pigeon_service = new Intent(this, Pigeon.class);
         boolean result = bindService(pigeon_service, this, 0); // 0 = do not auto-start
         Log.i(appTag, "pigeon bind result="+result);
-        scrollToLastFix();
         startNeighborReadTimer();
     }
     
@@ -282,6 +282,15 @@ public class Radar extends MapActivity implements ServiceConnection,
 		Log.i(appTag, "onServiceConnected "+service);
 		pigeon = PigeonService.Stub.asInterface(service);
 		scrollToLastFix();
+		try {
+			Location fix = pigeon.getLastFix();
+	        if (fix != null) {
+	            scrollToLastFix();
+	        } else {
+	        	Toast.makeText(this, "Waiting for first GPS fix", Toast.LENGTH_SHORT).show();
+	        }
+		} catch (RemoteException e) {
+		}
 	}
 
 	public void onServiceDisconnected(ComponentName className) {

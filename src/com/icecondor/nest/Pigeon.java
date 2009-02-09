@@ -100,7 +100,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		/* GPS */
 		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		Log.i(appTag, "GPS provider enabled: "+locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER));
+		last_fix = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		Log.i(appTag, "Last known GPS fix: "+last_fix);
 		Log.i(appTag, "NETWORK provider enabled: "+locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER));
+		Log.i(appTag, "Last known NETWORK fix: "+locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
 		
 		/* WIFI */
 		wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
