@@ -104,12 +104,15 @@ public class GeoRssList extends ListActivity implements OnItemSelectedListener {
 					String url = url_field.getText().toString();
 					if(service.equals("RSS")) {
 						// nothing left to do
-					}else if (service.equals("Brightkite")) {
+					}else if (service.equals("brightkite.com")) {
 						service = service + " " + url;
 						url = "http://brightkite.com/people/"+url+"/objects.rss";
-					}else if (service.equals("Shizzow")) {
+					}else if (service.equals("shizzow.com")) {
 						service = service + " " + url;
 						url = "http://shizzow.com/"+url+"/rss";
+					}else if (service.equals("icecondor.com")) {
+						service = service + " " + url;
+						url = "http://icecondor.com/locations.rss?id="+url;
 					}
 					insert_service(service, url);
 					
@@ -158,10 +161,12 @@ public class GeoRssList extends ListActivity implements OnItemSelectedListener {
 		TextView title = (TextView) add_url_dialog.findViewById(R.id.rss_field_title);
 		if(service.equals("RSS")) {
 			title.setText("");
-		}else if (service.equals("Brightkite")) {
+		}else if (service.equals("brightkite.com")) {
 			title.setText("Username");			
-		}else if (service.equals("Shizzow")) {
+		}else if (service.equals("shizzow.com")) {
 			title.setText("Username");			
+		}else if (service.equals("icecondor.com")) {
+			title.setText("OpenID or Username");			
 		}
 	}
 

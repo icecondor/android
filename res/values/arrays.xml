@@ -20,7 +20,8 @@
     </string-array>
     <string-array name="location_service_reader_values">
         <item>RSS</item>
-        <item>Brightkite</item>
-        <item>Shizzow</item>
+        <item>brightkite.com</item>
+        <item>icecondor.com</item>
+        <item>shizzow.com</item>
     </string-array>
 </resources>
