@@ -100,7 +100,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		/* GPS */
 		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		Log.i(appTag, "GPS provider enabled: "+locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER));
-		last_fix = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		last_local_fix = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 		Log.i(appTag, "Last known GPS fix: "+last_fix);
 		Log.i(appTag, "NETWORK provider enabled: "+locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER));
 		Log.i(appTag, "Last known NETWORK fix: "+locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
@@ -131,7 +131,11 @@ public class Pigeon extends Service implements Constants, LocationListener,
 					String fix_part;
 					if (on_switch) {
 						if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-							fix_part = "Waiting for first fix.";
+							if (last_local_fix == null) {
+								fix_part = "Waiting for the first fix.";								
+							} else {
+								fix_part = "Waiting for the next fix.";
+							}
 						} else {
 							fix_part = "Warning: GPS set to disabled";
 						}
@@ -379,7 +383,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			notificationFlash("Location reporting OFF.");
 		}
 		public Location getLastFix() throws RemoteException {
-			return last_fix;
+			return last_local_fix;
 		}
     };
 
