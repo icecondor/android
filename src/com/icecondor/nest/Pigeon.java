@@ -113,7 +113,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		contentIntent = PendingIntent.getActivity(this, 0, new Intent(this,
 				Start.class), 0);
 		CharSequence text = getText(R.string.status_started);
-		ongoing_notification = new Notification(R.drawable.icecube_statusbar, text, System
+		ongoing_notification = new Notification(R.drawable.condorhead_statusbar, text, System
 				.currentTimeMillis());
 		ongoing_notification.flags = ongoing_notification.flags ^ Notification.FLAG_ONGOING_EVENT;
 		
@@ -260,7 +260,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
 	private void notification(String msg) {
-		Notification notification = new Notification(R.drawable.icecube_statusbar, msg,
+		Notification notification = new Notification(R.drawable.condorhead_statusbar, msg,
 				System.currentTimeMillis());
 		// a contentView error is thrown if this line is not here
 		notification.setLatestEventInfo(this, "IceCondor Notice", msg, contentIntent);
