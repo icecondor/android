@@ -130,7 +130,7 @@ public class Start extends Activity implements ServiceConnection,
 					    Intent upgrade_www_intent = new Intent(Intent.ACTION_VIEW, new_version_url);
 						PendingIntent upgradeIntent = PendingIntent.getActivity(this, 0, upgrade_www_intent, 
 								                                                PendingIntent.FLAG_ONE_SHOT);
-						Notification notification = new Notification(R.drawable.condorhead_statusbar, 
+						Notification notification = new Notification(R.drawable.newversion_statusbar, 
 								"Upgrade Available!", System.currentTimeMillis());
 						notification.setLatestEventInfo(this, "IceCondor Upgrade", 
 								"Version "+remote_version+" is available.", upgradeIntent);
