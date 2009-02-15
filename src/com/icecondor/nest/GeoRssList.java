@@ -119,7 +119,7 @@ public class GeoRssList extends ListActivity implements OnItemSelectedListener {
 				public void onClick(DialogInterface dialog, int whichbutton) {
 					String service = (String)service_spinner.getSelectedItem();
 					String url = url_field.getText().toString();
-					String title = url + "/" + service;
+					String title = url + " - " + service;
 					if(service.equals("RSS")) {
 						// nothing left to do
 					}else if (service.equals("brightkite.com")) {
@@ -129,7 +129,6 @@ public class GeoRssList extends ListActivity implements OnItemSelectedListener {
 					}else if (service.equals("icecondor.com")) {
 						url = "http://icecondor.com/locations.rss?id="+url;
 					}
-
 					Log.i(appTag, "adding "+title);
 					insert_service(title, url);
 					
