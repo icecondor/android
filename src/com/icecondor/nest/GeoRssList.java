@@ -37,6 +37,7 @@ public class GeoRssList extends ListActivity implements OnItemSelectedListener {
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.i(appTag, "onCreate");
 		setContentView(R.layout.georsslist);
 		rssdb = new GeoRssSqlite(this, "georss", null, 1);
 		geoRssDb = rssdb.getReadableDatabase();
@@ -86,8 +87,10 @@ public class GeoRssList extends ListActivity implements OnItemSelectedListener {
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
+		Log.i(appTag, "onCreateDialog "+id);
 		LayoutInflater factory = LayoutInflater.from(this);
         add_url_dialog = factory.inflate(R.layout.georssadd, null);
+		url_field = (EditText) add_url_dialog.findViewById(R.id.rss_url_edit);
         service_spinner = (Spinner) add_url_dialog.findViewById(R.id.serviceselect);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this, R.array.location_service_reader_values, android.R.layout.simple_spinner_item);
@@ -102,19 +105,19 @@ public class GeoRssList extends ListActivity implements OnItemSelectedListener {
 				public void onClick(DialogInterface dialog, int whichbutton) {
 					String service = (String)service_spinner.getSelectedItem();
 					String url = url_field.getText().toString();
+					String title = url + "/" + service;
 					if(service.equals("RSS")) {
 						// nothing left to do
 					}else if (service.equals("brightkite.com")) {
-						service = service + " " + url;
 						url = "http://brightkite.com/people/"+url+"/objects.rss";
 					}else if (service.equals("shizzow.com")) {
-						service = service + " " + url;
 						url = "http://shizzow.com/"+url+"/rss";
 					}else if (service.equals("icecondor.com")) {
-						service = service + " " + url;
 						url = "http://icecondor.com/locations.rss?id="+url;
 					}
-					insert_service(service, url);
+
+					Log.i(appTag, "adding "+title);
+					insert_service(title, url);
 					
 					// not of the right way to get the list to refresh
 					finish();
@@ -141,7 +144,6 @@ public class GeoRssList extends ListActivity implements OnItemSelectedListener {
 	}
 	
 	protected void onPrepareDialog(int id, Dialog dialog) {
-		url_field = (EditText) dialog.findViewById(R.id.rss_url_edit);
         url_field.setText(""); // initial value
 	}
 		
