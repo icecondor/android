@@ -39,6 +39,15 @@ public class GeoRssList extends ListActivity implements OnItemSelectedListener {
 		super.onCreate(savedInstanceState);
 		Log.i(appTag, "onCreate");
 		setContentView(R.layout.georsslist);
+		
+        // Jump Points
+        settingsIntent = new Intent(this, Settings.class);
+        radarIntent = new Intent(this, Radar.class);
+	}
+	
+    @Override
+    public void onResume() {
+    	super.onResume();
 		rssdb = new GeoRssSqlite(this, "georss", null, 1);
 		geoRssDb = rssdb.getReadableDatabase();
 		//db.execSQL("insert into urls values (null, 'service', 'https://service.com'");
@@ -52,11 +61,16 @@ public class GeoRssList extends ListActivity implements OnItemSelectedListener {
 
         // Bind to our new adapter.
         setListAdapter(adapter);
-		
-        // Jump Points
-        settingsIntent = new Intent(this, Settings.class);
-        radarIntent = new Intent(this, Radar.class);
-	}
+    }
+    
+    @Override
+    public void onPause() {
+    	super.onPause();
+    	rsses.close();
+    	geoRssDb.close();
+    	rssdb.close();
+    }
+
 	
 	public boolean onCreateOptionsMenu(Menu menu) {
 		Log.i(appTag, "onCreateOptionsMenu");
