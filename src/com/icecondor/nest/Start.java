@@ -78,7 +78,7 @@ public class Start extends Activity implements ServiceConnection,
     		String blessed_request_token = uri.getQueryParameter("oauth_token");
     		if(blessed_request_token.length() > 0) {
 	    		String access_token_and_secret[];
-	    		Toast.makeText(this, "Requesting OAUTH access", Toast.LENGTH_SHORT).show();
+	    		Toast.makeText(this, "Finishing authentication", Toast.LENGTH_SHORT).show();
 	    		access_token_and_secret = LocationRepositoriesSqlite.getDefaultRequestToken(this);
 	    		Log.i(appTag, "Returned token (ignored): "+blessed_request_token+" Access token: "+access_token_and_secret[0]+" secret:"+access_token_and_secret[1]);
 	    		access_token_and_secret = LocationRepositoriesSqlite.convertToAccessTokenAndSecret(access_token_and_secret, this);
@@ -88,7 +88,7 @@ public class Start extends Activity implements ServiceConnection,
 	    			msg = "OAUTH authentication failed.";
 	    		} else {
 	    			LocationRepositoriesSqlite.setDefaultAccessToken(access_token_and_secret, this);
-	    			msg = "OAUTH token acquired for "+openid+".";
+	    			msg = "Authentication succeded for "+openid+".";
 					settings.edit().putString(SETTING_OPENID, openid).commit();
 					pigeon.startTransmitting();
 	    		}

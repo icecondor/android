@@ -194,6 +194,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 										public void onClick(DialogInterface dialog,
 												int whichButton) {
 											Log.i(appTag,"OAUTH request token retrieval");
+											Toast.makeText(Radar.this, "contacting server", Toast.LENGTH_SHORT).show();
 											// get the OAUTH request token
 											OAuthAccessor accessor = LocationRepositoriesSqlite
 													.defaultAccessor(Radar.this);
@@ -223,13 +224,13 @@ public class Radar extends MapActivity implements ServiceConnection,
 												i.setData(Uri.parse(url));
 												startActivity(i);
 											} catch (IOException e) {
-												// TODO Auto-generated catch block
+												Toast.makeText(Radar.this, "server failed", Toast.LENGTH_SHORT).show();
 												e.printStackTrace();
 											} catch (OAuthException e) {
-												// TODO Auto-generated catch block
+												Toast.makeText(Radar.this, "server failed", Toast.LENGTH_SHORT).show();
 												e.printStackTrace();
 											} catch (URISyntaxException e) {
-												// TODO Auto-generated catch block
+												Toast.makeText(Radar.this, "server failed", Toast.LENGTH_SHORT).show();
 												e.printStackTrace();
 											}
 										}
