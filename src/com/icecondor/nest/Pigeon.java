@@ -130,15 +130,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				public void run() {
 					String fix_part;
 					if (on_switch) {
-						if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-							if (last_local_fix == null) {
-								fix_part = "Waiting for the first fix.";
-							} else {
-								fix_part = "Waiting for the next fix.";
-							}
-						} else {
-							fix_part = "Warning: GPS set to disabled";
-						}
 						if (last_fix != null) {
 							String ago = Util.timeAgoInWords(last_fix.getTime());
 							String http_status = "";
@@ -146,6 +137,11 @@ public class Pigeon extends Service implements Constants, LocationListener,
 								http_status = "("+last_fix_http_status+")";
 							fix_part = last_fix.getProvider()+" push"+http_status+" "+
 							           ago;
+						} else {
+							fix_part = "Waiting for the first fix.";
+						}
+						if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+							fix_part = "Warning: GPS set to disabled";
 						}
 					} else {
 						fix_part = "Location reporting is off.";
@@ -300,7 +296,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
 	public void onStart(Intent start, int key) {
 		super.onStart(start,key);
-		Log.i(appTag, "service started!");
+		Log.i(appTag, "pigeon service started!");
 	}
 	
 	@Override
@@ -388,13 +384,14 @@ public class Pigeon extends Service implements Constants, LocationListener,
     };
 
 	public void onLocationChanged(Location location) {
-		Log.i(appTag, "onLocationChanged: "+location);
 		last_local_fix = location;
-		long time_since_last_update = last_local_fix.getTime() - last_fix.getTime(); 
+		long time_since_last_update = last_local_fix.getTime() - (last_fix == null?0:last_fix.getTime()); 
 		long record_frequency = Long.decode(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "180000"));
-		
+		Log.i(appTag, "onLocationChanged: at:"+location.getLatitude()+" long:"+location.getLongitude() + " acc:"+
+			       location.getAccuracy()+" "+ time_since_last_update+" seconds since last update");
+
 		if (on_switch) {
-			if((last_local_fix.getAccuracy() < last_fix.getAccuracy()) ||
+			if((last_local_fix.getAccuracy() < (last_fix == null?500000:last_fix.getAccuracy())) ||
 					time_since_last_update > record_frequency ) {
 				last_fix_http_status = pushLocation(last_local_fix);
 				if(last_fix_http_status == 200) {
