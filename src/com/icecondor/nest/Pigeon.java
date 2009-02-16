@@ -101,7 +101,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		Log.i(appTag, "GPS provider enabled: "+locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER));
 		last_local_fix = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		Log.i(appTag, "Last known GPS fix: "+last_fix);
+		Log.i(appTag, "Last known GPS fix: "+last_local_fix);
 		Log.i(appTag, "NETWORK provider enabled: "+locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER));
 		Log.i(appTag, "Last known NETWORK fix: "+locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
 		
@@ -132,7 +132,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 					if (on_switch) {
 						if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 							if (last_local_fix == null) {
-								fix_part = "Waiting for the first fix.";								
+								fix_part = "Waiting for the first fix.";
 							} else {
 								fix_part = "Waiting for the next fix.";
 							}
@@ -388,23 +388,18 @@ public class Pigeon extends Service implements Constants, LocationListener,
     };
 
 	public void onLocationChanged(Location location) {
-		String msg = "onLocationChanged: "+location;
-		if(last_local_fix != null) {
-			msg = msg + " last location change elapsed time "+(location.getTime()-last_local_fix.getTime())/1000.0;
-		}
-		Log.i(appTag, msg);
+		Log.i(appTag, "onLocationChanged: "+location);
 		last_local_fix = location;
+		long time_since_last_update = last_local_fix.getTime() - last_fix.getTime(); 
+		long record_frequency = Long.decode(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "180000"));
+		
 		if (on_switch) {
-			long last_time = 0;
-			if(last_fix != null) { last_time = last_fix.getTime(); }
-			long time_since_last_update = location.getTime() - last_time; 
-			long record_frequency = Long.decode(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "180000"));
-			if(time_since_last_update > record_frequency) { 
-				last_fix = location;
-				last_fix_http_status = pushLocation(location);  
-			} else {
-				Log.i(appTag, time_since_last_update/1000+" sec. is less than "+
-						record_frequency/1000+ " sec. server push skipped");
+			if((last_local_fix.getAccuracy() < last_fix.getAccuracy()) ||
+					time_since_last_update > record_frequency ) {
+				last_fix_http_status = pushLocation(last_local_fix);
+				if(last_fix_http_status == 200) {
+					last_fix = last_local_fix;
+				}
 			}
 		}
 	}
