@@ -310,7 +310,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		Log.i(appTag, "sending id: "+settings.getString(SETTING_OPENID,"")+ " fix: " 
 				+fix.getLatitude()+" long: "+fix.getLongitude()+
 				" alt: "+fix.getAltitude() + " time: " + Util.DateTimeIso8601(fix.getTime()) +
-				" meters: "+fix.getAccuracy());
+				" acc: "+fix.getAccuracy());
 		//ArrayList <NameValuePair> params = new ArrayList <NameValuePair>();
 		ArrayList<Map.Entry<String, String>> params = new ArrayList<Map.Entry<String, String>>();
 		addPostParameters(params, fix);
