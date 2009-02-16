@@ -48,10 +48,10 @@ public class Util {
 
 	public static String millisecondsToWords(long duration) {
 		long count = duration / 1000;
-		String unit = "sec.";
+		String unit = "sec";
 		if (count > 60) {
 			count = count / 60;
-			unit = "min.";
+			unit = "min";
 		}
 		return ""+count+" "+unit;
 	}
