@@ -385,6 +385,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		public Location getLastFix() throws RemoteException {
 			return last_local_fix;
 		}
+		@Override
+		public Location getLastPushedFix() throws RemoteException {
+			return last_fix;		
+		}
     };
 
 	public void onLocationChanged(Location location) {

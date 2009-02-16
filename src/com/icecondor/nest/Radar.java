@@ -108,10 +108,12 @@ public class Radar extends MapActivity implements ServiceConnection,
 	private void refreshBirdLocation() {
 		try {
 			if (pigeon!=null) {
-				nearbys.setLast_fix(pigeon.getLastFix());
+				nearbys.setLastLocalFix(pigeon.getLastFix());
+				nearbys.setLastPushedFix(pigeon.getLastPushedFix());
 			}
 		} catch (RemoteException e) {
-			nearbys.setLast_fix(null);
+			nearbys.setLastLocalFix(null);
+			nearbys.setLastPushedFix(null);
 		}
 	}
     

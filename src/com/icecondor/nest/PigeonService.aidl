@@ -5,4 +5,5 @@ interface PigeonService {
   void startTransmitting();
   void stopTransmitting();
   Location getLastFix();
+  Location getLastPushedFix();
 }
