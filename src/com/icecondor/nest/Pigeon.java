@@ -104,6 +104,9 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		Log.i(appTag, "Last known GPS fix: "+last_local_fix);
 		Log.i(appTag, "NETWORK provider enabled: "+locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER));
 		Log.i(appTag, "Last known NETWORK fix: "+locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
+		if (last_local_fix == null) { // fall back onto the network location
+			last_local_fix = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		}
 		
 		/* WIFI */
 		wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
@@ -128,7 +131,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		heartbeat_timer.scheduleAtFixedRate(
 			new TimerTask() {
 				public void run() {
-					String fix_part;
+					String fix_part = "";
 					if (on_switch) {
 						if (last_fix != null) {
 							String ago = Util.timeAgoInWords(last_fix.getTime());
@@ -137,8 +140,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 								http_status = "("+last_fix_http_status+")";
 							fix_part = last_fix.getProvider()+" push"+http_status+" "+
 							           ago;
-						} else {
-							fix_part = "Waiting for the first fix.";
 						}
 						if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 							fix_part = "Warning: GPS set to disabled";
