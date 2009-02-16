@@ -158,7 +158,7 @@ public class Start extends Activity implements ServiceConnection,
 		// Set the default Record On/Off
 		if(!settings.contains(SETTING_PIGEON_TRANSMITTING)) {
 			// default to OFF
-			editor.putBoolean(SETTING_PIGEON_TRANSMITTING, true).commit();
+			editor.putBoolean(SETTING_PIGEON_TRANSMITTING, false).commit();
 		}
 
 		// Set the default position update frequency
