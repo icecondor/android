@@ -78,7 +78,6 @@ public class LocationRepositoriesSqlite extends SQLiteOpenHelper implements Cons
 		String consumerKey = "icecondor-nest-2009-01";
 		String consumerSecret = "";
 		OAuthServiceProvider provider =  defaultProvider(ctx);
-		Log.i("OAUTH", provider.requestTokenURL);
 		OAuthConsumer consumer = new OAuthConsumer(ICECONDOR_OAUTH_CALLBACK, consumerKey,
                                                    consumerSecret, provider);
 		OAuthAccessor accessor = new OAuthAccessor(consumer);

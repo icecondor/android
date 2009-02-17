@@ -4,8 +4,8 @@
                   <!--  -->
   <DialogPreference android:key="authentication" 
                       android:title="Reporting Authentication"
-                      android:dialogTitle="Authentication Token"
-                      android:dialogMessage="The authentication token allows position updates to be sent to a location storage provider."
+                      android:dialogTitle="Authentication"
+                      android:dialogMessage="Authentication allows position updates to be sent to a location storage provider. Turn on location reporting from the map screen to begin."
                       android:persistent="false"
                        />
   <ListPreference android:key="transmission frequency"

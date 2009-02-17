@@ -8,8 +8,8 @@
 	<string name="tab_title2">Communication</string>
 	<string name="settings_transmitting">Transmitting</string>
 	<string name="status_started">IceCondor Background Task Started</string>
-	<string name="status_transmitting">Transmitting</string>
-	<string name="status_not_transmitting">Idle</string>
+	<string name="status_transmitting">Reporting On</string>
+	<string name="status_not_transmitting">Reporting Off</string>
 	<string name="status_error">Pigeon Error</string>
 	<string name="menu_last_fix">Last Fix</string>
 	<string name="menu_geo_rss">GeoRSS</string>

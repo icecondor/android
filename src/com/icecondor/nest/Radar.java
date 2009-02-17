@@ -191,7 +191,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 							"Login to the location storage provider at "
 									+ ICECONDOR_URL_SHORTNAME
 									+ " to activate position recording.")
-							.setPositiveButton("OK",
+							.setPositiveButton("Proceed",
 									new DialogInterface.OnClickListener() {
 										public void onClick(DialogInterface dialog,
 												int whichButton) {
