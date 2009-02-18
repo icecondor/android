@@ -54,8 +54,7 @@ public class Settings extends PreferenceActivity implements ServiceConnection,
     	super.onResume();
         Intent pigeon_service = new Intent(this, Pigeon.class);
         boolean result = bindService(pigeon_service, this, 0); // 0 = do not auto-start
-        Log.i(appTag, "pigeon bind result="+result);
-    	Log.i(appTag, "onResume yeah");
+    	Log.i(appTag, "onResume");
     	Preference auth_pref = getPreferenceScreen().findPreference("authentication");
     	if (LocationRepositoriesSqlite.has_access_token(this)) {
     		String openid = settings.getString(SETTING_OPENID, null);
@@ -67,15 +66,15 @@ public class Settings extends PreferenceActivity implements ServiceConnection,
     	String minutes = Util.millisecondsToWords(Long.parseLong(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "")));
     	xmit_pref.setSummary("every "+minutes);    	
     	Preference rss_pref = getPreferenceScreen().findPreference("rss read frequency");
-    	minutes = Util.millisecondsToWords(Long.parseLong(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "")));
-    	rss_pref.setSummary("every "+minutes);    	
+    	minutes = Util.millisecondsToWords(Long.parseLong(settings.getString(SETTING_RSS_READ_FREQUENCY, "")));
+    	rss_pref.setSummary("every "+minutes);
     }
     
     @Override
     public void onPause() {
     	super.onPause();
 		unbindService(this);
-    	Log.i(appTag, "onPause yeah");
+    	Log.i(appTag, "onPause");
     }
 
 	public void onServiceConnected(ComponentName className, IBinder service) {
