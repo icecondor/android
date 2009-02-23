@@ -142,6 +142,7 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 					insert_service(title, url);
 					try {
 						pigeon.refreshRSS();
+						Toast.makeText(this, "Refreshing GeoRSS feeds", Toast.LENGTH_SHORT).show();
 					} catch (RemoteException e) {
 						e.printStackTrace();
 					}

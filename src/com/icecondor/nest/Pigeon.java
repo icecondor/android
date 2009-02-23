@@ -205,7 +205,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 						geoRssUrls.close();						
 					}
 				}, 0);
-		Toast.makeText(this, "Refreshing GeoRSS feeds", Toast.LENGTH_SHORT).show();
 	}
 
 	protected void readGeoRss(Cursor geoRssUrls) throws ClientProtocolException, IOException {
