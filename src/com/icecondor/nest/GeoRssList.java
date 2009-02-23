@@ -26,6 +26,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 
@@ -142,7 +143,7 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 					insert_service(title, url);
 					try {
 						pigeon.refreshRSS();
-						Toast.makeText(this, "Refreshing GeoRSS feeds", Toast.LENGTH_SHORT).show();
+						Toast.makeText(GeoRssList.this, "Refreshing GeoRSS feeds", Toast.LENGTH_SHORT).show();
 					} catch (RemoteException e) {
 						e.printStackTrace();
 					}
