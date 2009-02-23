@@ -452,12 +452,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			}
 		}
 		if (pref_name.equals(SETTING_RSS_READ_FREQUENCY)) {
-			if (on_switch) {
-				stop_rss_timer();
-				start_rss_timer();
-				notificationFlash("RSS Read frequency now "+Util.millisecondsToWords(
+			stop_rss_timer();
+			start_rss_timer();
+			notificationFlash("RSS Read frequency now "+Util.millisecondsToWords(
 						Long.parseLong(prefs.getString(pref_name, "N/A"))));
-			}
 		}
 	}
 }
