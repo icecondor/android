@@ -284,7 +284,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 
 	private void startLocationUpdates() {
-		long record_frequency = Long.decode(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "60000"));
+		long record_frequency = Long.decode(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "300000"));
 		Log.i(appTag, "requesting GPS updates with frequency "+record_frequency);
 		locationManager.requestLocationUpdates(
 				LocationManager.GPS_PROVIDER, 
