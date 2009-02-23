@@ -6,4 +6,5 @@ interface PigeonService {
   void stopTransmitting();
   Location getLastFix();
   Location getLastPushedFix();
+  void refreshRSS();
 }

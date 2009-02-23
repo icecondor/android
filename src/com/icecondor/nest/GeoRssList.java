@@ -3,12 +3,16 @@ package com.icecondor.nest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,7 +29,8 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 
-public class GeoRssList extends ListActivity implements OnItemSelectedListener {
+public class GeoRssList extends ListActivity implements ServiceConnection,
+														OnItemSelectedListener {
 	static final String appTag = "GeoRssList";
 	Intent settingsIntent, radarIntent;
 	EditText url_field;
@@ -34,6 +39,7 @@ public class GeoRssList extends ListActivity implements OnItemSelectedListener {
 	SQLiteDatabase geoRssDb;
 	Cursor rsses;
 	View add_url_dialog;
+	PigeonService pigeon;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -48,6 +54,8 @@ public class GeoRssList extends ListActivity implements OnItemSelectedListener {
     @Override
     public void onResume() {
     	super.onResume();
+        Intent pigeon_service = new Intent(this, Pigeon.class);
+        boolean result = bindService(pigeon_service, this, 0); // 0 = do not auto-start
 		rssdb = new GeoRssSqlite(this, "georss", null, 1);
 		geoRssDb = rssdb.getReadableDatabase();
 		//db.execSQL("insert into urls values (null, 'service', 'https://service.com'");
@@ -66,6 +74,7 @@ public class GeoRssList extends ListActivity implements OnItemSelectedListener {
     @Override
     public void onPause() {
     	super.onPause();
+		unbindService(this);
     	rsses.close();
     	geoRssDb.close();
     	rssdb.close();
@@ -131,6 +140,11 @@ public class GeoRssList extends ListActivity implements OnItemSelectedListener {
 					}
 					Log.i(appTag, "adding "+title);
 					insert_service(title, url);
+					try {
+						pigeon.refreshRSS();
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
 					
 					// not of the right way to get the list to refresh
 					finish();
@@ -189,6 +203,15 @@ public class GeoRssList extends ListActivity implements OnItemSelectedListener {
 	public void onNothingSelected(AdapterView<?> arg0) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void onServiceConnected(ComponentName name, IBinder service) {
+		pigeon = PigeonService.Stub.asInterface(service);
+	}
+
+	@Override
+	public void onServiceDisconnected(ComponentName name) {
 	}
 	
 }

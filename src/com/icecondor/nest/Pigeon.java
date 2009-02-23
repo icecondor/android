@@ -73,6 +73,7 @@ import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.sax.Element;
 import android.util.Log;
+import android.widget.Toast;
 
 //look at android.permission.RECEIVE_BOOT_COMPLETED
 
@@ -176,6 +177,21 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				new TimerTask() {
 					public void run() {
 						Log.i(appTag, "rss_timer fired");
+						updateRSS();
+					}
+				}, 0, rss_read_frequency);
+	}
+	
+	private void stop_rss_timer() {
+		rss_timer.cancel();
+		geoRssDb.close();
+	}
+	
+	protected void updateRSS() {
+		new Timer().schedule(
+				new TimerTask() {
+					public void run() {
+						Log.i(appTag, "rss_timer fired");
 						Cursor geoRssUrls = geoRssDb.query(GeoRssSqlite.SERVICES_TABLE,null, null, null, null, null, null);
 						while (geoRssUrls.moveToNext()) {
 							try {
@@ -186,14 +202,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 								Log.i(appTag, "io error "+e);
 							}
 						}
-						geoRssUrls.close();
+						geoRssUrls.close();						
 					}
-				}, 0, rss_read_frequency);
-	}
-	
-	private void stop_rss_timer() {
-		rss_timer.cancel();
-		geoRssDb.close();
+				}, 0);
+		Toast.makeText(this, "Refreshing GeoRSS feeds", Toast.LENGTH_SHORT).show();
 	}
 
 	protected void readGeoRss(Cursor geoRssUrls) throws ClientProtocolException, IOException {
@@ -388,6 +400,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		@Override
 		public Location getLastPushedFix() throws RemoteException {
 			return last_fix;		
+		}
+		@Override
+		public void refreshRSS() throws RemoteException {
+			updateRSS();
 		}
     };
 
