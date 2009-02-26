@@ -26,7 +26,9 @@ public class Util {
 				 new SimpleDateFormat("d MMM yy HH:mm z"), 
 				 new SimpleDateFormat("d MMM yy HH:mm:ss z"), 
 				 new SimpleDateFormat("d MMM yyyy HH:mm z"), 
-				 new SimpleDateFormat("d MMM yyyy HH:mm:ss z")};
+				 new SimpleDateFormat("d MMM yyyy HH:mm:ss z"),
+				 new SimpleDateFormat("yyyyMMdd'T'HHmmss"),
+				 new SimpleDateFormat("yyyyMMdd")};
 		 
 		 Date parsed = null;
 		 for(int i=0; i < rfc822DateFormats.length; i++) {

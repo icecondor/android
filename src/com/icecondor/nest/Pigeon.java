@@ -239,6 +239,9 @@ public class Pigeon extends Service implements Constants, LocationListener,
 					if(sub_item.getNodeName().equals("pubDate")) {
 						date = Util.DateTimeIso8601(Util.DateRfc822(sub_item.getFirstChild().getNodeValue()));
 					}
+					if(sub_item.getNodeName().equals("xCal:dtstart")) {
+						date = Util.DateTimeIso8601(Util.DateRfc822(sub_item.getFirstChild().getNodeValue()));
+					}
 					if(sub_item.getNodeName().equals("geo:lat")) {
 						latitude = Float.parseFloat(sub_item.getFirstChild().getNodeValue());
 					}
