@@ -217,7 +217,11 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			DocumentBuilder db = DocumentBuilderFactory.newInstance()
 					.newDocumentBuilder();
 			Document doc = db.parse(urlConn.getInputStream());
-			NodeList items = doc.getElementsByTagName("item");
+			NodeList items = doc.getElementsByTagName("item");		
+			if (items.getLength() == 0) {
+				// try for ATOM
+				items = doc.getElementsByTagName("entry");
+			}
 
 			Log.i(appTag, "i read "+items.getLength()+" shouts");
 			for (int i = 0; i < items.getLength(); i++) {
@@ -241,6 +245,17 @@ public class Pigeon extends Service implements Constants, LocationListener,
 					if(sub_item.getNodeName().equals("geo:long")) {
 						DateFormat date_format = DateFormat.getInstance();
 						longitude = Float.parseFloat(sub_item.getFirstChild().getNodeValue());
+					}
+					if(sub_item.getNodeName().equals("georss:point")) {
+						String latLong = sub_item.getFirstChild().getNodeValue();
+						int spacePos = latLong.indexOf(' ');
+						String lat = latLong.substring(0,spacePos);
+						String lng = latLong.substring(spacePos);
+						latitude = Float.parseFloat(lat);
+						longitude = Float.parseFloat(lng);
+					}
+					if(sub_item.getNodeName().equals("published")) {
+						date = sub_item.getFirstChild().getNodeValue();
 					}
 				}
 				Log.i(appTag, "item #"+i+" guid:"+ guid+" lat:"+
