@@ -2,6 +2,7 @@ package com.icecondor.nest;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -207,12 +208,19 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				}, 0);
 	}
 
-	protected void readGeoRss(Cursor geoRssUrls) throws ClientProtocolException, IOException {
-		String urlString = geoRssUrls.getString(geoRssUrls.getColumnIndex(GeoRssSqlite.URL));
+	protected void readGeoRss(Cursor geoRssRow) throws ClientProtocolException, IOException {
+		String urlString = geoRssRow.getString(geoRssRow.getColumnIndex(GeoRssSqlite.URL));
 		Log.i(appTag, "readGeoRss "+urlString);
+		int service_id = geoRssRow.getInt(geoRssRow.getColumnIndex("_id"));
+		parseGeoRss(urlString, service_id);	
+	}
+	
+	private void parseGeoRss(String urlString, int service_id)
+			throws MalformedURLException, IOException {
 		URL url = new URL(urlString);
 		URLConnection urlConn = url.openConnection();
 		urlConn.setReadTimeout(15000);
+
 		try {
 			DocumentBuilder db = DocumentBuilderFactory.newInstance()
 					.newDocumentBuilder();
@@ -271,7 +279,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				cv.put("long", longitude);
 				cv.put("date", date);
 				cv.put("title", title);
-				cv.put("service_id", geoRssUrls.getInt(geoRssUrls.getColumnIndex("_id")));
+				cv.put("service_id", service_id);
 				geoRssDb.insert(GeoRssSqlite.SHOUTS_TABLE, null, cv);
 			}
 		} catch (ParserConfigurationException e) {
@@ -280,7 +288,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			e.printStackTrace();
 		} catch (SAXException e) {
 			e.printStackTrace();
-		}	
+		}
 	}
 
 	private void notificationStatusUpdate(String msg) {
