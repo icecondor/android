@@ -17,7 +17,7 @@ public class Util {
         return date;//.substring (0, 22) + ":" + date.substring (22);
 	}
 	
-	public static long DateRfc822(String date) {
+	public static Date DateRfc822(String date) {
 		 SimpleDateFormat rfc822DateFormats[] = new SimpleDateFormat[] { 
 				 new SimpleDateFormat("EEE, d MMM yy HH:mm:ss z"), 
 				 new SimpleDateFormat("EEE, d MMM yy HH:mm z"), 
@@ -39,7 +39,7 @@ public class Util {
 				// not this one
 			}
 		 }
-		 return parsed != null ? parsed.getTime() : 0;
+		 return parsed;
 	}
 	public static String timeAgoInWords(long mark) {
 		String ago="none";

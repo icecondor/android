@@ -9,6 +9,7 @@ import java.net.URLConnection;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -235,6 +236,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			for (int i = 0; i < items.getLength(); i++) {
 				String guid = null, title = null, date =null;
 				float latitude = -100, longitude = -200;
+				Date pubDate = null, dtstart = null;
 				NodeList item_elements = items.item(i).getChildNodes();
 				for(int j=0; j < item_elements.getLength(); j++) {
 					Node sub_item = item_elements.item(j);
@@ -245,12 +247,11 @@ public class Pigeon extends Service implements Constants, LocationListener,
 						title = sub_item.getFirstChild().getNodeValue();
 					}
 					if(sub_item.getNodeName().equals("pubDate")) {
-						if (date == null) { // allow dtstart to override pubdate
-							date = Util.DateTimeIso8601(Util.DateRfc822(sub_item.getFirstChild().getNodeValue()));
-						}
+						pubDate = Util.DateRfc822(sub_item.getFirstChild().getNodeValue());
+						date = Util.DateTimeIso8601(pubDate.getTime());
 					}
 					if(sub_item.getNodeName().equals("xCal:dtstart")) {
-						date = Util.DateTimeIso8601(Util.DateRfc822(sub_item.getFirstChild().getNodeValue()));
+						dtstart = Util.DateRfc822(sub_item.getFirstChild().getNodeValue());
 					}
 					if(sub_item.getNodeName().equals("geo:lat")) {
 						latitude = Float.parseFloat(sub_item.getFirstChild().getNodeValue());
@@ -267,12 +268,25 @@ public class Pigeon extends Service implements Constants, LocationListener,
 						latitude = Float.parseFloat(lat);
 						longitude = Float.parseFloat(lng);
 					}
+					// ATOM hack
 					if(sub_item.getNodeName().equals("published")) {
 						date = sub_item.getFirstChild().getNodeValue();
 					}
+					// ATOM hack
+					if(sub_item.getNodeName().equals("id")) {
+						guid = sub_item.getFirstChild().getNodeValue();
+					}
 				}
+				
 				Log.i(appTag, "item #"+i+" guid:"+ guid+" lat:"+
 						latitude + " long:"+longitude +" date:"+date);
+				if(dtstart != null) {
+					// xcal dtstart has no timezone. use the timezone from the entry's pubdate
+					date = Util.DateTimeIso8601(dtstart.getTime()-
+							(dtstart.getTimezoneOffset()*60000) + 
+							(pubDate.getTimezoneOffset()*60000));
+				}
+
 				ContentValues cv = new ContentValues(2);
 				cv.put("guid", guid);
 				cv.put("lat", latitude);
