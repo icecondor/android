@@ -28,8 +28,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -61,6 +63,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	FlockOverlay flock;
 	EditText uuid_field;
 	MapView mapView;
+	Drawable redMarker, greenMarker;
 	
     public void onCreate(Bundle savedInstanceState) {
     	Log.i(appTag, "onCreate");
@@ -82,7 +85,10 @@ public class Radar extends MapActivity implements ServiceConnection,
         mapController.setZoom(15);
         nearbys = new BirdOverlay();
         mapView.getOverlays().add(nearbys);
-        flock = new FlockOverlay(getResources().getDrawable(R.drawable.red_dot_12x20), this);
+        Resources res = getResources();
+        redMarker = res.getDrawable(R.drawable.red_dot_12x20);
+        greenMarker = res.getDrawable(R.drawable.green_dot_12x20); // android bug?
+        flock = new FlockOverlay(redMarker, this);
         mapView.getOverlays().add(flock);
     }
     
@@ -357,28 +363,45 @@ public class Radar extends MapActivity implements ServiceConnection,
 		Cursor Urls = geoRssDb.query(GeoRssSqlite.SERVICES_TABLE, null, null, null, null, null, null);
 		while(Urls.moveToNext()) {
 			long url_id = Urls.getLong(Urls.getColumnIndex("_id"));
-			Log.i(appTag, "reading shouts db for "+url_id);
-			Cursor shouts = geoRssDb.query(GeoRssSqlite.SHOUTS_TABLE, null, "service_id = ?", 
-					new String[] {String.valueOf(url_id)}, null, null, "date desc", "1");
-			while (shouts.moveToNext()) {
-				String guid = shouts.getString(shouts.getColumnIndex("guid"));
-				if (!flock.contains(guid)) {
-					Log.i(appTag, "adding bird to overlay:" + guid);
-					GeoPoint point = new GeoPoint((int) (shouts
-							.getFloat(shouts.getColumnIndex("lat")) * 1000000),
-							(int) (shouts.getFloat(shouts
-									.getColumnIndex("long")) * 1000000));
-					BirdItem test_bird = new BirdItem(point, guid, shouts
-							.getString(shouts.getColumnIndex("title")) + " " +
-							shouts.getString(shouts.getColumnIndex("date")));
-					flock.add(test_bird);
-				} 
+			Log.i(appTag, "reading shouts db for #"+url_id+" "+Urls.getString(Urls.getColumnIndex("name")));
+			Cursor preshouts = geoRssDb.query(GeoRssSqlite.SHOUTS_TABLE, null, "service_id = ? and " +
+					"date <= ?", 
+					new String[] {String.valueOf(url_id), Util.DateTimeIso8601(System.currentTimeMillis())},
+					null, null, "date desc", "1");
+			if(preshouts.getCount() > 0) {
+				preshouts.moveToFirst();
+				addBird(preshouts, redMarker);
 			}
-			shouts.close();
+			preshouts.close();
+
+			Cursor postshouts = geoRssDb.query(GeoRssSqlite.SHOUTS_TABLE, null, "service_id = ? and " +
+					"date > ?", 
+					new String[] {String.valueOf(url_id), Util.DateTimeIso8601(System.currentTimeMillis())},
+					null, null, "date asc", "1");
+			if (postshouts.getCount() > 0) {
+				postshouts.moveToFirst();
+				addBird(postshouts, redMarker);
+			}
+			postshouts.close();
 		}
 		Urls.close();
 		geoRssDb.close();
 		rssdb.close();
+	}
+
+	private void addBird(Cursor displayShout, Drawable marker) {
+		String guid = displayShout.getString(displayShout.getColumnIndex("guid"));
+		if (!flock.contains(guid)) {
+			GeoPoint point = new GeoPoint((int) (displayShout
+					.getFloat(displayShout.getColumnIndex("lat")) * 1000000),
+					(int) (displayShout.getFloat(displayShout
+							.getColumnIndex("long")) * 1000000));
+			BirdItem bird = new BirdItem(point, guid, displayShout
+					.getString(displayShout.getColumnIndex("title")) + " " +
+					displayShout.getString(displayShout.getColumnIndex("date")));
+			bird.setMarker(marker);
+			flock.add(bird);
+		}	
 	}
 
 	public void stopNeighborReadTimer() {
