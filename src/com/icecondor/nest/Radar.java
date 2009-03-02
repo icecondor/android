@@ -87,7 +87,7 @@ public class Radar extends MapActivity implements ServiceConnection,
         mapView.getOverlays().add(nearbys);
         Resources res = getResources();
         redMarker = res.getDrawable(R.drawable.red_dot_12x20);
-        greenMarker = res.getDrawable(R.drawable.green_dot_12x20); // android bug?
+        greenMarker = redMarker; // res.getDrawable(R.drawable.red_dot_12x20); // android bug?
         flock = new FlockOverlay(redMarker, this);
         mapView.getOverlays().add(flock);
     }
@@ -380,7 +380,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 					null, null, "date asc", "1");
 			if (postshouts.getCount() > 0) {
 				postshouts.moveToFirst();
-				addBird(postshouts, redMarker);
+				addBird(postshouts, greenMarker);
 			}
 			postshouts.close();
 		}
