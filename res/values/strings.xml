@@ -16,7 +16,7 @@
 	<string name="menu_geo_rss_add">Add URL</string>
 	<string name="menu_geo_rss_detail_delete">Delete</string>
 	<string name="dialog_openid">Enter a descriptive name or OpenID URL</string>
-	<string name="license">"IceCondor is capable of continuously tracking and publishing the phone's GPS location. It also reads the location of friends on popular location services such as BrightKite and Shizzow. Heavy data usage is possible - an unlimited data plan is recommended. Use at own risk. No warranty."</string>
+	<string name="license">"IceCondor is a GeoRSS reader and location tracking tool. Using RSS feeds, friends and events can be mapped automatically. The phone's GPS location can optionally be made available on the Internet. Heavy data usage is possible. Use at own risk. No warranty."</string>
 	<string name="spinner_location_service_prompt">Choose a service</string>
 	<string name="about">Thank you for using IceCondor - a GeoRSS reader and continuous location tracking tool for android. (C) 2009 Don Park</string>	
 </resources>
