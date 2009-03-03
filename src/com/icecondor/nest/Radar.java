@@ -298,7 +298,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 		        if (fix != null) {
 		            scrollToLastFix();
 		        } else {
-		        	Toast.makeText(this, "Waiting for first GPS fix", Toast.LENGTH_SHORT).show();
+		        	Toast.makeText(this, "Waiting for first location fix", Toast.LENGTH_SHORT).show();
 		        }
 			}
 		} catch (RemoteException e) {
