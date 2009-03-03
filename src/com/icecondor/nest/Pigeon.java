@@ -436,7 +436,11 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			notificationFlash("Location reporting OFF.");
 		}
 		public Location getLastFix() throws RemoteException {
-			return last_local_fix;
+			if(on_switch) {
+				return last_local_fix;
+			} else {
+				return locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			}
 		}
 		@Override
 		public Location getLastPushedFix() throws RemoteException {
