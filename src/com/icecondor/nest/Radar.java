@@ -290,15 +290,6 @@ public class Radar extends MapActivity implements ServiceConnection,
 	public void onServiceConnected(ComponentName className, IBinder service) {
 		Log.i(appTag, "onServiceConnected "+service);
 		pigeon = PigeonService.Stub.asInterface(service);
-		try {
-			Location fix = pigeon.getLastFix();
-	        if (fix != null) {
-	            scrollToLastFix();
-	        } else {
-	        	Toast.makeText(this, "Waiting for first GPS fix", Toast.LENGTH_SHORT).show();
-	        }
-		} catch (RemoteException e) {
-		}
 	}
 
 	public void onServiceDisconnected(ComponentName className) {
