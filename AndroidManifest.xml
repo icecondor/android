@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.icecondor.nest"
-      android:versionCode="20090210"
-      android:versionName="20090210">
+      android:versionCode="20090303"
+      android:versionName="20090303">
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> 
     <uses-permission android:name="android.permission.INTERNET" />
     <application android:icon="@drawable/icon" android:label="@string/app_name">
