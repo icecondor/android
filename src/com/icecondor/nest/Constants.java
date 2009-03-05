@@ -1,7 +1,7 @@
 package com.icecondor.nest;
 
 public interface Constants {
-	public static final int ICECONDOR_VERSION = 20090303;
+	public static final int ICECONDOR_VERSION = 20090304;
 	public static final String ICECONDOR_URL = "http://icecondor.com/"; // use preference
 	public static final String ICECONDOR_URL_SHORTNAME = "icecondor.com"; // use preference
 	public static final String ICECONDOR_VERSION_CHECK_URL = "http://icecondor.com/version"; // use preference
@@ -11,6 +11,7 @@ public interface Constants {
 	public static final String ICECONDOR_OAUTH_AUTHORIZATION_URL = "http://icecondor.com/oauth/authorize";
 	public static final String ICECONDOR_OAUTH_ACCESS_URL = "http://icecondor.com/oauth/access_token";
 	public static final String ICECONDOR_OAUTH_CALLBACK = "icecondor-android-app:///";
+	public static final String GETSATISFACTION_URL = "http://getsatisfaction.com/icecondor";
 	public static final long RADAR_REFRESH_INTERVAL = 15000;
 
 	public static final String SETTING_PIGEON_TRANSMITTING = "pigeon_transmitting";
