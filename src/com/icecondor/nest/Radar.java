@@ -88,7 +88,7 @@ public class Radar extends MapActivity implements ServiceConnection,
         mapView.getOverlays().add(nearbys);
         Resources res = getResources();
         redMarker = res.getDrawable(R.drawable.red_dot_12x20);
-        greenMarker = redMarker; // res.getDrawable(R.drawable.red_dot_12x20); // android bug?
+        greenMarker = res.getDrawable(R.drawable.green_dot_12x20);
         flock = new FlockOverlay(redMarker, this);
         mapView.getOverlays().add(flock);
     }
@@ -372,13 +372,14 @@ public class Radar extends MapActivity implements ServiceConnection,
 		Cursor Urls = geoRssDb.query(GeoRssSqlite.SERVICES_TABLE, null, null, null, null, null, null);
 		while(Urls.moveToNext()) {
 			long url_id = Urls.getLong(Urls.getColumnIndex("_id"));
-			Log.i(appTag, "reading shouts db for #"+url_id+" "+Urls.getString(Urls.getColumnIndex("name")));
+			Log.i(appTag, "reading shouts db for #"+url_id+" "+Urls.getString(Urls.getColumnIndex("name"))+"at "+Util.DateTimeIso8601(System.currentTimeMillis()));
 			Cursor preshouts = geoRssDb.query(GeoRssSqlite.SHOUTS_TABLE, null, "service_id = ? and " +
 					"date <= ?", 
 					new String[] {String.valueOf(url_id), Util.DateTimeIso8601(System.currentTimeMillis())},
 					null, null, "date desc", "1");
 			if(preshouts.getCount() > 0) {
 				preshouts.moveToFirst();
+				Log.i(appTag, "preshout red "+preshouts.getString(preshouts.getColumnIndex("title")));
 				addBird(preshouts, redMarker);
 			}
 			preshouts.close();
@@ -389,6 +390,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 					null, null, "date asc", "1");
 			if (postshouts.getCount() > 0) {
 				postshouts.moveToFirst();
+				Log.i(appTag, "postshout green "+postshouts.getString(postshouts.getColumnIndex("title")));
 				addBird(postshouts, greenMarker);
 			}
 			postshouts.close();
@@ -408,8 +410,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 			BirdItem bird = new BirdItem(point, guid, displayShout
 					.getString(displayShout.getColumnIndex("title")) + " " +
 					displayShout.getString(displayShout.getColumnIndex("date")));
-			bird.setMarker(marker);
-			flock.add(bird);
+			flock.add(bird, marker);
 		}	
 	}
 

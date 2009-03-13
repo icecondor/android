@@ -24,11 +24,10 @@ public class FlockOverlay extends ItemizedOverlay<BirdItem> {
 	public FlockOverlay(Drawable defaultMarker, Context app) {
 		super(boundCenterBottom(defaultMarker));
 		this.app = app;
-		// R30 bug for zero-item overlay
-		add(new BirdItem(new GeoPoint(0,0), "bug workaround", "workaround for ItemizedOverlay R30 android bug"));
 	}
 	
-	public void add(BirdItem bird) {
+	public void add(BirdItem bird, Drawable marker) {
+		bird.setMarker(boundCenterBottom(marker));
 		birds.add(bird);
 		populate();
 	}
@@ -72,6 +71,5 @@ public class FlockOverlay extends ItemizedOverlay<BirdItem> {
 	public void draw(Canvas canvas, MapView view, boolean shadow ) {
 		super.draw(canvas, view, shadow);
 		//draw other stuffs...
-
 	} 
 }
