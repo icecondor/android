@@ -59,7 +59,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	private Timer service_read_timer;
 	Intent settingsIntent, geoRssIntent;
 	SharedPreferences settings;
-	BirdOverlay nearbys;
+	MeOverlay nearbys;
 	FlockOverlay flock;
 	EditText uuid_field;
 	MapView mapView;
@@ -84,7 +84,7 @@ public class Radar extends MapActivity implements ServiceConnection,
         radar_zoom.addView(mapView.getZoomControls());
         mapController = mapView.getController();
         mapController.setZoom(15);
-        nearbys = new BirdOverlay();
+        nearbys = new MeOverlay();
         mapView.getOverlays().add(nearbys);
         Resources res = getResources();
         redMarker = res.getDrawable(R.drawable.red_dot_12x20);
