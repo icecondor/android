@@ -237,6 +237,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				String guid = null, title = null, date =null;
 				float latitude = -100, longitude = -200;
 				Date pubDate = null, dtstart = null;
+				int pubDateTZ = 0;
 				NodeList item_elements = items.item(i).getChildNodes();
 				for(int j=0; j < item_elements.getLength(); j++) {
 					Node sub_item = item_elements.item(j);
@@ -247,7 +248,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 						title = sub_item.getFirstChild().getNodeValue();
 					}
 					if(sub_item.getNodeName().equals("pubDate")) {
-						pubDate = Util.DateRfc822(sub_item.getFirstChild().getNodeValue());
+						String pubDateStr = sub_item.getFirstChild().getNodeValue();
+						pubDate = Util.DateRfc822(pubDateStr);
+						// SimpleDateFormat adjusts the date into GMT instead of returning the TZ
+						pubDateTZ = Integer.parseInt(pubDateStr.substring(pubDateStr.length()-5));
 						date = Util.DateTimeIso8601(pubDate.getTime());
 					}
 					if(sub_item.getNodeName().equals("xCal:dtstart")) {
@@ -279,12 +283,15 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				}
 				
 				Log.i(appTag, "item #"+i+" guid:"+ guid+" lat:"+
-						latitude + " long:"+longitude +" date:"+date);
+						latitude + " long:"+longitude +" date:"+pubDate);
 				if(dtstart != null) {
 					// xcal dtstart has no timezone. use the timezone from the entry's pubdate
+					Log.i(appTag, "tzfix "+Util.DateTimeIso8601(dtstart.getTime())+" - "
+							+(dtstart.getTimezoneOffset()*60000)+" + "+pubDateTZ*60000);
 					date = Util.DateTimeIso8601(dtstart.getTime()-
 							(dtstart.getTimezoneOffset()*60000) + 
-							(pubDate.getTimezoneOffset()*60000));
+							(pubDateTZ*-60000));
+					Log.i(appTag, "tzfix date "+date);
 				}
 
 				ContentValues cv = new ContentValues(2);
