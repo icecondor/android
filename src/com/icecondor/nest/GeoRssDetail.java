@@ -44,14 +44,18 @@ public class GeoRssDetail extends Activity {
 		Cursor last_update = geoRssDb.query(GeoRssSqlite.SHOUTS_TABLE,null, "service_id = ?",
                 new String[] {""+row_id}, null, null, "date desc", "1");
 		String date;
+		String title = "";
 		if (last_update.getCount() > 0) {
 			last_update.moveToFirst();
 			date = last_update.getString(last_update.getColumnIndex("date"));
+			title = last_update.getString(last_update.getColumnIndex("title"));
 		} else {
 			date = "no updates";
 		}
 		TextView dateTextView = (TextView)findViewById(R.id.georssdetail_lastupdate);
 		dateTextView.setText(date);
+		TextView titleTextView = (TextView)findViewById(R.id.georssdetail_title);
+		titleTextView.setText(title);
 		last_update.close();
 		service.close();
 		geoRssDb.close();
