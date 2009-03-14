@@ -135,7 +135,7 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 					}else if (service.equals("brightkite.com")) {
 						url = "http://brightkite.com/people/"+url+"/objects.rss";
 					}else if (service.equals("shizzow.com")) {
-						url = "http://shizzow.com/"+url+"/rss";
+						url = "http://shizzow.com/people/"+url+"/rss";
 					}else if (service.equals("icecondor.com")) {
 						url = "http://icecondor.com/locations.rss?id="+url;
 					}
