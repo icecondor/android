@@ -1,5 +1,7 @@
 package com.icecondor.nest;
 
+import com.icecondor.nest.db.GeoRss;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -11,38 +13,38 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 public class GeoRssDetail extends Activity {
-	private final String appTag = "GeoRssDetail";
-	GeoRssSqlite rssdb;
-	SQLiteDatabase geoRssDb;
+	private static final String appTag = "GeoRssDetail";
+	public static final String RssDbIdKey = "georssid";
+	GeoRss rssdb;
 	private int row_id;
 	
     @Override
     protected void onCreate(Bundle icicle){
         super.onCreate(icicle);
         setContentView(R.layout.georssdetail);
-        
-		rssdb = new GeoRssSqlite(this, "georss", null, 1);
-        row_id = getIntent().getExtras().getInt(GeoRssSqlite.ID);
-        Log.i(appTag, "GeoRssDetail created with row id "+row_id);
+
+        // Database
+		rssdb = new GeoRss(this);
+		rssdb.open();
+		
+        row_id = getIntent().getExtras().getInt(RssDbIdKey);
+        Log.i(appTag, "GeoRssDetail onCreate with row id "+row_id);
     }
 
     @Override
     protected void onResume() {
     	super.onResume();
     	// fill in fields on the screen
-		geoRssDb = rssdb.getReadableDatabase();
-		Cursor service = geoRssDb.query(GeoRssSqlite.SERVICES_TABLE,null, "_id = ?",
-				                     new String[] {""+row_id}, null, null, null);
-		service.moveToFirst();
-		String name = service.getString(service.getColumnIndex(GeoRssSqlite.NAME));
-		String url = service.getString(service.getColumnIndex(GeoRssSqlite.URL));
+		Cursor feed = rssdb.findFeed(row_id);
+		feed.moveToFirst();
+		String name = feed.getString(feed.getColumnIndex(GeoRss.FEEDS_SERVICENAME));
+		String url = feed.getString(feed.getColumnIndex(GeoRss.FEEDS_EXTRA));
 		TextView msgTextView = (TextView)findViewById(R.id.georssdetail_header);
 		msgTextView.setText(name);
 		TextView urlTextView = (TextView)findViewById(R.id.georssdetail_url);
 		urlTextView.setText(url);
 		
-		Cursor last_update = geoRssDb.query(GeoRssSqlite.SHOUTS_TABLE,null, "service_id = ?",
-                new String[] {""+row_id}, null, null, "date desc", "1");
+		Cursor last_update = rssdb.findLastShout(row_id);
 		String date;
 		String title = "";
 		if (last_update.getCount() > 0) {
@@ -57,8 +59,7 @@ public class GeoRssDetail extends Activity {
 		TextView titleTextView = (TextView)findViewById(R.id.georssdetail_title);
 		titleTextView.setText(title);
 		last_update.close();
-		service.close();
-		geoRssDb.close();
+		feed.close();
     }
     
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -79,13 +80,15 @@ public class GeoRssDetail extends Activity {
 	}
 
 	private void removeServiceFromDatabase() {
-		GeoRssSqlite rssdb = new GeoRssSqlite(this, "georss", null, 1);
-		SQLiteDatabase db = rssdb.getWritableDatabase();
-		// the parameter substitution form of execSQL wasnt working. yuk.
-		db.execSQL("DELETE from "+GeoRssSqlite.SERVICES_TABLE+" where "+GeoRssSqlite.ID+ " = "+row_id);
-		db.close();
+		rssdb.deleteFeed(row_id);
 		finish(); // don't come back here
 		startActivity(new Intent(this, GeoRssList.class));
+	}
+	
+	@Override
+	public void onDestroy() {
+		rssdb.close();
+		super.onDestroy();
 	}
 
 }

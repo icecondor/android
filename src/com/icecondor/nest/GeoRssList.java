@@ -1,5 +1,7 @@
 package com.icecondor.nest;
 
+import com.icecondor.nest.db.GeoRss;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
@@ -36,9 +38,9 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 	Intent settingsIntent, radarIntent;
 	EditText url_field;
 	Spinner service_spinner;
-	GeoRssSqlite rssdb;
+	GeoRss rssdb;
 	SQLiteDatabase geoRssDb;
-	Cursor rsses;
+	Cursor feeds;
 	View add_url_dialog;
 	PigeonService pigeon;
 
@@ -50,6 +52,10 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
         // Jump Points
         settingsIntent = new Intent(this, Settings.class);
         radarIntent = new Intent(this, Radar.class);
+        
+        // Database
+		rssdb = new GeoRss(this);
+		rssdb.open();
 	}
 	
     @Override
@@ -57,15 +63,13 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
     	super.onResume();
         Intent pigeon_service = new Intent(this, Pigeon.class);
         boolean result = bindService(pigeon_service, this, 0); // 0 = do not auto-start
-		rssdb = new GeoRssSqlite(this, "georss", null, 1);
-		geoRssDb = rssdb.getReadableDatabase();
-		//db.execSQL("insert into urls values (null, 'service', 'https://service.com'");
-		rsses = geoRssDb.query(GeoRssSqlite.SERVICES_TABLE,null, null, null, null, null, null);
+        
+		feeds = rssdb.findFeeds();
         ListAdapter adapter = new SimpleCursorAdapter(
                 this, // Context
                 android.R.layout.two_line_list_item,  // Specify the row template to use (here, two columns bound to the two retrieved cursor rows)
-                rsses,  // Pass in the cursor to bind to.
-                new String[] {GeoRssSqlite.NAME, GeoRssSqlite.URL}, // Array of cursor columns to bind to.
+                feeds,  // Pass in the cursor to bind to.
+                new String[] {GeoRss.FEEDS_SERVICENAME, GeoRss.FEEDS_EXTRA}, // Array of cursor columns to bind to.
                 new int[] {android.R.id.text1, android.R.id.text2});      // Parallel array of which template objects to bind to those columns.
 
         // Bind to our new adapter.
@@ -76,9 +80,6 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
     public void onPause() {
     	super.onPause();
 		unbindService(this);
-    	rsses.close();
-    	geoRssDb.close();
-    	rssdb.close();
     }
 
 	
@@ -128,17 +129,9 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 			.setPositiveButton("Add", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int whichbutton) {
 					String service = (String)service_spinner.getSelectedItem();
-					String url = url_field.getText().toString();
-					String title = url + " - " + service;
-					if(service.equals("RSS")) {
-						// nothing left to do
-					}else if (service.equals("brightkite.com")) {
-						url = "http://brightkite.com/people/"+url+"/objects.rss";
-					}else if (service.equals("shizzow.com")) {
-						url = "http://shizzow.com/people/"+url+"/rss";
-					}else if (service.equals("icecondor.com")) {
-						url = "http://icecondor.com/locations.rss?id="+url;
-					}
+					String extra = url_field.getText().toString();
+					String title = extra + " - " + service;
+					String url = rssdb.urlFor(service, extra);
 					Log.i(appTag, "adding "+title);
 					insert_service(title, url);
 					try {
@@ -163,13 +156,11 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 	}
 
 	protected void insert_service(String service, String url) {
-		// GeoRSS Database
-		SQLiteDatabase db = rssdb.getWritableDatabase();
 		ContentValues cv = new ContentValues(2);
-		cv.put("name", service);
-		cv.put("url", url);
-		db.insert(GeoRssSqlite.SERVICES_TABLE, null, cv);
-		db.close();
+		cv.put(GeoRss.FEEDS_SERVICENAME, service);
+		cv.put(GeoRss.FEEDS_EXTRA, url);
+		Log.i(appTag,"adding feed "+service+" "+url);
+		rssdb.addFeed(cv);
 	}
 	
 	protected void onPrepareDialog(int id, Dialog dialog) {
@@ -180,8 +171,8 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 	public void onListItemClick(ListView l, View v, int position, long id){
 		Log.i(appTag, "Item clicked position: "+position);
 		Intent itemIntent = new Intent(this, GeoRssDetail.class);
-		rsses.moveToPosition(position);
-		itemIntent.putExtra(GeoRssSqlite.ID, rsses.getInt(rsses.getColumnIndex(GeoRssSqlite.ID)));
+		feeds.moveToPosition(position);
+		itemIntent.putExtra(GeoRssDetail.RssDbIdKey, feeds.getInt(feeds.getColumnIndex(GeoRss.FEEDS_ID)));
 		startActivity(itemIntent);
 	}
 
@@ -216,4 +207,10 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 	public void onServiceDisconnected(ComponentName name) {
 	}
 	
+	@Override
+	public void onDestroy() {
+		rssdb.close();
+		super.onDestroy();
+	}
+
 }

@@ -54,6 +54,8 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import com.icecondor.nest.db.GeoRss;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -94,12 +96,16 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	WifiManager wifiManager;
 	PendingIntent contentIntent;
 	SharedPreferences settings;
-	SQLiteDatabase geoRssDb;
+	GeoRss rssdb;
 	
 	public void onCreate() {
 		Log.i(appTag, "*** service created.");
 		super.onCreate();
 		
+		/* Database */
+		rssdb = new GeoRss(this);
+		rssdb.open();
+
 		/* GPS */
 		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		Log.i(appTag, "GPS provider enabled: "+locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER));
@@ -166,13 +172,11 @@ public class Pigeon extends Service implements Constants, LocationListener,
 }
 	public void onDestroy() {
 		stop_rss_timer();
+		rssdb.close();
 	}
 	
 	private void start_rss_timer() {
 		rss_timer = new Timer();
-		// GeoRSS Database
-		GeoRssSqlite rssdb = new GeoRssSqlite(this, "georss", null, 1);
-		geoRssDb = rssdb.getWritableDatabase();
 		long rss_read_frequency = Long.decode(settings.getString(SETTING_RSS_READ_FREQUENCY, "60000"));
 		Log.i(appTag, "starting rss timer at frequency "+rss_read_frequency);
 		rss_timer.scheduleAtFixedRate(
@@ -186,7 +190,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	
 	private void stop_rss_timer() {
 		rss_timer.cancel();
-		geoRssDb.close();
 	}
 	
 	protected void updateRSS() {
@@ -194,7 +197,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				new TimerTask() {
 					public void run() {
 						Log.i(appTag, "rss_timer fired");
-						Cursor geoRssUrls = geoRssDb.query(GeoRssSqlite.SERVICES_TABLE,null, null, null, null, null, null);
+						Cursor geoRssUrls = rssdb.findFeeds();
 						while (geoRssUrls.moveToNext()) {
 							try {
 								readGeoRss(geoRssUrls);
@@ -210,7 +213,9 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 
 	protected void readGeoRss(Cursor geoRssRow) throws ClientProtocolException, IOException {
-		String urlString = geoRssRow.getString(geoRssRow.getColumnIndex(GeoRssSqlite.URL));
+		String urlString = geoRssRow.getString(geoRssRow.getColumnIndex(GeoRss.FEEDS_EXTRA));
+			//rssdb.urlFor(geoRssRow.getString(geoRssRow.getColumnIndex(GeoRss.FEEDS_SERVICENAME)),
+			//	geoRssRow.getString(geoRssRow.getColumnIndex(GeoRss.FEEDS_EXTRA)));
 		Log.i(appTag, "readGeoRss "+urlString);
 		int service_id = geoRssRow.getInt(geoRssRow.getColumnIndex("_id"));
 		parseGeoRss(urlString, service_id);	
@@ -301,7 +306,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				cv.put("date", date);
 				cv.put("title", title);
 				cv.put("service_id", service_id);
-				geoRssDb.insert(GeoRssSqlite.SHOUTS_TABLE, null, cv);
+				rssdb.insertShout(cv);
 			}
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();

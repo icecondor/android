@@ -50,6 +50,7 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
+import com.icecondor.nest.db.GeoRss;
 
 public class Radar extends MapActivity implements ServiceConnection,
 												  Constants {
@@ -65,6 +66,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	MapView mapView;
 	Drawable redMarker, greenMarker;
 	boolean first_fix;
+	GeoRss rssdb;
 	
     public void onCreate(Bundle savedInstanceState) {
     	Log.i(appTag, "onCreate");
@@ -91,6 +93,9 @@ public class Radar extends MapActivity implements ServiceConnection,
         greenMarker = res.getDrawable(R.drawable.green_dot_12x20);
         flock = new FlockOverlay(redMarker, this);
         mapView.getOverlays().add(flock);
+        
+		rssdb = new GeoRss(this);
+		rssdb.open();
     }
     
     public void scrollToLastFix() {
@@ -366,17 +371,11 @@ public class Radar extends MapActivity implements ServiceConnection,
 	}
 
 	protected void updateBirds() {
-		GeoRssSqlite rssdb = new GeoRssSqlite(this, "georss", null, 1);
-		SQLiteDatabase geoRssDb = rssdb.getReadableDatabase();
-		
-		Cursor Urls = geoRssDb.query(GeoRssSqlite.SERVICES_TABLE, null, null, null, null, null, null);
+		Cursor Urls = rssdb.findFeeds();
 		while(Urls.moveToNext()) {
 			long url_id = Urls.getLong(Urls.getColumnIndex("_id"));
 			Log.i(appTag, "reading shouts db for #"+url_id+" "+Urls.getString(Urls.getColumnIndex("name"))+"at "+Util.DateTimeIso8601(System.currentTimeMillis()));
-			Cursor preshouts = geoRssDb.query(GeoRssSqlite.SHOUTS_TABLE, null, "service_id = ? and " +
-					"date <= ?", 
-					new String[] {String.valueOf(url_id), Util.DateTimeIso8601(System.currentTimeMillis())},
-					null, null, "date desc", "1");
+			Cursor preshouts = rssdb.findPreShouts(url_id, System.currentTimeMillis());
 			if(preshouts.getCount() > 0) {
 				preshouts.moveToFirst();
 				Log.i(appTag, "preshout red "+preshouts.getString(preshouts.getColumnIndex("title")));
@@ -384,10 +383,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 			}
 			preshouts.close();
 
-			Cursor postshouts = geoRssDb.query(GeoRssSqlite.SHOUTS_TABLE, null, "service_id = ? and " +
-					"date > ?", 
-					new String[] {String.valueOf(url_id), Util.DateTimeIso8601(System.currentTimeMillis())},
-					null, null, "date asc", "1");
+			Cursor postshouts = rssdb.findPostShouts(url_id, System.currentTimeMillis());
 			if (postshouts.getCount() > 0) {
 				postshouts.moveToFirst();
 				Log.i(appTag, "postshout green "+postshouts.getString(postshouts.getColumnIndex("title")));
@@ -396,8 +392,6 @@ public class Radar extends MapActivity implements ServiceConnection,
 			postshouts.close();
 		}
 		Urls.close();
-		geoRssDb.close();
-		rssdb.close();
 	}
 
 	private void addBird(Cursor displayShout, Drawable marker) {
@@ -416,5 +410,11 @@ public class Radar extends MapActivity implements ServiceConnection,
 
 	public void stopNeighborReadTimer() {
 		service_read_timer.cancel();
+	}
+	
+	@Override
+	public void onDestroy() {
+		rssdb.close();
+		super.onDestroy();
 	}
 }
