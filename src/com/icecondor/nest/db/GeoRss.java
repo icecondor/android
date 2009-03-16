@@ -116,4 +116,12 @@ public class GeoRss {
 		return db.query(GeoRss.SHOUTS_TABLE,null, "service_id = ?",
                 new String[] {""+feed_id}, null, null, "date desc", "1");
 	}
+	
+	public int countFeeds() {
+		Cursor c = db.query(GeoRss.FEEDS_TABLE, new String[] {"count(*)"}, null, null, null, null, null);
+		c.moveToFirst();
+		int count = c.getInt(0);
+		c.close();
+		return count;
+	}
 }
