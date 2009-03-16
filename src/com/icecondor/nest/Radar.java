@@ -371,10 +371,10 @@ public class Radar extends MapActivity implements ServiceConnection,
 	}
 
 	protected void updateBirds() {
-		Cursor Urls = rssdb.findFeeds();
-		while(Urls.moveToNext()) {
-			long url_id = Urls.getLong(Urls.getColumnIndex("_id"));
-			Log.i(appTag, "reading shouts db for #"+url_id+" "+Urls.getString(Urls.getColumnIndex("name"))+"at "+Util.DateTimeIso8601(System.currentTimeMillis()));
+		Cursor feeds = rssdb.findFeeds();
+		while(feeds.moveToNext()) {
+			long url_id = feeds.getLong(feeds.getColumnIndex(GeoRss.FEEDS_ID));
+			Log.i(appTag, "reading shouts db for #"+url_id+" "+feeds.getString(feeds.getColumnIndex(GeoRss.FEEDS_EXTRA)));
 			Cursor preshouts = rssdb.findPreShouts(url_id, System.currentTimeMillis());
 			if(preshouts.getCount() > 0) {
 				preshouts.moveToFirst();
@@ -391,7 +391,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 			}
 			postshouts.close();
 		}
-		Urls.close();
+		feeds.close();
 	}
 
 	private void addBird(Cursor displayShout, Drawable marker) {

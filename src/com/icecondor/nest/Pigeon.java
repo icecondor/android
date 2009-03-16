@@ -237,7 +237,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				items = doc.getElementsByTagName("entry");
 			}
 
-			Log.i(appTag, "i read "+items.getLength()+" shouts");
+			Log.i(appTag, ""+items.getLength()+" items in feed");
 			for (int i = 0; i < items.getLength(); i++) {
 				String guid = null, title = null, date =null;
 				float latitude = -100, longitude = -200;
@@ -256,7 +256,12 @@ public class Pigeon extends Service implements Constants, LocationListener,
 						String pubDateStr = sub_item.getFirstChild().getNodeValue();
 						pubDate = Util.DateRfc822(pubDateStr);
 						// SimpleDateFormat adjusts the date into GMT instead of returning the TZ
-						pubDateTZ = Integer.parseInt(pubDateStr.substring(pubDateStr.length()-5,pubDateStr.length()-2));
+						try {
+							// try to extract the timezone from pubdate directly (for upcoming.org dtstart adjustment)
+							pubDateTZ = Integer.parseInt(pubDateStr.substring(pubDateStr.length()-5,pubDateStr.length()-2));
+						} catch (NumberFormatException e) {
+							// pubDate does not end in +/-HHMM
+						}
 						date = Util.DateTimeIso8601(pubDate.getTime());
 					}
 					if(sub_item.getNodeName().equals("xCal:dtstart")) {
