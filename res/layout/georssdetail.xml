@@ -22,19 +22,13 @@
         android:layout_height="wrap_content"
         android:id="@+id/georssdetail_lastupdate_label"
         android:textSize="14.0sp"
-        android:text="Last update:"
+        android:text="RSS entries:"
         />
-    <TextView
-        android:layout_width="fill_parent" 
-        android:layout_height="wrap_content"
-        android:id="@+id/georssdetail_lastupdate"
-        android:textSize="14.0sp"
-        />
-    <TextView
-        android:layout_width="fill_parent" 
-        android:layout_height="wrap_content"
-        android:id="@+id/georssdetail_title"
-        android:textSize="14.0sp"
-        />
+    <ListView android:id="@+id/android:list"
+              android:layout_width="fill_parent" 
+              android:layout_height="fill_parent"
+              android:layout_weight="1"
+              android:drawSelectorOnTop="false"/>
+        
         
 </LinearLayout>

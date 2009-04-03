@@ -22,6 +22,8 @@ public class GeoRss {
 	public static final String FEEDS_EXTRA = "extra";
 	
 	public static final String SHOUTS_TABLE = "shouts";
+	public static final String SHOUTS_TITLE = "title";
+	public static final String SHOUTS_DATE = "date";
 	
 	private SQLiteDatabase db;
 	private final Context context;
@@ -74,6 +76,12 @@ public class GeoRss {
 				"date > ?", 
 				new String[] {String.valueOf(url_id), Util.DateTimeIso8601(currentTimeMillis)},
 				null, null, "date asc", "1");
+	}
+
+	public Cursor findShouts(long url_id) {
+		return db.query(GeoRss.SHOUTS_TABLE, null, "service_id = ?",
+				new String[] {String.valueOf(url_id)},
+				null, null, "date desc", null);
 	}
 
 	public void insertShout(ContentValues cv) {

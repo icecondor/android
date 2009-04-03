@@ -3,6 +3,7 @@ package com.icecondor.nest;
 import com.icecondor.nest.db.GeoRss;
 
 import android.app.Activity;
+import android.app.ListActivity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -10,9 +11,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListAdapter;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-public class GeoRssDetail extends Activity {
+public class GeoRssDetail extends ListActivity {
 	private static final String appTag = "GeoRssDetail";
 	public static final String RssDbIdKey = "georssid";
 	GeoRss rssdb;
@@ -43,23 +46,18 @@ public class GeoRssDetail extends Activity {
 		msgTextView.setText(name);
 		TextView urlTextView = (TextView)findViewById(R.id.georssdetail_url);
 		urlTextView.setText(url);
-		
-		Cursor last_update = rssdb.findLastShout(row_id);
-		String date;
-		String title = "";
-		if (last_update.getCount() > 0) {
-			last_update.moveToFirst();
-			date = last_update.getString(last_update.getColumnIndex("date"));
-			title = last_update.getString(last_update.getColumnIndex("title"));
-		} else {
-			date = "no updates";
-		}
-		TextView dateTextView = (TextView)findViewById(R.id.georssdetail_lastupdate);
-		dateTextView.setText(date);
-		TextView titleTextView = (TextView)findViewById(R.id.georssdetail_title);
-		titleTextView.setText(title);
-		last_update.close();
 		feed.close();
+		
+		Cursor shouts = rssdb.findShouts(row_id);
+        ListAdapter adapter = new SimpleCursorAdapter(
+                this, // Context
+                android.R.layout.two_line_list_item,  // Specify the row template to use (here, two columns bound to the two retrieved cursor rows)
+                shouts,  // Pass in the cursor to bind to.
+                new String[] {GeoRss.SHOUTS_TITLE, GeoRss.SHOUTS_DATE}, // Array of cursor columns to bind to.
+                new int[] {android.R.id.text1, android.R.id.text2});      // Parallel array of which template objects to bind to those columns.
+
+        // Bind to our new adapter.
+        setListAdapter(adapter);
     }
     
 	public boolean onCreateOptionsMenu(Menu menu) {
