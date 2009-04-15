@@ -25,6 +25,7 @@ public class GeoRss {
 	public static final String SHOUTS_TABLE = "shouts";
 	public static final String SHOUTS_TITLE = "title";
 	public static final String SHOUTS_DATE = "date";
+	public static final String SHOUTS_FEED_ID = "feed_id";
 	
 	private SQLiteDatabase db;
 	private final Context context;
@@ -56,7 +57,7 @@ public class GeoRss {
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			db.execSQL("CREATE TABLE "+FEEDS_TABLE+" (_id integer primary key, service_name text, title text, extra text, username text, password text)");
-			db.execSQL("CREATE TABLE "+SHOUTS_TABLE+" (_id integer primary key, guid text unique on conflict replace, title text, lat float, long float, date datetime, service_id integer)");
+			db.execSQL("CREATE TABLE "+SHOUTS_TABLE+" (_id integer primary key, guid text unique on conflict replace, title text, lat float, long float, date datetime, feed_id integer)");
 		}
 	
 		@Override
@@ -117,6 +118,7 @@ public class GeoRss {
 	public void deleteFeed(int row_id) {
 		// the parameter substitution form of execSQL wasnt working. yuk.
 		db.execSQL("DELETE from "+GeoRss.FEEDS_TABLE+" where "+GeoRss.FEEDS_ID+ " = "+row_id);
+		db.execSQL("DELETE from "+GeoRss.SHOUTS_TABLE+" where "+GeoRss.SHOUTS_FEED_ID+ " = "+row_id);
 	}
 
 	public Cursor findLastShout(int feed_id) {
