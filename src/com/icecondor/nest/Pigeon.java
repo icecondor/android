@@ -260,6 +260,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				cv.put(GeoRss.SHOUTS_FEED_ID, service_id);
 				rssdb.insertShout(cv);
 			}
+			rssdb.touch(service_id);
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		} catch (FactoryConfigurationError e) {

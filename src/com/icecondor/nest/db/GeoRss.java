@@ -21,6 +21,7 @@ public class GeoRss {
 	public static final String FEEDS_SERVICENAME = "service_name";
 	public static final String FEEDS_EXTRA = "extra";
 	public static final String FEEDS_TITLE = "title";
+	public static final String FEEDS_UPDATED_AT = "updated_at";
 	
 	public static final String SHOUTS_TABLE = "shouts";
 	public static final String SHOUTS_TITLE = "title";
@@ -56,7 +57,7 @@ public class GeoRss {
 	
 		@Override
 		public void onCreate(SQLiteDatabase db) {
-			db.execSQL("CREATE TABLE "+FEEDS_TABLE+" (_id integer primary key, service_name text, title text, extra text, username text, password text, last_update datetime)");
+			db.execSQL("CREATE TABLE "+FEEDS_TABLE+" (_id integer primary key, service_name text, title text, extra text, username text, password text, "+FEEDS_UPDATED_AT+" datetime)");
 			db.execSQL("CREATE TABLE "+SHOUTS_TABLE+" (_id integer primary key, guid text unique on conflict replace, title text, lat float, long float, date datetime, feed_id integer)");
 		}
 	
@@ -132,5 +133,12 @@ public class GeoRss {
 		int count = c.getInt(0);
 		c.close();
 		return count;
+	}
+
+	public void touch(int feed_id) {
+		ContentValues cv = new ContentValues(2);
+		cv.put(FEEDS_UPDATED_AT, Util.DateTimeIso8601Now());
+		db.update(FEEDS_TABLE, cv, FEEDS_ID+" = ?", new String[] {""+feed_id});
+		
 	}
 }

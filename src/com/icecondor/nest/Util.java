@@ -9,6 +9,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public class Util {
+	public static String DateTimeIso8601Now() {
+		return Util.DateTimeIso8601(System.currentTimeMillis());
+	}
+	
 	public static String DateTimeIso8601(long offset) {
 		DateFormat datePattern =  new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:ssZ");
 		datePattern.setTimeZone(TimeZone.getTimeZone("GMT"));
