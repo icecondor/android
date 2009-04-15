@@ -1,7 +1,5 @@
 package com.icecondor.nest;
 
-import com.icecondor.nest.db.GeoRss;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
@@ -29,8 +27,9 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
+
+import com.icecondor.nest.db.GeoRss;
 
 public class GeoRssList extends ListActivity implements ServiceConnection,
 														OnItemSelectedListener {
@@ -62,7 +61,7 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
     public void onResume() {
     	super.onResume();
         Intent pigeon_service = new Intent(this, Pigeon.class);
-        boolean result = bindService(pigeon_service, this, 0); // 0 = do not auto-start
+        bindService(pigeon_service, this, 0); // 0 = do not auto-start
         
 		feeds = rssdb.findFeeds();
         ListAdapter adapter = new SimpleCursorAdapter(
@@ -194,8 +193,6 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 
 	@Override
 	public void onNothingSelected(AdapterView<?> arg0) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
