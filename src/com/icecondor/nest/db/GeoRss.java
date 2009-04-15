@@ -67,21 +67,21 @@ public class GeoRss {
 	}
 
 	public Cursor findPreShouts(long url_id, long currentTimeMillis) {
-		return db.query(GeoRss.SHOUTS_TABLE, null, "service_id = ? and " +
+		return db.query(GeoRss.SHOUTS_TABLE, null, SHOUTS_FEED_ID+" = ? and " +
 				"date <= ?", 
 				new String[] {String.valueOf(url_id), Util.DateTimeIso8601(currentTimeMillis)},
 				null, null, "date desc", "1");
 	}
 
 	public Cursor findPostShouts(long url_id, long currentTimeMillis) {
-		return db.query(GeoRss.SHOUTS_TABLE, null, "service_id = ? and " +
+		return db.query(GeoRss.SHOUTS_TABLE, null, SHOUTS_FEED_ID+" = ? and " +
 				"date > ?", 
 				new String[] {String.valueOf(url_id), Util.DateTimeIso8601(currentTimeMillis)},
 				null, null, "date asc", "1");
 	}
 
 	public Cursor findShouts(long url_id) {
-		return db.query(GeoRss.SHOUTS_TABLE, null, "service_id = ?",
+		return db.query(GeoRss.SHOUTS_TABLE, null, SHOUTS_FEED_ID+" = ?",
 				new String[] {String.valueOf(url_id)},
 				null, null, "date desc", null);
 	}
@@ -122,8 +122,8 @@ public class GeoRss {
 	}
 
 	public Cursor findLastShout(int feed_id) {
-		return db.query(GeoRss.SHOUTS_TABLE,null, "service_id = ?",
-                new String[] {""+feed_id}, null, null, "date desc", "1");
+		return db.query(GeoRss.SHOUTS_TABLE,null, SHOUTS_FEED_ID+" = ?",
+                new String[] {""+feed_id}, null, null, SHOUTS_DATE+" desc", "1");
 	}
 	
 	public int countFeeds() {
