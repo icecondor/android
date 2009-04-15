@@ -20,6 +20,7 @@ public class GeoRss {
 	public static final String FEEDS_ID = "_id";
 	public static final String FEEDS_SERVICENAME = "service_name";
 	public static final String FEEDS_EXTRA = "extra";
+	public static final String FEEDS_TITLE = "title";
 	
 	public static final String SHOUTS_TABLE = "shouts";
 	public static final String SHOUTS_TITLE = "title";
@@ -89,10 +90,8 @@ public class GeoRss {
 	}
 
 	public String urlFor(String serviceName, String extra) {
-		String url = null;
-		if(serviceName.equals("RSS")) {
-			url = extra;
-		}else if (serviceName.equals("brightkite.com")) {
+		String url = extra; // if serviceName is blank or RSS
+		if (serviceName.equals("brightkite.com")) {
 			url = "http://brightkite.com/people/"+extra+"/objects.rss";
 		}else if (serviceName.equals("shizzow.com")) {
 			url = "http://shizzow.com/people/"+extra+"/rss";

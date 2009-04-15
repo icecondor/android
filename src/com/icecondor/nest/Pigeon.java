@@ -192,9 +192,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 
 	protected void readGeoRss(Cursor geoRssRow) throws ClientProtocolException, IOException {
-		String urlString = geoRssRow.getString(geoRssRow.getColumnIndex(GeoRss.FEEDS_EXTRA));
-			//rssdb.urlFor(geoRssRow.getString(geoRssRow.getColumnIndex(GeoRss.FEEDS_SERVICENAME)),
-			//	geoRssRow.getString(geoRssRow.getColumnIndex(GeoRss.FEEDS_EXTRA)));
+		String urlString = rssdb.urlFor(geoRssRow.getString(geoRssRow.getColumnIndex(GeoRss.FEEDS_SERVICENAME)),
+			                            geoRssRow.getString(geoRssRow.getColumnIndex(GeoRss.FEEDS_EXTRA)));
 		Log.i(appTag, "readGeoRss "+urlString);
 		int service_id = geoRssRow.getInt(geoRssRow.getColumnIndex("_id"));
 		parseGeoRss(urlString, service_id);	

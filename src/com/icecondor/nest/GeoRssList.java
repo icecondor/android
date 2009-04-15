@@ -131,9 +131,8 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 					String service = (String)service_spinner.getSelectedItem();
 					String extra = url_field.getText().toString();
 					String title = extra + " - " + service;
-					String url = rssdb.urlFor(service, extra);
 					Log.i(appTag, "adding "+title);
-					insert_service(title, url);
+					insert_service(service, extra, title);
 					try {
 						pigeon.refreshRSS();
 						Toast.makeText(GeoRssList.this, "Refreshing GeoRSS feeds", Toast.LENGTH_SHORT).show();
@@ -155,11 +154,12 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 			.create();
 	}
 
-	protected void insert_service(String service, String url) {
+	protected void insert_service(String service, String extra, String title) {
 		ContentValues cv = new ContentValues(2);
 		cv.put(GeoRss.FEEDS_SERVICENAME, service);
-		cv.put(GeoRss.FEEDS_EXTRA, url);
-		Log.i(appTag,"adding feed "+service+" "+url);
+		cv.put(GeoRss.FEEDS_EXTRA, extra);
+		cv.put(GeoRss.FEEDS_TITLE, title);
+		Log.i(appTag,"adding feed "+service+" "+extra);
 		rssdb.addFeed(cv);
 	}
 	
