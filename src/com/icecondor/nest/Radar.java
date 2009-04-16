@@ -2,6 +2,8 @@ package com.icecondor.nest;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -399,9 +401,11 @@ public class Radar extends MapActivity implements ServiceConnection,
 					.getFloat(displayShout.getColumnIndex("lat")) * 1000000),
 					(int) (displayShout.getFloat(displayShout
 							.getColumnIndex("long")) * 1000000));
-			BirdItem bird = new BirdItem(point, guid, displayShout
-					.getString(displayShout.getColumnIndex("title")) + " " +
-					displayShout.getString(displayShout.getColumnIndex("date")));
+			String date_string = displayShout.getString(displayShout.getColumnIndex("date"));
+			Date date = Util.DateRfc822(date_string);
+			String shout_date = Util.DateToShortDisplay(date);
+			String message = displayShout.getString(displayShout.getColumnIndex("title")) + " " + shout_date;
+			BirdItem bird = new BirdItem(point, guid, message);
 			flock.add(bird, marker);
 		}	
 	}

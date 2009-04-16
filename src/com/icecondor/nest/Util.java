@@ -31,6 +31,7 @@ public class Util {
 				 new SimpleDateFormat("d MMM yy HH:mm:ss z"), 
 				 new SimpleDateFormat("d MMM yyyy HH:mm z"), 
 				 new SimpleDateFormat("d MMM yyyy HH:mm:ss z"),
+				 new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz"),
 				 new SimpleDateFormat("yyyyMMdd'T'HHmmss"),
 				 new SimpleDateFormat("yyyyMMdd")};
 		 
@@ -128,5 +129,21 @@ public class Util {
             return true;
         }
     }
+
+	public static String DateToShortDisplay(Date date) {
+		String date_string;
+		String[] months = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+		String month_name = months[date.getMonth()-1];
+		String ampm;
+		int hours = date.getHours();
+		if(date.getHours() > 12) {
+			ampm="pm";
+			hours = hours - 12;
+		} else {
+			ampm="am";
+		}
+		date_string = ""+hours+":"+date.getMinutes()+ampm+" "+month_name+" "+date.getDay();
+		return date_string;
+	}
 
 }
