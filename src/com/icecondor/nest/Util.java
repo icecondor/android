@@ -142,7 +142,7 @@ public class Util {
 		} else {
 			ampm="am";
 		}
-		date_string = ""+hours+":"+date.getMinutes()+ampm+" "+month_name+" "+date.getDay();
+		date_string = ""+hours+":"+date.getMinutes()+ampm+" "+month_name+" "+date.getDate();
 		return date_string;
 	}
 
