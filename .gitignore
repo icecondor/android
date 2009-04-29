@@ -4,3 +4,4 @@ bin
 src/com/icecondor/nest/PigeonService.java
 src/com/icecondor/nest/R.java
 lib/*jar
+gen/
