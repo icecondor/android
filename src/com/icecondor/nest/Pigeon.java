@@ -111,9 +111,31 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		heartbeat_timer.scheduleAtFixedRate(
 			new TimerTask() {
 				public void run() {
-			    	String minutes = Util.millisecondsToWords(Long.parseLong(settings.getString(SETTING_RSS_READ_FREQUENCY, "")));
-					String msg = ""+rssdb.countFeeds()+" feeds refreshed every "+minutes;
-					notificationStatusUpdate(msg); 
+					String fix_part = "";
+					if (on_switch) {
+						if (last_fix != null) {
+							String ago = Util.timeAgoInWords(last_fix.getTime());
+							String http_status = "";
+							if (last_fix_http_status != 200) {
+								fix_part = last_fix.getProvider()+" publish error.";
+							} else {
+								fix_part = last_fix.getProvider()+" push"+http_status+" "+
+						                   ago+".";
+					        }
+					                        
+					    }
+						if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+							fix_part = "Warning: GPS set to disabled";
+						}
+					} else {
+						fix_part = "Location reporting is off.";
+					}
+				    String beat_part = "";
+				    if (last_local_fix != null) {
+				    	String ago = Util.timeAgoInWords(last_local_fix.getTime());
+				    	beat_part = "fix "+ago;
+				    }
+					notificationStatusUpdate(fix_part+" "+beat_part); 
 				}
 			}, 0, 20000);		
 

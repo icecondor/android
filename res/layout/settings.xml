@@ -2,14 +2,21 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" 
                   android:key="first_preferencescreen">  
                   <!--  -->
+                  
   <ListPreference android:key="rss read frequency"
                   android:title="GeoRSS Read Frequency"
                   android:entries="@+array/time_frequency"
                   android:entryValues="@+array/time_frequency_values" />
-  <!-- <EditTextPreference android:key="transmission frequency"
-                      android:title="Upload Frequency"
+  <ListPreference android:key="transmission frequency"
+                      android:title="Tracking Frequency"
                       android:entries="@+array/time_frequency"
                       android:entryValues="@+array/time_frequency_values" />
-   <CheckBoxPreference android:key="wifi enabled" 
+  <DialogPreference android:key="authentication" 
+                      android:title="Tracking Authentication"
+                      android:dialogTitle="Authentication"
+                      android:dialogMessage="Authentication allows position updates to be sent to a location storage provider. Turn on location reporting from the map screen to begin."
+                      android:persistent="false"
+                       />
+  <!-- <CheckBoxPreference android:key="wifi enabled" 
                       android:title="Use WiFi Location" /> -->
 </PreferenceScreen>

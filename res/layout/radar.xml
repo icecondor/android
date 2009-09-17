@@ -8,7 +8,7 @@
         android:layout_height="fill_parent"
         android:enabled="true"
         android:clickable="true"
-        android:apiKey="0KVP3r7JZvW_sgroTh1V0qpOfazwq-Vr4vpNlGQ"
+        android:apiKey="0KVP3r7JZvW9ds9nVInmSfGeTqa7UlWG-iOv1Vw"
         android:id="@+id/radar_mapview"
         />
      <LinearLayout android:id="@+id/radar_mapview_zoom"

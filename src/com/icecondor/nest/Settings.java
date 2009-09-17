@@ -55,7 +55,16 @@ public class Settings extends PreferenceActivity implements ServiceConnection,
         Intent pigeon_service = new Intent(this, Pigeon.class);
         boolean result = bindService(pigeon_service, this, 0); // 0 = do not auto-start
     	Log.i(appTag, "onResume");
-    	String minutes;
+        Preference auth_pref = getPreferenceScreen().findPreference("authentication");
+        if (LocationRepositoriesSqlite.has_access_token(this)) {
+          String openid = settings.getString(SETTING_OPENID, "");
+          auth_pref.setSummary(openid);
+        } else {
+          auth_pref.setSummary("Access token missing.");
+        }
+        Preference xmit_pref = getPreferenceScreen().findPreference("transmission frequency");
+        String minutes = Util.millisecondsToWords(Long.parseLong(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "")));
+        xmit_pref.setSummary("every "+minutes);    
     	Preference rss_pref = getPreferenceScreen().findPreference("rss read frequency");
     	minutes = Util.millisecondsToWords(Long.parseLong(settings.getString(SETTING_RSS_READ_FREQUENCY, "")));
     	rss_pref.setSummary("every "+minutes);

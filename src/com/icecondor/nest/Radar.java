@@ -161,6 +161,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 		menu.add(Menu.NONE, 1, Menu.NONE, R.string.menu_last_fix).setIcon(android.R.drawable.ic_menu_mylocation);
 		menu.add(Menu.NONE, 2, Menu.NONE, R.string.menu_settings).setIcon(android.R.drawable.ic_menu_preferences);
 		menu.add(Menu.NONE, 3, Menu.NONE, R.string.menu_geo_rss).setIcon(R.drawable.bluerss);
+		menu.add(Menu.NONE, 4, Menu.NONE, pigeonStatusTitle()).setIcon(android.R.drawable.presence_invisible);
 		menu.add(Menu.NONE, 5, Menu.NONE, R.string.menu_feedback).setIcon(R.drawable.exclamation);
 		return result;
 	}
@@ -194,6 +195,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		boolean result = super.onPrepareOptionsMenu(menu);
+		menu.findItem(4).setIcon(pigeonStatusIcon()).setTitle(pigeonStatusTitle());
 		return result;
 	}
 	
