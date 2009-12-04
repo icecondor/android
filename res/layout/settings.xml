@@ -11,7 +11,7 @@
                       android:title="Tracking Frequency"
                       android:entries="@+array/time_frequency"
                       android:entryValues="@+array/time_frequency_values" />
-  <DialogPreference android:key="authentication" 
+  <com.icecondor.nest.DialogPreference android:key="authentication" 
                       android:title="Tracking Authentication"
                       android:dialogTitle="Authentication"
                       android:dialogMessage="Authentication allows position updates to be sent to a location storage provider. Turn on location reporting from the map screen to begin."
