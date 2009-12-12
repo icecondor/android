@@ -60,7 +60,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	MapController mapController;
 	PigeonService pigeon;
 	private Timer service_read_timer;
-	Intent settingsIntent, geoRssIntent;
+	Intent settingsIntent, geoRssIntent, activityLogIntent;
 	SharedPreferences settings;
 	MeOverlay nearbys;
 	FlockOverlay flock;
@@ -76,6 +76,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
         settingsIntent = new Intent(this, Settings.class);
         geoRssIntent = new Intent(this, GeoRssList.class);
+        activityLogIntent = new Intent(this, ActivityLog.class);
         
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setProgressBarIndeterminateVisibility(false);
@@ -163,6 +164,8 @@ public class Radar extends MapActivity implements ServiceConnection,
 		menu.add(Menu.NONE, 3, Menu.NONE, R.string.menu_geo_rss).setIcon(R.drawable.bluerss);
 		menu.add(Menu.NONE, 4, Menu.NONE, pigeonStatusTitle()).setIcon(android.R.drawable.presence_invisible);
 		menu.add(Menu.NONE, 5, Menu.NONE, R.string.menu_feedback).setIcon(R.drawable.exclamation);
+		menu.add(Menu.NONE, 6, Menu.NONE, R.string.menu_exit).setIcon(android.R.drawable.ic_delete);
+		menu.add(Menu.NONE, 7, Menu.NONE, R.string.menu_log).setIcon(android.R.drawable.ic_menu_recent_history);
 		return result;
 	}
 	
@@ -187,6 +190,13 @@ public class Radar extends MapActivity implements ServiceConnection,
 			Intent i = new Intent(Intent.ACTION_VIEW);
 			i.setData(Uri.parse(GETSATISFACTION_URL));
 			startActivity(i);
+			break;
+		case 6:
+			unbindService(this);
+			stopService(new Intent(this, Pigeon.class));
+			break;
+		case 7:
+			startActivity(activityLogIntent);
 			break;
 		}
 		
@@ -317,7 +327,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 		} catch (RemoteException e) {
 		}
 	}
-
+	
 	public void onServiceDisconnected(ComponentName className) {
 		Log.i(appTag, "onServiceDisconnected "+className);
 	}
@@ -364,7 +374,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 		service_read_timer = new Timer();
 		service_read_timer.scheduleAtFixedRate(new TimerTask() {
 			public void run() {
-				Log.i(appTag, "NeighborReadTimer fired");
+				//Log.i(appTag, "NeighborReadTimer fired");
 				//scrollToLastFix();
 				updateBirds();
 				//getNearbys();

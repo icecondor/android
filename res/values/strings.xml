@@ -16,6 +16,8 @@
 	<string name="menu_geo_rss">GeoRSS</string>
 	<string name="menu_geo_rss_add">Add a Service</string>
 	<string name="menu_geo_rss_detail_delete">Delete</string>
+	<string name="menu_exit">Exit</string>
+	<string name="menu_log">Log</string>
 	<string name="dialog_openid">Enter a descriptive name or OpenID URL</string>
 	<string name="license">"IceCondor is a GeoRSS reader and location tracking tool. Using RSS feeds, friends and events can be mapped automatically. Heavy data usage is possible. Use at own risk. No warranty."</string>
 	<string name="spinner_location_service_prompt">Choose a service</string>

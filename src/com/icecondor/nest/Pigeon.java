@@ -76,6 +76,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		/* Database */
 		rssdb = new GeoRss(this);
 		rssdb.open();
+		rssdb.log("Pigon created");
 
 		/* GPS */
 		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -143,6 +144,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 }
 	public void onDestroy() {
 		stop_rss_timer();
+		rssdb.log("Pigon destroyed");
 		rssdb.close();
 	}
 	
@@ -315,6 +317,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	private void startLocationUpdates() {
 		long record_frequency = Long.decode(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "300000"));
 		Log.i(appTag, "requesting GPS updates with frequency "+record_frequency);
+		rssdb.log("requestLocationUpdates "+record_frequency);
 		locationManager.requestLocationUpdates(
 				LocationManager.GPS_PROVIDER, 
 				record_frequency, 
@@ -335,12 +338,14 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	
 	private void stopLocationUpdates() {
 		Log.i(appTag, "stopping GPS updates");		
+		rssdb.log("stopping GPS updates");		
 		locationManager.removeUpdates(this);
 	}
 
 	public void onStart(Intent start, int key) {
 		super.onStart(start,key);
 		Log.i(appTag, "pigeon service started!");
+		rssdb.log("Pigon started");
 	}
 	
 	@Override
@@ -445,6 +450,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		long record_frequency = Long.decode(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "180000"));
 		Log.i(appTag, "onLocationChanged: at:"+location.getLatitude()+" long:"+location.getLongitude() + " acc:"+
 			       location.getAccuracy()+" "+ time_since_last_update+" seconds since last update");
+		rssdb.log("Pigon location update. accuracy "+location.getAccuracy());
 
 		if (on_switch) {
 			if((last_local_fix.getAccuracy() < (last_fix == null?500000:last_fix.getAccuracy())) ||
@@ -459,10 +465,12 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
 	public void onProviderDisabled(String provider) {
 		Log.i(appTag, "provider "+provider+" disabled");
+		rssdb.log("provider "+provider+" disabled");
 	}
 
 	public void onProviderEnabled(String provider) {
 		Log.i(appTag, "provider "+provider+" enabled");		
+		rssdb.log("provider "+provider+" enabled");
 	}
 
 	public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -471,6 +479,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		if (status ==  LocationProvider.OUT_OF_SERVICE) {status_msg = "OUT_OF_SERVICE";}
 		if (status ==  LocationProvider.AVAILABLE) {status_msg = "AVAILABLE";}
 		Log.i(appTag, "provider "+provider+" status changed to "+status_msg);
+		rssdb.log("GPS "+status_msg);
 	}
 
 	@Override

@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 public class GeoRss {
 	public static final String DATABASE_NAME = "georss";
-	public static final int DATABASE_VERSION = 3;
+	public static final int DATABASE_VERSION = 5;
 
 	public static final String FEEDS_TABLE = "feeds";
 	public static final String FEEDS_ID = "_id";
@@ -27,6 +27,11 @@ public class GeoRss {
 	public static final String SHOUTS_TITLE = "title";
 	public static final String SHOUTS_DATE = "date";
 	public static final String SHOUTS_FEED_ID = "feed_id";
+	
+	public static final String ACTIVITY_TABLE = "activities";
+	public static final String ACTIVITY_DATE = "date";
+	public static final String ACTIVITY_DESCRIPTION = "description";
+	
 	
 	private SQLiteDatabase db;
 	private final Context context;
@@ -59,6 +64,7 @@ public class GeoRss {
 		public void onCreate(SQLiteDatabase db) {
 			db.execSQL("CREATE TABLE "+FEEDS_TABLE+" (_id integer primary key, service_name text, title text, extra text, username text, password text, "+FEEDS_UPDATED_AT+" datetime)");
 			db.execSQL("CREATE TABLE "+SHOUTS_TABLE+" (_id integer primary key, guid text unique on conflict replace, title text, lat float, long float, date datetime, feed_id integer)");
+			db.execSQL("CREATE TABLE "+ACTIVITY_TABLE+" (_id integer primary key, date datetime, type text, description text)");
 		}
 	
 		@Override
@@ -141,4 +147,20 @@ public class GeoRss {
 		db.update(FEEDS_TABLE, cv, FEEDS_ID+" = ?", new String[] {""+feed_id});
 		
 	}
+	
+	public void log(String desc) {
+		ContentValues cv = new ContentValues(2);
+		cv.put(ACTIVITY_DATE, Util.DateTimeIso8601Now());
+		cv.put(ACTIVITY_DESCRIPTION, desc);
+		db.insert(GeoRss.ACTIVITY_TABLE, null, cv);
+	}
+	
+	public Cursor findActivityLogs() {
+		return  db.query(GeoRss.ACTIVITY_TABLE,null, null, null, null, null, null);
+	}
+
+	public void clearLog() {
+		db.execSQL("DELETE from "+GeoRss.ACTIVITY_TABLE);
+	}
+
 }

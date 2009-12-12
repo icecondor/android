@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.icecondor.nest"
-      android:versionCode="20091204"
-      android:versionName="20091204">
+      android:versionCode="20091205"
+      android:versionName="20091205">
     <uses-sdk android:minSdkVersion="4" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -26,6 +26,8 @@
         <activity android:name=".GeoRssList" android:label="GeoRssList">
         </activity>
         <activity android:name=".GeoRssDetail" android:label="GeoRssDetail">
+        </activity>
+        <activity android:name=".ActivityLog" android:label="ActivityLog">
         </activity>
         <service android:name=".Pigeon">
         </service>
