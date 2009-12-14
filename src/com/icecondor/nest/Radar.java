@@ -60,7 +60,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	MapController mapController;
 	PigeonService pigeon;
 	private Timer service_read_timer;
-	Intent settingsIntent, geoRssIntent, activityLogIntent;
+	Intent settingsIntent, geoRssIntent, activityLogIntent, pigeonIntent;
 	SharedPreferences settings;
 	MeOverlay nearbys;
 	FlockOverlay flock;
@@ -77,6 +77,7 @@ public class Radar extends MapActivity implements ServiceConnection,
         settingsIntent = new Intent(this, Settings.class);
         geoRssIntent = new Intent(this, GeoRssList.class);
         activityLogIntent = new Intent(this, ActivityLog.class);
+        pigeonIntent = new Intent(this, Pigeon.class);
         
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setProgressBarIndeterminateVisibility(false);
@@ -135,9 +136,8 @@ public class Radar extends MapActivity implements ServiceConnection,
     @Override
     public void onResume() {
     	super.onResume();
-    	Log.i(appTag, "onResume yeah");
-        Intent pigeon_service = new Intent(this, Pigeon.class);
-        boolean result = bindService(pigeon_service, this, 0); // 0 = do not auto-start
+    	Log.i(appTag, "onResume");
+        boolean result = bindService(pigeonIntent, this, 0); // 0 = do not auto-start
         Log.i(appTag, "pigeon bind result="+result);
         startNeighborReadTimer();
     }
@@ -193,7 +193,8 @@ public class Radar extends MapActivity implements ServiceConnection,
 			break;
 		case 6:
 			unbindService(this);
-			stopService(new Intent(this, Pigeon.class));
+			stopService(pigeonIntent);
+			rssdb.log("Radar: pigeon told to stop");
 			break;
 		case 7:
 			startActivity(activityLogIntent);

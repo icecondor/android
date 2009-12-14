@@ -146,6 +146,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		stop_rss_timer();
 		rssdb.log("Pigon destroyed");
 		rssdb.close();
+		notificationManager.cancel(1);
 	}
 	
 	private void start_rss_timer() {

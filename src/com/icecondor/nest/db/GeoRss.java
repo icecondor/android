@@ -150,7 +150,7 @@ public class GeoRss {
 	
 	public void log(String desc) {
 		ContentValues cv = new ContentValues(2);
-		cv.put(ACTIVITY_DATE, Util.DateTimeIso8601Now());
+		cv.put(ACTIVITY_DATE, Util.DateTimeIso8601NowShort());
 		cv.put(ACTIVITY_DESCRIPTION, desc);
 		db.insert(GeoRss.ACTIVITY_TABLE, null, cv);
 	}

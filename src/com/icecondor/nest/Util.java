@@ -13,6 +13,10 @@ public class Util {
 		return Util.DateTimeIso8601(System.currentTimeMillis());
 	}
 	
+	public static String DateTimeIso8601NowShort() {
+		return Util.DateTimeIso8601(System.currentTimeMillis()).substring(0,19);
+	}
+	
 	public static String DateTimeIso8601(long offset) {
 		DateFormat datePattern =  new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:ssZ");
 		datePattern.setTimeZone(TimeZone.getTimeZone("GMT"));
