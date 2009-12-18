@@ -142,17 +142,17 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				}
 			}, 0, 20000);		
 
-		start_rss_timer();
+		startRssTimer();
 }
 	public void onDestroy() {
-		stop_rss_timer();
-		locationManager.removeUpdates(this);
+		stopRssTimer();
+		stopLocationUpdates();
 		rssdb.log("Pigon destroyed");
 		rssdb.close();
 		notificationManager.cancel(1);
 	}
 	
-	private void start_rss_timer() {
+	private void startRssTimer() {
 		rss_timer = new Timer();
 		long rss_read_frequency = Long.decode(settings.getString(SETTING_RSS_READ_FREQUENCY, "60000"));
 		Log.i(appTag, "starting rss timer at frequency "+rss_read_frequency);
@@ -165,7 +165,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				}, 0, rss_read_frequency);
 	}
 	
-	private void stop_rss_timer() {
+	private void stopRssTimer() {
 		rss_timer.cancel();
 	}
 	
@@ -355,13 +355,35 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	@Override
 	public IBinder onBind(Intent intent) {
 		Log.i(appTag, "onBind for "+intent.getAction());
+		rssdb.log("onBind for "+intent.getAction());
 		return pigeonBinder;
+	}
+	
+	@Override
+	public void onRebind(Intent intent) {
+		Log.i(appTag, "onReBind for "+intent.getAction());
+		rssdb.log("onBind for "+intent.getAction());
+	}
+	
+	@Override
+	public void onLowMemory() {
+		Log.i(appTag, "onLowMemory");
+		rssdb.log("onLowMemory");
+	}
+	
+	@Override
+	public boolean onUnbind(Intent intent) {
+		Log.i(appTag, "onUnbind for "+intent.getAction());
+		rssdb.log("onUnbind for "+intent.getAction());
+		return false;
 	}
 	
 	public int pushLocation(Location fix) {
 		Log.i(appTag, "sending id: "+settings.getString(SETTING_OPENID,"")+ " fix: " 
 				+fix.getLatitude()+" long: "+fix.getLongitude()+
 				" alt: "+fix.getAltitude() + " time: " + Util.DateTimeIso8601(fix.getTime()) +
+				" acc: "+fix.getAccuracy());
+		rssdb.log("pushing fix "+" time: " + Util.DateTimeIso8601(fix.getTime()) +
 				" acc: "+fix.getAccuracy());
 		//ArrayList <NameValuePair> params = new ArrayList <NameValuePair>();
 		ArrayList<Map.Entry<String, String>> params = new ArrayList<Map.Entry<String, String>>();
@@ -504,8 +526,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			}
 		}
 		if (pref_name.equals(SETTING_RSS_READ_FREQUENCY)) {
-			stop_rss_timer();
-			start_rss_timer();
+			stopRssTimer();
+			startRssTimer();
 			notificationFlash("RSS Read frequency now "+Util.millisecondsToWords(
 						Long.parseLong(prefs.getString(pref_name, "N/A"))));
 		}
