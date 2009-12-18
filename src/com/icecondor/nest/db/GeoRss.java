@@ -156,7 +156,7 @@ public class GeoRss {
 	}
 	
 	public Cursor findActivityLogs() {
-		return  db.query(GeoRss.ACTIVITY_TABLE,null, null, null, null, null, null);
+		return  db.query(GeoRss.ACTIVITY_TABLE,null, null, null, null, null, "_id desc");
 	}
 
 	public void clearLog() {
