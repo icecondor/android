@@ -41,6 +41,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.media.MediaPlayer;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -137,6 +138,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				    	beat_part = "fix "+ago;
 				    }
 					notificationStatusUpdate(fix_part+" "+beat_part); 
+					rssdb.log("heartbeat "+fix_part+" "+beat_part);
 				}
 			}, 0, 20000);		
 
@@ -144,6 +146,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 }
 	public void onDestroy() {
 		stop_rss_timer();
+		locationManager.removeUpdates(this);
 		rssdb.log("Pigon destroyed");
 		rssdb.close();
 		notificationManager.cancel(1);
@@ -452,10 +455,12 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		Log.i(appTag, "onLocationChanged: at:"+location.getLatitude()+" long:"+location.getLongitude() + " acc:"+
 			       location.getAccuracy()+" "+ time_since_last_update+" seconds since last update");
 		rssdb.log("Pigon location update. accuracy "+location.getAccuracy());
+		play_fix_beep();
 
 		if (on_switch) {
 			if((last_local_fix.getAccuracy() < (last_fix == null?500000:last_fix.getAccuracy())) ||
 					time_since_last_update > record_frequency ) {
+				rssdb.log("Pushing fix to server");
 				last_fix_http_status = pushLocation(last_local_fix);
 				if(last_fix_http_status == 200) {
 					last_fix = last_local_fix;
@@ -464,6 +469,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		}
 	}
 
+	private void play_fix_beep() {
+		MediaPlayer mp = MediaPlayer.create(this, R.raw.beep);	
+		mp.start();
+	}
 	public void onProviderDisabled(String provider) {
 		Log.i(appTag, "provider "+provider+" disabled");
 		rssdb.log("provider "+provider+" disabled");
