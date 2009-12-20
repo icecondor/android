@@ -342,13 +342,13 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		long time_since_last_update = last_local_fix.getTime() - (last_fix == null?0:last_fix.getTime()); 
 		long record_frequency = Long.decode(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "180000"));
 		Log.i(appTag, "onLocationChanged: at:"+location.getLatitude()+" long:"+location.getLongitude() + " acc:"+
-			       location.getAccuracy()+" "+ time_since_last_update+" seconds since last update");
+			       location.getAccuracy()+" "+ (time_since_last_update/1000)+" seconds since last update");
 		rssdb.log("Pigon location update. accuracy "+location.getAccuracy());
 
 		if (on_switch) {
 			if((last_local_fix.getAccuracy() < (last_fix == null?500000:last_fix.getAccuracy())) ||
 					time_since_last_update > record_frequency ) {
-				rssdb.log("Pushing fix to server");
+				rssdb.log("Pushing "+(last_fix == null?"first":"")+" fix to server");
 				last_fix_http_status = pushLocation(last_local_fix);
 				if(last_fix_http_status == 200) {
 					last_fix = last_local_fix;
