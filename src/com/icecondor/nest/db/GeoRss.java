@@ -167,9 +167,10 @@ public class GeoRss {
 		int count = count(GeoRss.ACTIVITY_TABLE);
 		if(count > limit) {
 			Cursor zombies = db.query(GeoRss.ACTIVITY_TABLE, new String[] {"_id"}, null,	
-					null, null, null, "id asc", ""+(count - limit));
+					null, null, null, "_id asc", ""+(count - limit));
 			zombies.moveToLast();
 			int lowwater = zombies.getInt(zombies.getColumnIndex("_id"));
+			zombies.close();
 			db.execSQL("DELETE from "+GeoRss.ACTIVITY_TABLE+" where _id >= "+lowwater);
 		}
 	}
