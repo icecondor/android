@@ -51,7 +51,6 @@ import android.util.Log;
 
 import com.icecondor.nest.db.GeoRss;
 import com.icecondor.nest.db.LocationStorageProviders;
-import com.icecondor.nest.pigeon.HeartbeatTask;
 
 //look at android.permission.RECEIVE_BOOT_COMPLETED
 
@@ -537,5 +536,5 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			notificationStatusUpdate(fix_part+" "+beat_part); 
 			rssdb.log("heartbeat "+fix_part+" "+beat_part);
 		}
-	} 
+	};
 }
