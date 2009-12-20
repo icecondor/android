@@ -51,6 +51,7 @@ import android.util.Log;
 
 import com.icecondor.nest.db.GeoRss;
 import com.icecondor.nest.db.LocationStorageProviders;
+import com.icecondor.nest.pigeon.HeartbeatTask;
 
 //look at android.permission.RECEIVE_BOOT_COMPLETED
 
@@ -115,37 +116,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		/* Sound */
 		mp = MediaPlayer.create(this, R.raw.beep);	
 		 
-		heartbeat_timer.scheduleAtFixedRate(
-			new TimerTask() {
-				public void run() {
-					String fix_part = "";
-					if (on_switch) {
-						if (last_fix != null) {
-							String ago = Util.timeAgoInWords(last_fix.getTime());
-							String http_status = "";
-							if (last_fix_http_status != 200) {
-								fix_part = last_fix.getProvider()+" publish error.";
-							} else {
-								fix_part = last_fix.getProvider()+" push"+http_status+" "+
-						                   ago+".";
-					        }
-					                        
-					    }
-						if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-							fix_part = "Warning: GPS set to disabled";
-						}
-					} else {
-						fix_part = "Location reporting is off.";
-					}
-				    String beat_part = "";
-				    if (last_local_fix != null) {
-				    	String ago = Util.timeAgoInWords(last_local_fix.getTime());
-				    	beat_part = "fix "+ago;
-				    }
-					notificationStatusUpdate(fix_part+" "+beat_part); 
-					rssdb.log("heartbeat "+fix_part+" "+beat_part);
-				}
-			}, 0, 20000);		
+		heartbeat_timer.scheduleAtFixedRate(heartbeatTask, 0, 20000);		
 
 		startRssTimer();
 }
@@ -281,6 +252,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				" acc: "+fix.getAccuracy());
 		rssdb.log("pushing fix "+" time: " + Util.DateTimeIso8601(fix.getTime()) +
 				" acc: "+fix.getAccuracy());
+		play_fix_beep();
 		//ArrayList <NameValuePair> params = new ArrayList <NameValuePair>();
 		ArrayList<Map.Entry<String, String>> params = new ArrayList<Map.Entry<String, String>>();
 		addPostParameters(params, fix);
@@ -373,7 +345,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		Log.i(appTag, "onLocationChanged: at:"+location.getLatitude()+" long:"+location.getLongitude() + " acc:"+
 			       location.getAccuracy()+" "+ time_since_last_update+" seconds since last update");
 		rssdb.log("Pigon location update. accuracy "+location.getAccuracy());
-		play_fix_beep();
 
 		if (on_switch) {
 			if((last_local_fix.getAccuracy() < (last_fix == null?500000:last_fix.getAccuracy())) ||
@@ -536,4 +507,35 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			e.printStackTrace();
 		}
 	}
+	
+	private final TimerTask heartbeatTask = new TimerTask() {
+		public void run() {
+			String fix_part = "";
+			if (on_switch) {
+				if (last_fix != null) {
+					String ago = Util.timeAgoInWords(last_fix.getTime());
+					String http_status = "";
+					if (last_fix_http_status != 200) {
+						fix_part = last_fix.getProvider()+" publish error.";
+					} else {
+						fix_part = last_fix.getProvider()+" push"+http_status+" "+
+				                   ago+".";
+			        }
+			                        
+			    }
+				if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+					fix_part = "Warning: GPS set to disabled";
+				}
+			} else {
+				fix_part = "Location reporting is off.";
+			}
+		    String beat_part = "";
+		    if (last_local_fix != null) {
+		    	String ago = Util.timeAgoInWords(last_local_fix.getTime());
+		    	beat_part = "fix "+ago;
+		    }
+			notificationStatusUpdate(fix_part+" "+beat_part); 
+			rssdb.log("heartbeat "+fix_part+" "+beat_part);
+		}
+	} 
 }
