@@ -53,6 +53,7 @@ import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.icecondor.nest.db.GeoRss;
+import com.icecondor.nest.db.LocationStorageProviders;
 
 public class Radar extends MapActivity implements ServiceConnection,
 												  Constants {
@@ -216,7 +217,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 				pigeon.stopTransmitting();
 				return false;
 			} else {
-				if(!LocationRepositoriesSqlite.has_access_token(this)) {
+				if(!LocationStorageProviders.has_access_token(this)) {
 					// Alert the user that login is required
 					(new AlertDialog.Builder(this)).setMessage(
 							"Login to the location storage provider at "
@@ -229,7 +230,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 											Log.i(appTag,"OAUTH request token retrieval");
 											Toast.makeText(Radar.this, "contacting server", Toast.LENGTH_SHORT).show();
 											// get the OAUTH request token
-											OAuthAccessor accessor = LocationRepositoriesSqlite
+											OAuthAccessor accessor = LocationStorageProviders
 													.defaultAccessor(Radar.this);
 											OAuthClient client = new OAuthClient(
 													new HttpClient4());
@@ -242,7 +243,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 														+ token_and_secret[0]
 														+ " secret:"
 														+ token_and_secret[1]);
-												LocationRepositoriesSqlite
+												LocationStorageProviders
 														.setDefaultRequestToken(
 																token_and_secret,
 																Radar.this);

@@ -1,5 +1,7 @@
 package com.icecondor.nest;
 
+import com.icecondor.nest.db.LocationStorageProviders;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ComponentName;
@@ -56,7 +58,7 @@ public class Settings extends PreferenceActivity implements ServiceConnection,
         boolean result = bindService(pigeon_service, this, 0); // 0 = do not auto-start
     	Log.i(appTag, "onResume");
         Preference auth_pref = getPreferenceScreen().findPreference("authentication");
-        if (LocationRepositoriesSqlite.has_access_token(this)) {
+        if (LocationStorageProviders.has_access_token(this)) {
           String openid = settings.getString(SETTING_OPENID, "");
           auth_pref.setSummary(openid);
         } else {

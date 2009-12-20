@@ -15,6 +15,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.icecondor.nest.db.LocationStorageProviders;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -79,15 +81,15 @@ public class Start extends Activity implements ServiceConnection,
     		if(blessed_request_token.length() > 0) {
 	    		String access_token_and_secret[];
 	    		Toast.makeText(this, "Finishing authentication", Toast.LENGTH_SHORT).show();
-	    		access_token_and_secret = LocationRepositoriesSqlite.getDefaultRequestToken(this);
+	    		access_token_and_secret = LocationStorageProviders.getDefaultRequestToken(this);
 	    		Log.i(appTag, "Returned token (ignored): "+blessed_request_token+" Access token: "+access_token_and_secret[0]+" secret:"+access_token_and_secret[1]);
-	    		access_token_and_secret = LocationRepositoriesSqlite.convertToAccessTokenAndSecret(access_token_and_secret, this);
+	    		access_token_and_secret = LocationStorageProviders.convertToAccessTokenAndSecret(access_token_and_secret, this);
 				String openid = uri.getQueryParameter("openid");
 	    		String msg;
 	    		if(access_token_and_secret == null) {
 	    			msg = "OAUTH authentication failed.";
 	    		} else {
-	    			LocationRepositoriesSqlite.setDefaultAccessToken(access_token_and_secret, this);
+	    			LocationStorageProviders.setDefaultAccessToken(access_token_and_secret, this);
 	    			msg = "Authentication succeded for "+openid+".";
 					settings.edit().putString(SETTING_OPENID, openid).commit();
 					pigeon.startTransmitting();

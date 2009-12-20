@@ -105,6 +105,7 @@ public class LocationStorageProviders extends SQLiteOpenHelper implements Consta
 		repos.moveToFirst();
 		String token = repos.getString(repos.getColumnIndex("access_token"));
 		String secret = repos.getString(repos.getColumnIndex("access_token_secret"));		
+		repos.close();
 		repoDb.close();
 		return new String[] {token, secret};
 	}

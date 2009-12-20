@@ -50,6 +50,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.icecondor.nest.db.GeoRss;
+import com.icecondor.nest.db.LocationStorageProviders;
 
 //look at android.permission.RECEIVE_BOOT_COMPLETED
 
@@ -284,8 +285,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		ArrayList<Map.Entry<String, String>> params = new ArrayList<Map.Entry<String, String>>();
 		addPostParameters(params, fix);
 		OAuthClient oclient = new OAuthClient(new HttpClient4());
-		OAuthAccessor accessor = LocationRepositoriesSqlite.defaultAccessor(this);
-		String[] token_and_secret = LocationRepositoriesSqlite.getDefaultAccessToken(this);
+		OAuthAccessor accessor = LocationStorageProviders.defaultAccessor(this);
+		String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
 		params.add(new OAuth.Parameter("oauth_token", token_and_secret[0]));
 		accessor.tokenSecret = token_and_secret[1];
 		try {
