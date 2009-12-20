@@ -1,5 +1,7 @@
 package com.icecondor.nest.db;
 
+import java.util.Calendar;
+
 import com.icecondor.nest.Util;
 
 import android.content.ContentValues;
@@ -134,7 +136,12 @@ public class GeoRss {
 	}
 	
 	public int countFeeds() {
-		Cursor c = db.query(GeoRss.FEEDS_TABLE, new String[] {"count(*)"}, null, null, null, null, null);
+		int count = count(GeoRss.FEEDS_TABLE);
+		return count;
+	}
+
+	private int count(String table) {
+		Cursor c = db.query(table, new String[] {"count(*)"}, null, null, null, null, null);
 		c.moveToFirst();
 		int count = c.getInt(0);
 		c.close();
@@ -153,8 +160,20 @@ public class GeoRss {
 		cv.put(ACTIVITY_DATE, Util.DateTimeIso8601NowShort());
 		cv.put(ACTIVITY_DESCRIPTION, desc);
 		db.insert(GeoRss.ACTIVITY_TABLE, null, cv);
+		trimLog(200);
 	}
 	
+	private void trimLog(int limit) {
+		int count = count(GeoRss.ACTIVITY_TABLE);
+		if(count > limit) {
+			Cursor zombies = db.query(GeoRss.ACTIVITY_TABLE, new String[] {"_id"}, null,	
+					null, null, null, "id asc", ""+(count - limit));
+			zombies.moveToLast();
+			int lowwater = zombies.getInt(zombies.getColumnIndex("_id"));
+			db.execSQL("DELETE from "+GeoRss.ACTIVITY_TABLE+" where _id >= "+lowwater);
+		}
+	}
+
 	public Cursor findActivityLogs() {
 		return  db.query(GeoRss.ACTIVITY_TABLE,null, null, null, null, null, "_id desc");
 	}
