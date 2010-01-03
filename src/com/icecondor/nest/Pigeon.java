@@ -251,7 +251,9 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				" acc: "+fix.getAccuracy());
 		rssdb.log("pushing fix "+" time: " + Util.DateTimeIso8601(fix.getTime()) +
 				" acc: "+fix.getAccuracy());
-		play_fix_beep();
+		if (settings.getBoolean(SETTING_BEEP_ON_FIX, false)) {
+			play_fix_beep();
+		}
 		//ArrayList <NameValuePair> params = new ArrayList <NameValuePair>();
 		ArrayList<Map.Entry<String, String>> params = new ArrayList<Map.Entry<String, String>>();
 		addPostParameters(params, fix);

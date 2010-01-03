@@ -17,6 +17,9 @@
                       android:dialogMessage="Authentication allows position updates to be sent to a location storage provider. Turn on location reporting from the map screen to begin."
                       android:persistent="false"
                        />
+  <CheckBoxPreference android:key="beep on fix"
+            		  android:title="Beep on GPS fix" />
+
   <!-- <CheckBoxPreference android:key="wifi enabled" 
                       android:title="Use WiFi Location" /> -->
 </PreferenceScreen>
