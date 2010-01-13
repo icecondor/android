@@ -73,6 +73,11 @@ public class Start extends Activity implements ServiceConnection,
         }
     }
 
+    public void continueOnResume() {
+        startPigeon();
+        new Thread( new Runnable() {public void run() {check_for_new_version();} }).start();
+    }
+
 	private void processOauthToken() throws RemoteException {
 		// extract the OAUTH request token if it exists
     	Uri uri = this.getIntent().getData();
@@ -99,11 +104,6 @@ public class Start extends Activity implements ServiceConnection,
     	}
 	}
     
-    public void continueOnResume() {
-        startPigeon();
-        new Thread( new Runnable() {public void run() {check_for_new_version();} }).start();
-    }
-
     private void check_for_new_version() {
         long version_check_date_in_milliseconds = settings.getLong(SETTING_LAST_VERSION_CHECK, 0);
         Calendar version_check_date = Calendar.getInstance();

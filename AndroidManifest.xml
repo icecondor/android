@@ -23,9 +23,9 @@
         </activity>
         <activity android:name=".Settings" android:label="Settings">
         </activity>
-        <activity android:name=".GeoRssList" android:label="GeoRssList">
+        <activity android:name=".rss.GeoRssList" android:label="GeoRssList">
         </activity>
-        <activity android:name=".GeoRssDetail" android:label="GeoRssDetail">
+        <activity android:name=".rss.GeoRssDetail" android:label="GeoRssDetail">
         </activity>
         <activity android:name=".ActivityLog" android:label="ActivityLog">
         </activity>
