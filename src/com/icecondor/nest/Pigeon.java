@@ -1,20 +1,11 @@
 package com.icecondor.nest;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.FactoryConfigurationError;
-import javax.xml.parsers.ParserConfigurationException;
 
 import net.oauth.OAuth;
 import net.oauth.OAuthAccessor;
@@ -24,16 +15,11 @@ import net.oauth.client.OAuthClient;
 import net.oauth.client.httpclient4.HttpClient4;
 
 import org.apache.http.client.ClientProtocolException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -127,43 +113,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		notificationManager.cancel(1);
 	}
 	
-	private void startRssTimer() {
-		rss_timer = new Timer();
-		long rss_read_frequency = Long.decode(settings.getString(SETTING_RSS_READ_FREQUENCY, "60000"));
-		Log.i(appTag, "starting rss timer at frequency "+rss_read_frequency);
-		rss_timer.scheduleAtFixedRate(
-				new TimerTask() {
-					public void run() {
-						Log.i(appTag, "rss_timer fired");
-						updateRSS();
-					}
-				}, 0, rss_read_frequency);
-	}
-	
-	private void stopRssTimer() {
-		rss_timer.cancel();
-	}
-	
-	protected void updateRSS() {
-		new Timer().schedule(
-				new TimerTask() {
-					public void run() {
-						Log.i(appTag, "rss_timer fired");
-						Cursor geoRssUrls = rssdb.findFeeds();
-						while (geoRssUrls.moveToNext()) {
-							try {
-								readGeoRss(geoRssUrls);
-							} catch (ClientProtocolException e) {
-								Log.i(appTag, "http protocol exception "+e);
-							} catch (IOException e) {
-								Log.i(appTag, "io error "+e);
-							}
-						}
-						geoRssUrls.close();						
-					}
-				}, 0);
-	}
-
 	private void notificationStatusUpdate(String msg) {
 		ongoing_notification.setLatestEventInfo(this, "IceCondor",
 				msg, contentIntent);
@@ -400,14 +349,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		}
 	}
 	
-	protected void readGeoRss(Cursor geoRssRow) throws ClientProtocolException, IOException {
-		String urlString = rssdb.urlFor(geoRssRow.getString(geoRssRow.getColumnIndex(GeoRss.FEEDS_SERVICENAME)),
-			                            geoRssRow.getString(geoRssRow.getColumnIndex(GeoRss.FEEDS_EXTRA)));
-		Log.i(appTag, "readGeoRss "+urlString);
-		int service_id = geoRssRow.getInt(geoRssRow.getColumnIndex("_id"));
-		rssdb.processRssFeed(urlString, service_id);	
-	}
-	
 	private final TimerTask heartbeatTask = new TimerTask() {
 		public void run() {
 			String fix_part = "";
@@ -438,4 +379,42 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			rssdb.log("heartbeat "+fix_part+" "+beat_part);
 		}
 	};
+	
+	private void startRssTimer() {
+		rss_timer = new Timer();
+		long rss_read_frequency = Long.decode(settings.getString(SETTING_RSS_READ_FREQUENCY, "60000"));
+		Log.i(appTag, "starting rss timer at frequency "+rss_read_frequency);
+		rss_timer.scheduleAtFixedRate(
+				new TimerTask() {
+					public void run() {
+						Log.i(appTag, "rss_timer fired");
+						updateRSS();
+					}
+				}, 0, rss_read_frequency);
+	}
+	
+	private void stopRssTimer() {
+		rss_timer.cancel();
+	}
+	
+	protected void updateRSS() {
+		new Timer().schedule(
+				new TimerTask() {
+					public void run() {
+						Log.i(appTag, "rss_timer fired");
+						Cursor geoRssUrls = rssdb.findFeeds();
+						while (geoRssUrls.moveToNext()) {
+							try {
+								rssdb.readGeoRss(geoRssUrls);
+							} catch (ClientProtocolException e) {
+								Log.i(appTag, "http protocol exception "+e);
+							} catch (IOException e) {
+								Log.i(appTag, "io error "+e);
+							}
+						}
+						geoRssUrls.close();						
+					}
+				}, 0);
+	}
+
 }

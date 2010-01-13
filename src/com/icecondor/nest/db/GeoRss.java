@@ -12,6 +12,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.http.client.ClientProtocolException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -200,6 +201,14 @@ public class GeoRss {
 		db.execSQL("DELETE from "+GeoRss.ACTIVITY_TABLE);
 	}
 
+	public void readGeoRss(Cursor geoRssRow) throws ClientProtocolException, IOException {
+		String urlString = urlFor(geoRssRow.getString(geoRssRow.getColumnIndex(GeoRss.FEEDS_SERVICENAME)),
+			                            geoRssRow.getString(geoRssRow.getColumnIndex(GeoRss.FEEDS_EXTRA)));
+		Log.i(appTag, "readGeoRss "+urlString);
+		int service_id = geoRssRow.getInt(geoRssRow.getColumnIndex("_id"));
+		processRssFeed(urlString, service_id);	
+	}
+	
 	public void processRssFeed(String urlString, int service_id)
 			throws MalformedURLException, IOException {
 		URL url = new URL(urlString);
