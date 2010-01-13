@@ -1,4 +1,4 @@
-package com.icecondor.nest;
+package com.icecondor.nest.rss;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -29,6 +29,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
 
+import com.icecondor.nest.Pigeon;
+import com.icecondor.nest.PigeonService;
+import com.icecondor.nest.R;
+import com.icecondor.nest.Radar;
+import com.icecondor.nest.Settings;
+import com.icecondor.nest.PigeonService.Stub;
+import com.icecondor.nest.R.array;
+import com.icecondor.nest.R.id;
+import com.icecondor.nest.R.layout;
+import com.icecondor.nest.R.string;
 import com.icecondor.nest.db.GeoRss;
 
 public class GeoRssList extends ListActivity implements ServiceConnection,

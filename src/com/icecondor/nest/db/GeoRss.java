@@ -1,6 +1,21 @@
 package com.icecondor.nest.db;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Calendar;
+import java.util.Date;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.FactoryConfigurationError;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import com.icecondor.nest.Util;
 
@@ -11,10 +26,12 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.util.Log;
 import android.widget.Toast;
 
 
 public class GeoRss {
+	public static final String appTag = "GeoRSS";
 	public static final String DATABASE_NAME = "georss";
 	public static final int DATABASE_VERSION = 5;
 
@@ -182,5 +199,119 @@ public class GeoRss {
 	public void clearLog() {
 		db.execSQL("DELETE from "+GeoRss.ACTIVITY_TABLE);
 	}
+
+	public void processRssFeed(String urlString, int service_id)
+			throws MalformedURLException, IOException {
+		URL url = new URL(urlString);
+		URLConnection urlConn = url.openConnection();
+		urlConn.setReadTimeout(15000);
+
+		try {
+			DocumentBuilder db = DocumentBuilderFactory.newInstance()
+					.newDocumentBuilder();
+			Document doc = db.parse(urlConn.getInputStream());
+			NodeList items = doc.getElementsByTagName("item");
+			if (items.getLength() == 0) {
+				// try for ATOM
+				items = doc.getElementsByTagName("entry");
+			}
+
+			Log.i(appTag, "" + items.getLength() + " items in feed");
+			for (int i = 0; i < items.getLength(); i++) {
+				String guid = null, title = null, date = null;
+				float latitude = -100, longitude = -200;
+				Date pubDate = null, dtstart = null;
+				int pubDateTZ = 0;
+				NodeList item_elements = items.item(i).getChildNodes();
+				for (int j = 0; j < item_elements.getLength(); j++) {
+					Node sub_item = item_elements.item(j);
+					if (sub_item.getNodeName().equals("guid")) {
+						guid = sub_item.getFirstChild().getNodeValue();
+					}
+					if (sub_item.getNodeName().equals("title")) {
+						title = sub_item.getFirstChild().getNodeValue();
+					}
+					if (sub_item.getNodeName().equals("pubDate")) {
+						String pubDateStr = sub_item.getFirstChild()
+								.getNodeValue();
+						pubDate = Util.DateRfc822(pubDateStr);
+						// SimpleDateFormat adjusts the date into GMT instead of
+						// returning the TZ
+						try {
+							// try to extract the timezone from pubdate directly
+							// (for upcoming.org dtstart adjustment)
+							pubDateTZ = Integer.parseInt(pubDateStr.substring(
+									pubDateStr.length() - 5, pubDateStr
+											.length() - 2));
+						} catch (NumberFormatException e) {
+							// pubDate does not end in +/-HHMM
+						}
+						date = Util.DateTimeIso8601(pubDate.getTime());
+					}
+					if (sub_item.getNodeName().equals("xCal:dtstart")) {
+						dtstart = Util.DateRfc822(sub_item.getFirstChild()
+								.getNodeValue());
+					}
+					if (sub_item.getNodeName().equals("geo:lat")) {
+						latitude = Float.parseFloat(sub_item.getFirstChild()
+								.getNodeValue());
+					}
+					if (sub_item.getNodeName().equals("geo:long")) {
+						longitude = Float.parseFloat(sub_item.getFirstChild()
+								.getNodeValue());
+					}
+					if (sub_item.getNodeName().equals("georss:point")) {
+						String latLong = sub_item.getFirstChild()
+								.getNodeValue();
+						int spacePos = latLong.indexOf(' ');
+						String lat = latLong.substring(0, spacePos);
+						String lng = latLong.substring(spacePos);
+						latitude = Float.parseFloat(lat);
+						longitude = Float.parseFloat(lng);
+					}
+					// ATOM hack
+					if (sub_item.getNodeName().equals("published")) {
+						date = sub_item.getFirstChild().getNodeValue();
+					}
+					// ATOM hack
+					if (sub_item.getNodeName().equals("id")) {
+						guid = sub_item.getFirstChild().getNodeValue();
+					}
+				}
+
+				Log.i(appTag, "item #" + i + " guid:" + guid + " lat:"
+						+ latitude + " long:" + longitude + " date:" + pubDate);
+				if (dtstart != null) {
+					// xcal dtstart has no timezone. use the timezone from the
+					// entry's pubdate
+					Log.i(appTag, "tzfix "
+							+ Util.DateTimeIso8601(dtstart.getTime()) + " - "
+							+ (dtstart.getTimezoneOffset() * 60000)
+							+ " + pubDateTZ:" + pubDateTZ);
+					date = Util.DateTimeIso8601(dtstart.getTime()
+							- (dtstart.getTimezoneOffset() * 60000)
+							+ (pubDateTZ * 60 * -60000));
+					Log.i(appTag, "tzfix date " + date);
+				}
+
+				ContentValues cv = new ContentValues(2);
+				cv.put("guid", guid);
+				cv.put("lat", latitude);
+				cv.put("long", longitude);
+				cv.put(GeoRss.SHOUTS_DATE, date);
+				cv.put(GeoRss.SHOUTS_TITLE, title);
+				cv.put(GeoRss.SHOUTS_FEED_ID, service_id);
+				insertShout(cv);
+			}
+			touch(service_id);
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		} catch (FactoryConfigurationError e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		}
+	}
+
 
 }

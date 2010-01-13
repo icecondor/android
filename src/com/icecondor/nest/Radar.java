@@ -54,6 +54,7 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.icecondor.nest.db.GeoRss;
 import com.icecondor.nest.db.LocationStorageProviders;
+import com.icecondor.nest.rss.GeoRssList;
 
 public class Radar extends MapActivity implements ServiceConnection,
 												  Constants {

@@ -1,5 +1,9 @@
-package com.icecondor.nest;
+package com.icecondor.nest.rss;
 
+import com.icecondor.nest.R;
+import com.icecondor.nest.R.id;
+import com.icecondor.nest.R.layout;
+import com.icecondor.nest.R.string;
 import com.icecondor.nest.db.GeoRss;
 
 import android.app.Activity;
