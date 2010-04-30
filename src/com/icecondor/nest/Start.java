@@ -141,6 +141,7 @@ public class Start extends Activity implements ServiceConnection,
 					}
 					Log.i(appTag, "current version "+ICECONDOR_VERSION+" remote version "+remote_version);
 				} catch (JSONException e) {
+					Log.e(appTag, "json parse error during version check");
 				}
 
 			} catch (ClientProtocolException e) {
@@ -201,9 +202,9 @@ public class Start extends Activity implements ServiceConnection,
 
 	private void startPigeon() {
 		// Start the pigeon service
-    	Intent pigeon_service = new Intent(this, Pigeon.class);
-        startService(pigeon_service);
+        startService(pigeon_intent);
         pigeon_bound = bindService(pigeon_intent, this, 0); // 0 = do not auto-start
+        Log.i(appTag, "pigeon bind result="+pigeon_bound);
 	}
 	
 	private void stopPigeon() {
@@ -222,6 +223,7 @@ public class Start extends Activity implements ServiceConnection,
 		}
 		finish();
 	}
+
 	public void onServiceConnected(ComponentName className, IBinder service) {
 		Log.i(appTag, "onServiceConnected "+service);
 		pigeon = PigeonService.Stub.asInterface(service);

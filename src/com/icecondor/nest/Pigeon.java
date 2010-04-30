@@ -104,7 +104,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		heartbeat_timer.scheduleAtFixedRate(heartbeatTask, 0, 20000);		
 
 		startRssTimer();
-}
+	}
+	
 	public void onDestroy() {
 		stopRssTimer();
 		stopLocationUpdates();
