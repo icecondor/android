@@ -53,7 +53,7 @@ public class GeoRss {
 	public static final String ACTIVITY_DATE = "date";
 	public static final String ACTIVITY_DESCRIPTION = "description";
 	
-	public static final String POSITION_QUEUE_TABLE = "shouts";
+	public static final String POSITION_QUEUE_TABLE = "position_queue";
 	public static final String POSITION_QUEUE_CREATED_AT = "created_at";
 	public static final String POSITION_QUEUE_JSON = "json";
 	public static final String POSITION_QUEUE_SENT = "sent";
