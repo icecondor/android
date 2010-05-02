@@ -15,6 +15,8 @@ import net.oauth.client.OAuthClient;
 import net.oauth.client.httpclient4.HttpClient4;
 
 import org.apache.http.client.ClientProtocolException;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -300,12 +302,23 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		if (on_switch) {
 			if((last_local_fix.getAccuracy() < (last_fix == null?500000:last_fix.getAccuracy())) ||
 					time_since_last_update > record_frequency ) {
-				rssdb.log("Pushing "+(last_fix == null?"first":"")+" fix to server");
-				last_fix_http_status = pushLocation(last_local_fix);
-				if(last_fix_http_status == 200) {
-					last_fix = last_local_fix;
-				}
+				last_fix_http_status = 200;
+				rssdb.addPosition(locationToJson(last_local_fix));
+				rssdb.log("queued location #"+rssdb.countPositionQueue());
 			}
+		}
+	}
+
+	private String locationToJson(Location lastLocalFix) {
+		try {
+		JSONObject position = new JSONObject();
+			position.put("latitude", lastLocalFix.getLatitude());
+			position.put("longitude", lastLocalFix.getLatitude());
+			JSONObject jloc = new JSONObject();
+			jloc.put("location", position);
+			return jloc.toString();
+		} catch (JSONException e) {
+			return "{\"ERROR\":\""+e.toString()+"\"}";
 		}
 	}
 

@@ -27,6 +27,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.location.Location;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -34,7 +35,7 @@ import android.widget.Toast;
 public class GeoRss {
 	public static final String appTag = "GeoRSS";
 	public static final String DATABASE_NAME = "georss";
-	public static final int DATABASE_VERSION = 5;
+	public static final int DATABASE_VERSION = 6;
 
 	public static final String FEEDS_TABLE = "feeds";
 	public static final String FEEDS_ID = "_id";
@@ -51,6 +52,11 @@ public class GeoRss {
 	public static final String ACTIVITY_TABLE = "activities";
 	public static final String ACTIVITY_DATE = "date";
 	public static final String ACTIVITY_DESCRIPTION = "description";
+	
+	public static final String POSITION_QUEUE_TABLE = "shouts";
+	public static final String POSITION_QUEUE_CREATED_AT = "created_at";
+	public static final String POSITION_QUEUE_JSON = "json";
+	public static final String POSITION_QUEUE_SENT = "sent";
 	
 	
 	private SQLiteDatabase db;
@@ -85,6 +91,7 @@ public class GeoRss {
 			db.execSQL("CREATE TABLE "+FEEDS_TABLE+" (_id integer primary key, service_name text, title text, extra text, username text, password text, "+FEEDS_UPDATED_AT+" datetime)");
 			db.execSQL("CREATE TABLE "+SHOUTS_TABLE+" (_id integer primary key, guid text unique on conflict replace, title text, lat float, long float, date datetime, feed_id integer)");
 			db.execSQL("CREATE TABLE "+ACTIVITY_TABLE+" (_id integer primary key, date datetime, type text, description text)");
+			db.execSQL("CREATE TABLE "+POSITION_QUEUE_TABLE+" (_id integer primary key, "+POSITION_QUEUE_JSON+" text, "+POSITION_QUEUE_CREATED_AT+" datetime, "+POSITION_QUEUE_CREATED_AT+" datetime)");
 		}
 	
 		@Override
@@ -133,6 +140,13 @@ public class GeoRss {
 		db.insert(GeoRss.FEEDS_TABLE, null, cv);
 	}
 
+	public void addPosition(String locationJson) {
+		ContentValues cv = new ContentValues(2);
+		cv.put(POSITION_QUEUE_CREATED_AT, Util.DateTimeIso8601Now());
+		cv.put(POSITION_QUEUE_JSON, locationJson);
+		db.insert(GeoRss.POSITION_QUEUE_TABLE, null, cv);
+	}
+
 	public Cursor findFeeds() {
 		return  db.query(GeoRss.FEEDS_TABLE,null, null, null, null, null, null);
 	}
@@ -156,6 +170,10 @@ public class GeoRss {
 	public int countFeeds() {
 		int count = count(GeoRss.FEEDS_TABLE);
 		return count;
+	}
+	
+	public int countPositionQueue() {
+		return count(GeoRss.POSITION_QUEUE_TABLE);
 	}
 
 	private int count(String table) {
