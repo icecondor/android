@@ -91,7 +91,7 @@ public class GeoRss {
 			db.execSQL("CREATE TABLE "+FEEDS_TABLE+" (_id integer primary key, service_name text, title text, extra text, username text, password text, "+FEEDS_UPDATED_AT+" datetime)");
 			db.execSQL("CREATE TABLE "+SHOUTS_TABLE+" (_id integer primary key, guid text unique on conflict replace, title text, lat float, long float, date datetime, feed_id integer)");
 			db.execSQL("CREATE TABLE "+ACTIVITY_TABLE+" (_id integer primary key, date datetime, type text, description text)");
-			db.execSQL("CREATE TABLE "+POSITION_QUEUE_TABLE+" (_id integer primary key, "+POSITION_QUEUE_JSON+" text, "+POSITION_QUEUE_CREATED_AT+" datetime, "+POSITION_QUEUE_CREATED_AT+" datetime)");
+			db.execSQL("CREATE TABLE "+POSITION_QUEUE_TABLE+" (_id integer primary key, "+POSITION_QUEUE_JSON+" text, "+POSITION_QUEUE_CREATED_AT+" datetime, "+POSITION_QUEUE_SENT+" datetime)");
 		}
 	
 		@Override
@@ -340,5 +340,10 @@ public class GeoRss {
 		}
 	}
 
-
+	public String oldestUnpushedLocationJsonQueue() {
+		Cursor c = db.query(GeoRss.POSITION_QUEUE_TABLE, null, POSITION_QUEUE_SENT+" IS NULL",
+                null, null, null, "_id desc", "1");
+		c.moveToFirst();
+		return c.getString(c.getColumnIndex(POSITION_QUEUE_JSON));
+	}
 }

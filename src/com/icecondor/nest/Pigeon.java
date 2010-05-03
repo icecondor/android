@@ -196,6 +196,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		return false;
 	}
 	
+	public void pushQueue() {
+		pushLocation(locationFromJson(rssdb.oldestUnpushedLocationJsonQueue()));
+	}
+	
 	public int pushLocation(Location fix) {
 		Log.i(appTag, "sending id: "+settings.getString(SETTING_OPENID,"")+ " fix: " 
 				+fix.getLatitude()+" long: "+fix.getLongitude()+
@@ -289,6 +293,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		public void refreshRSS() throws RemoteException {
 			updateRSS();
 		}
+		@Override 
+		public void pushFix() throws RemoteException {
+			pushQueue();
+		}
     };
 
 	public void onLocationChanged(Location location) {
@@ -313,7 +321,12 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		try {
 		JSONObject position = new JSONObject();
 			position.put("latitude", lastLocalFix.getLatitude());
-			position.put("longitude", lastLocalFix.getLatitude());
+			position.put("longitude", lastLocalFix.getLongitude());
+			position.put("time", lastLocalFix.getTime());
+			position.put("altitude", lastLocalFix.getAltitude());
+			position.put("accuracy", lastLocalFix.getAccuracy());
+			position.put("bearing", lastLocalFix.getBearing());
+			position.put("speed", lastLocalFix.getSpeed());
 			JSONObject jloc = new JSONObject();
 			jloc.put("location", position);
 			return jloc.toString();
@@ -322,6 +335,27 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		}
 	}
 
+	private Location locationFromJson(String json) {
+		try {
+			JSONObject j = new JSONObject(json);
+			JSONObject p = j.getJSONObject("location");
+			Log.i(appTag, "locationFromJson:"+json);
+			Location l = new Location("");
+			l.setLatitude(p.getDouble("latitude"));
+			l.setLongitude(p.getDouble("longitude"));
+			l.setTime(p.getLong("time"));
+			l.setAltitude(p.getDouble("altitude"));
+			l.setAccuracy(new Float(p.getDouble("accuracy")));
+			l.setBearing(new Float(p.getDouble("bearing")));
+			l.setSpeed(new Float(p.getDouble("speed")));
+			return l;
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	private void play_fix_beep() {
 		mp.start();
 	}
