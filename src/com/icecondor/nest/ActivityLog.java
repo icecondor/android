@@ -32,6 +32,11 @@ public class ActivityLog extends ListActivity {
         setListAdapter(adapter);
 	}
 	
+    @Override
+    public void onPause() {
+    	rssdb.close();
+    }
+    
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
 		menu.add(Menu.NONE, 1, Menu.NONE, "Clear").setIcon(android.R.drawable.ic_delete);

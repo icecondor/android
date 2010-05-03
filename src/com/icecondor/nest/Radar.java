@@ -151,7 +151,6 @@ public class Radar extends MapActivity implements ServiceConnection,
     	stopNeighborReadTimer();
     	Log.i(appTag, "onPause yeah");
     }
-
     
 	@Override
 	protected boolean isRouteDisplayed() {
