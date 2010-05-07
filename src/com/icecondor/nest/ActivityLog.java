@@ -34,6 +34,7 @@ public class ActivityLog extends ListActivity {
 	
     @Override
     public void onPause() {
+    	super.onPause();
     	rssdb.close();
     }
     
