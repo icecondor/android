@@ -199,7 +199,12 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
 	public void pushQueue() {
-		pushLocation(locationFromJson(rssdb.oldestUnpushedLocationJsonQueue()));
+		String oldest;
+		rssdb.log("Starting queue push of size "+rssdb.countPositionQueue());
+		while ((oldest = rssdb.oldestUnpushedLocationJsonQueue()) != null) {
+			pushLocation(locationFromJson(oldest));
+		} 
+		rssdb.log("Finished queue push. size = "+rssdb.countPositionQueue());
 	}
 	
 	public int pushLocation(Location fix) {
