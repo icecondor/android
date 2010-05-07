@@ -167,7 +167,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 		menu.add(Menu.NONE, 5, Menu.NONE, R.string.menu_feedback).setIcon(R.drawable.exclamation);
 		menu.add(Menu.NONE, 6, Menu.NONE, R.string.menu_exit).setIcon(android.R.drawable.ic_delete);
 		menu.add(Menu.NONE, 7, Menu.NONE, R.string.menu_log).setIcon(android.R.drawable.ic_menu_recent_history);
-		menu.add(Menu.NONE, 8, Menu.NONE, "Push Fix").setIcon(android.R.drawable.ic_menu_recent_history);
+		menu.add(Menu.NONE, 8, Menu.NONE, "Push Fixes").setIcon(android.R.drawable.ic_menu_recent_history);
 		return result;
 	}
 	
@@ -197,6 +197,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 			unbindService(this);
 			stopService(pigeonIntent);
 			rssdb.log("Radar: pigeon told to stop");
+			finish();
 			break;
 		case 7:
 			startActivity(activityLogIntent);

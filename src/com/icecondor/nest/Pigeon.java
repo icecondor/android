@@ -2,6 +2,7 @@ package com.icecondor.nest;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Timer;
@@ -199,14 +200,30 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
 	public void pushQueue() {
-		String oldest;
-		rssdb.log("Starting queue push of size "+rssdb.countPositionQueue());
-		while ((oldest = rssdb.oldestUnpushedLocationJsonQueue()) != null) {
-			pushLocation(locationFromJson(oldest));
-		} 
-		rssdb.log("Finished queue push. size = "+rssdb.countPositionQueue());
+		new Timer().schedule(
+				new TimerTask() {
+					public void run() {
+						Cursor oldest;
+						rssdb.log("Starting queue push of size "+rssdb.countPositionQueue());
+						while ((oldest = rssdb.oldestUnpushedLocationQueue()).getCount() > 0) {
+							int id = oldest.getInt(oldest.getColumnIndex("_id"));
+							Log.d(appTag, "queue push #"+id);
+							int result = pushLocation(locationFromJson(
+									                      oldest.getString(
+									                    oldest.getColumnIndex(GeoRss.POSITION_QUEUE_JSON))));
+							if (result == 200) {
+								rssdb.log("queue push #"+id+" OK");
+								rssdb.mark_as_pushed(id);
+							} else {
+								rssdb.log("queue push #"+id+" FAIL");
+							}
+							oldest.close();
+						} 
+						rssdb.log("Finished queue push. size = "+rssdb.countPositionQueue());
+					}
+				}, 0);
 	}
-	
+
 	public int pushLocation(Location fix) {
 		Log.i(appTag, "sending id: "+settings.getString(SETTING_OPENID,"")+ " fix: " 
 				+fix.getLatitude()+" long: "+fix.getLongitude()+
@@ -235,6 +252,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			e.printStackTrace();
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			Log.e(appTag, ""+e);
 		} catch (IOException e) {
 			// includes host not found
 			e.printStackTrace();

@@ -151,8 +151,13 @@ public class GeoRss {
 		return  db.query(GeoRss.FEEDS_TABLE,null, null, null, null, null, null);
 	}
 
+
 	public Cursor findFeed(int row_id) {
-		return db.query(GeoRss.FEEDS_TABLE,null, "_id = ?",
+		return findRow(FEEDS_TABLE, row_id);
+	}
+	
+	public Cursor findRow(String table, int row_id) {
+		return db.query(table,null, "_id = ?",
                 new String[] {""+row_id}, null, null, null);
 	}
 
@@ -340,12 +345,17 @@ public class GeoRss {
 		}
 	}
 
-	public String oldestUnpushedLocationJsonQueue() {
+	public Cursor oldestUnpushedLocationQueue() {
 		Cursor c = db.query(GeoRss.POSITION_QUEUE_TABLE, null, POSITION_QUEUE_SENT+" IS NULL",
                 null, null, null, "_id desc", "1");
 		c.moveToFirst();
-		String oldest_json = c.getString(c.getColumnIndex(POSITION_QUEUE_JSON));
-		c.close();
-		return oldest_json;
+		return c;
+	}
+
+	public void mark_as_pushed(int id) {
+		Log.d(appTag, "mark_as_pushed "+id);
+		ContentValues cv = new ContentValues(2);
+		cv.put(POSITION_QUEUE_SENT, Util.DateTimeIso8601Now());
+		db.update(POSITION_QUEUE_TABLE, cv, "_id = ?", new String[] {""+id});
 	}
 }
