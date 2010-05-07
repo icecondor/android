@@ -344,6 +344,8 @@ public class GeoRss {
 		Cursor c = db.query(GeoRss.POSITION_QUEUE_TABLE, null, POSITION_QUEUE_SENT+" IS NULL",
                 null, null, null, "_id desc", "1");
 		c.moveToFirst();
-		return c.getString(c.getColumnIndex(POSITION_QUEUE_JSON));
+		String oldest_json = c.getString(c.getColumnIndex(POSITION_QUEUE_JSON));
+		c.close();
+		return oldest_json;
 	}
 }
