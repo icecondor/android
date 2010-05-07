@@ -59,6 +59,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	SharedPreferences settings;
 	GeoRss rssdb;
 	MediaPlayer mp;
+	private TimerTask heartbeatTask;
 	
 	public void onCreate() {
 		Log.i(appTag, "*** service created.");
@@ -102,7 +103,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
 		/* Sound */
 		mp = MediaPlayer.create(this, R.raw.beep);	
-		 
+		
+		heartbeatTask = new HeartBeatTask();
 		heartbeat_timer.scheduleAtFixedRate(heartbeatTask, 0, 20000);		
 
 		startRssTimer();
@@ -397,36 +399,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		}
 	}
 	
-	private final TimerTask heartbeatTask = new TimerTask() {
-		public void run() {
-			String fix_part = "";
-			if (on_switch) {
-				if (last_fix != null) {
-					String ago = Util.timeAgoInWords(last_fix.getTime());
-					String http_status = "";
-					if (last_fix_http_status != 200) {
-						fix_part = last_fix.getProvider()+" publish error.";
-					} else {
-						fix_part = last_fix.getProvider()+" push"+http_status+" "+
-				                   ago+".";
-			        }
-			                        
-			    }
-				if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-					fix_part = "Warning: GPS set to disabled";
-				}
-			} else {
-				fix_part = "Location reporting is off.";
-			}
-		    String beat_part = "";
-		    if (last_local_fix != null) {
-		    	String ago = Util.timeAgoInWords(last_local_fix.getTime());
-		    	beat_part = "fix "+ago;
-		    }
-			notificationStatusUpdate(fix_part+" "+beat_part); 
-			rssdb.log("heartbeat "+fix_part+" "+beat_part);
-		}
-	};
 	
 	private void startRssTimer() {
 		rss_timer = new Timer();
@@ -464,5 +436,38 @@ public class Pigeon extends Service implements Constants, LocationListener,
 					}
 				}, 0);
 	}
+	
+	class HeartBeatTask extends TimerTask {
+		public void run() {
+			String fix_part = "";
+			if (on_switch) {
+				if (last_fix != null) {
+					String ago = Util.timeAgoInWords(last_fix.getTime());
+					String http_status = "";
+					if (last_fix_http_status != 200) {
+						fix_part = last_fix.getProvider()+" publish error.";
+					} else {
+						fix_part = last_fix.getProvider()+" push"+http_status+" "+
+				                   ago+".";
+			        }
+			                        
+			    }
+				if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+					fix_part = "Warning: GPS set to disabled";
+				}
+			} else {
+				fix_part = "Location reporting is off.";
+			}
+			String queue_part = ""+rssdb.countPositionQueue()+" fix queue.";
+		    String beat_part = "";
+		    if (last_local_fix != null) {
+		    	String ago = Util.timeAgoInWords(last_local_fix.getTime());
+		    	beat_part = "fix "+ago;
+		    }
+		    String msg = fix_part+" "+beat_part+" "+queue_part;
+			notificationStatusUpdate(msg); 
+			rssdb.log("heartbeat "+msg);
+		}
+	};
 
 }
