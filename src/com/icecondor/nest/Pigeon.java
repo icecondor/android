@@ -45,7 +45,7 @@ import com.icecondor.nest.db.LocationStorageProviders;
 
 public class Pigeon extends Service implements Constants, LocationListener,
                                                SharedPreferences.OnSharedPreferenceChangeListener {
-	private Timer heartbeat_timer = new Timer();
+	private Timer heartbeat_timer;
 	private Timer rss_timer;
 	//private Timer wifi_scan_timer = new Timer();
 	static final String appTag = "Pigeon";
@@ -105,9 +105,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		/* Sound */
 		mp = MediaPlayer.create(this, R.raw.beep);	
 		
-		heartbeatTask = new HeartBeatTask();
-		heartbeat_timer.scheduleAtFixedRate(heartbeatTask, 0, 20000);		
-
+		startHeartbeatTimer();
 		startRssTimer();
 	}
 	
@@ -204,10 +202,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				new TimerTask() {
 					public void run() {
 						Cursor oldest;
-						rssdb.log("Starting queue push of size "+rssdb.countPositionQueue());
+						rssdb.log("Starting queue push of size "+rssdb.countPositionQueueRemaining());
 						while ((oldest = rssdb.oldestUnpushedLocationQueue()).getCount() > 0) {
 							int id = oldest.getInt(oldest.getColumnIndex("_id"));
-							Log.d(appTag, "queue push #"+id);
+							rssdb.log("queue push #"+id);
 							int result = pushLocation(locationFromJson(
 									                      oldest.getString(
 									                    oldest.getColumnIndex(GeoRss.POSITION_QUEUE_JSON))));
@@ -219,7 +217,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 							}
 							oldest.close();
 						} 
-						rssdb.log("Finished queue push. size = "+rssdb.countPositionQueue());
+						rssdb.log("Finished queue push. size = "+rssdb.countPositionQueueRemaining());
 					}
 				}, 0);
 	}
@@ -337,8 +335,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			if((last_local_fix.getAccuracy() < (last_fix == null?500000:last_fix.getAccuracy())) ||
 					time_since_last_update > record_frequency ) {
 				last_fix_http_status = 200;
-				rssdb.addPosition(locationToJson(last_local_fix));
-				rssdb.log("queued location #"+rssdb.countPositionQueue());
+				long id = rssdb.addPosition(locationToJson(last_local_fix));
+				rssdb.log("queued location #"+id);
 			}
 		}
 	}
@@ -423,9 +421,14 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		}
 	}
 	
+	private void startHeartbeatTimer() {
+		heartbeat_timer = new Timer("Heartbeat");
+		heartbeatTask = new HeartBeatTask();
+		heartbeat_timer.scheduleAtFixedRate(heartbeatTask, 0, 20000);
+	}
 	
 	private void startRssTimer() {
-		rss_timer = new Timer();
+		rss_timer = new Timer("RSS Reader");
 		long rss_read_frequency = Long.decode(settings.getString(SETTING_RSS_READ_FREQUENCY, "60000"));
 		Log.i(appTag, "starting rss timer at frequency "+rss_read_frequency);
 		rss_timer.scheduleAtFixedRate(
@@ -482,7 +485,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			} else {
 				fix_part = "Location reporting is off.";
 			}
-			String queue_part = ""+rssdb.countPositionQueue()+" fix queue.";
+			String queue_part = ""+rssdb.countPositionQueueRemaining()+" queued.";
 		    String beat_part = "";
 		    if (last_local_fix != null) {
 		    	String ago = Util.timeAgoInWords(last_local_fix.getTime());
@@ -490,7 +493,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		    }
 		    String msg = fix_part+" "+beat_part+" "+queue_part;
 			notificationStatusUpdate(msg); 
-			rssdb.log("heartbeat "+msg);
+			rssdb.log("heartbeat \""+msg+"\"");
 		}
 	};
 

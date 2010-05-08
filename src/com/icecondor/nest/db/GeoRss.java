@@ -140,11 +140,11 @@ public class GeoRss {
 		db.insert(GeoRss.FEEDS_TABLE, null, cv);
 	}
 
-	public void addPosition(String locationJson) {
+	public long addPosition(String locationJson) {
 		ContentValues cv = new ContentValues(2);
 		cv.put(POSITION_QUEUE_CREATED_AT, Util.DateTimeIso8601Now());
 		cv.put(POSITION_QUEUE_JSON, locationJson);
-		db.insert(GeoRss.POSITION_QUEUE_TABLE, null, cv);
+		return db.insert(GeoRss.POSITION_QUEUE_TABLE, null, cv);		
 	}
 
 	public Cursor findFeeds() {
@@ -182,12 +182,21 @@ public class GeoRss {
 	}
 
 	private int count(String table) {
-		Cursor c = db.query(table, new String[] {"count(*)"}, null, null, null, null, null);
+		return countCondition(table, null);
+	}
+	
+	public int countPositionQueueRemaining() {
+		return countCondition(GeoRss.POSITION_QUEUE_TABLE, POSITION_QUEUE_SENT+" IS NULL");
+	}
+
+	private int countCondition(String table, String selection) {
+		Cursor c = db.query(table, new String[] {"count(*)"}, selection, null, null, null, null);
 		c.moveToFirst();
 		int count = c.getInt(0);
 		c.close();
 		return count;
 	}
+	
 
 	public void touch(int feed_id) {
 		ContentValues cv = new ContentValues(2);
@@ -197,6 +206,7 @@ public class GeoRss {
 	}
 	
 	public void log(String desc) {
+		Log.d(appTag, desc);
 		ContentValues cv = new ContentValues(2);
 		cv.put(ACTIVITY_DATE, Util.DateTimeIso8601NowShort());
 		cv.put(ACTIVITY_DESCRIPTION, desc);
