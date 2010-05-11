@@ -167,6 +167,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
 	public void onStart(Intent start, int key) {
 		super.onStart(start,key);
+		rssdb.log("date test: "+Util.DateTimeIso8601(1273546315000L));
 		pushQueue();
 		rssdb.log("Pigon started");
 	}
