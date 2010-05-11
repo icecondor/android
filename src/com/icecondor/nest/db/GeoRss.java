@@ -363,7 +363,6 @@ public class GeoRss {
 	}
 
 	public void mark_as_pushed(int id) {
-		Log.d(appTag, "mark_as_pushed "+id);
 		ContentValues cv = new ContentValues(2);
 		cv.put(POSITION_QUEUE_SENT, Util.DateTimeIso8601Now());
 		db.update(POSITION_QUEUE_TABLE, cv, "_id = ?", new String[] {""+id});

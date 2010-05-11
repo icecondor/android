@@ -47,6 +47,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
                                                SharedPreferences.OnSharedPreferenceChangeListener {
 	private Timer heartbeat_timer;
 	private Timer rss_timer;
+	private Timer push_queue;
 	//private Timer wifi_scan_timer = new Timer();
 	static final String appTag = "Pigeon";
 	boolean on_switch = false;
@@ -160,49 +161,47 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
 	private void stopLocationUpdates() {
-		Log.i(appTag, "stopping GPS updates");		
-		rssdb.log("stopping GPS updates");		
+		rssdb.log("pigeon: stopping GPS updates");		
 		locationManager.removeUpdates(this);
 	}
 
 	public void onStart(Intent start, int key) {
 		super.onStart(start,key);
-		Log.i(appTag, "pigeon service started!");
+		pushQueue();
 		rssdb.log("Pigon started");
 	}
 	
 	@Override
 	public IBinder onBind(Intent intent) {
-		Log.i(appTag, "onBind for "+intent.getAction());
-		rssdb.log("onBind for "+intent.getAction());
+		rssdb.log("Pigeon onBind for "+intent.getAction());
 		return pigeonBinder;
 	}
 	
 	@Override
 	public void onRebind(Intent intent) {
-		Log.i(appTag, "onReBind for "+intent.getAction());
-		rssdb.log("onBind for "+intent.getAction());
+		rssdb.log("pigeon: onReBind for "+intent.getAction());
 	}
 	
 	@Override
 	public void onLowMemory() {
-		Log.i(appTag, "onLowMemory");
 		rssdb.log("onLowMemory");
 	}
 	
 	@Override
 	public boolean onUnbind(Intent intent) {
 		Log.i(appTag, "onUnbind for "+intent.getAction());
-		rssdb.log("onUnbind for "+intent.getAction());
+		rssdb.log("pigeon: onUnbind for "+intent.getAction());
 		return false;
 	}
 	
 	public void pushQueue() {
-		new Timer().schedule(
+		if(push_queue == null) {
+		push_queue = new Timer("Push Queue");
+		push_queue.schedule(
 				new TimerTask() {
 					public void run() {
 						Cursor oldest;
-						rssdb.log("Starting queue push of size "+rssdb.countPositionQueueRemaining());
+						rssdb.log("** Starting queue push of size "+rssdb.countPositionQueueRemaining());
 						while ((oldest = rssdb.oldestUnpushedLocationQueue()).getCount() > 0) {
 							int id = oldest.getInt(oldest.getColumnIndex("_id"));
 							rssdb.log("queue push #"+id);
@@ -217,9 +216,12 @@ public class Pigeon extends Service implements Constants, LocationListener,
 							}
 							oldest.close();
 						} 
-						rssdb.log("Finished queue push. size = "+rssdb.countPositionQueueRemaining());
+						rssdb.log("** Finished queue push. size = "+rssdb.countPositionQueueRemaining());
 					}
 				}, 0);
+		} else {
+			rssdb.log("PushQueue already running. "+push_queue);
+		}
 	}
 
 	public int pushLocation(Location fix) {
