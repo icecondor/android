@@ -15,19 +15,24 @@ public class Util {
 		return Util.DateTimeIso8601(System.currentTimeMillis());
 	}
 	
-	public static String DateTimeIso8601NowShort() {
-		return Util.DateTimeIso8601(System.currentTimeMillis()).substring(0,19);
+	public static String dateTimeIso8601NowLocalShort() {
+		return Util.DateTimeIso8601(System.currentTimeMillis(), TimeZone.getDefault()).substring(0,19);
 	}
 	
 	public static String DateTimeIso8601(long offset) {
-		DateFormat datePattern =  new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:ssZ");
-		datePattern.setTimeZone(TimeZone.getTimeZone("GMT"));
-		String date = datePattern.format(new Date(offset));
+		String date = DateTimeIso8601(offset, TimeZone.getTimeZone("GMT"));
 		if (Build.VERSION.SDK_INT == 7) {
 			// Android 2.1 timezone bug
 			// http://code.google.com/p/android/issues/detail?id=8258
 			date = date.substring(0, 19)+"Z";
 		}
+		return date;
+	}
+	
+	public static String DateTimeIso8601(long offset, TimeZone tz) {
+		DateFormat datePattern =  new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:ssZ");
+		datePattern.setTimeZone(tz);
+		String date = datePattern.format(new Date(offset));
         return date;
 	}
 	

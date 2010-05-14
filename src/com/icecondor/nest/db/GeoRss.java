@@ -208,7 +208,7 @@ public class GeoRss {
 	public void log(String desc) {
 		Log.d(appTag, desc);
 		ContentValues cv = new ContentValues(2);
-		cv.put(ACTIVITY_DATE, Util.DateTimeIso8601NowShort());
+		cv.put(ACTIVITY_DATE, Util.dateTimeIso8601NowLocalShort());
 		cv.put(ACTIVITY_DESCRIPTION, desc);
 		db.insert(GeoRss.ACTIVITY_TABLE, null, cv);
 		trimLog(200);
