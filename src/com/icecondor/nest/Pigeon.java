@@ -281,52 +281,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		dict.add(new Util.Parameter("location[timestamp]", Util.DateTimeIso8601(fix.getTime())));
 	}
 				
-    private final PigeonService.Stub pigeonBinder = new PigeonService.Stub() {
-		public boolean isTransmitting() throws RemoteException {
-			Log.i(appTag, "isTransmitting => "+on_switch);
-			return on_switch;
-		}
-		public void startTransmitting() throws RemoteException {
-			if (on_switch) {
-				Log.i(appTag, "startTransmitting: already transmitting");
-			} else {
-				Log.i(appTag, "startTransmitting");
-				on_switch = true;
-				settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING, on_switch).commit();
-				startLocationUpdates();
-				notificationStatusUpdate("Waiting for fix.");				
-				notificationFlash("Location reporting ON.");
-			}
-		}
-		public void stopTransmitting() throws RemoteException {
-			Log.i(appTag, "stopTransmitting");
-			on_switch = false;
-			settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING,on_switch).commit();
-			stopLocationUpdates();
-			notificationStatusUpdate("Location reporting is off.");				
-			notificationFlash("Location reporting OFF.");
-		}
-		public Location getLastFix() throws RemoteException {
-			if(on_switch) {
-				return last_local_fix;
-			} else {
-				return locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-			}
-		}
-		@Override
-		public Location getLastPushedFix() throws RemoteException {
-			return last_fix;		
-		}
-		@Override
-		public void refreshRSS() throws RemoteException {
-			updateRSS();
-		}
-		@Override 
-		public void pushFix() throws RemoteException {
-			pushQueue();
-		}
-    };
-
 	public void onLocationChanged(Location location) {
 		last_local_fix = location;
 		long time_since_last_update = last_local_fix.getTime() - (last_fix == null?0:last_fix.getTime()); 
@@ -500,5 +454,51 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			rssdb.log("heartbeat \""+msg+"\"");
 		}
 	};
+
+    private final PigeonService.Stub pigeonBinder = new PigeonService.Stub() {
+		public boolean isTransmitting() throws RemoteException {
+			Log.i(appTag, "isTransmitting => "+on_switch);
+			return on_switch;
+		}
+		public void startTransmitting() throws RemoteException {
+			if (on_switch) {
+				Log.i(appTag, "startTransmitting: already transmitting");
+			} else {
+				Log.i(appTag, "startTransmitting");
+				on_switch = true;
+				settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING, on_switch).commit();
+				startLocationUpdates();
+				notificationStatusUpdate("Waiting for fix.");				
+				notificationFlash("Location reporting ON.");
+			}
+		}
+		public void stopTransmitting() throws RemoteException {
+			Log.i(appTag, "stopTransmitting");
+			on_switch = false;
+			settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING,on_switch).commit();
+			stopLocationUpdates();
+			notificationStatusUpdate("Location reporting is off.");				
+			notificationFlash("Location reporting OFF.");
+		}
+		public Location getLastFix() throws RemoteException {
+			if(on_switch) {
+				return last_local_fix;
+			} else {
+				return locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			}
+		}
+		@Override
+		public Location getLastPushedFix() throws RemoteException {
+			return last_fix;		
+		}
+		@Override
+		public void refreshRSS() throws RemoteException {
+			updateRSS();
+		}
+		@Override 
+		public void pushFix() throws RemoteException {
+			pushQueue();
+		}
+    };
 
 }
