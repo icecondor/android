@@ -2,6 +2,7 @@ package com.icecondor.nest;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Map;
@@ -15,8 +16,12 @@ import net.oauth.OAuthException;
 import net.oauth.OAuthMessage;
 import net.oauth.client.OAuthClient;
 import net.oauth.client.httpclient4.HttpClient4;
+import net.oauth.client.httpclient4.HttpClientPool;
 
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.params.AllClientPNames;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -63,6 +68,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	GeoRss rssdb;
 	MediaPlayer mp;
 	private TimerTask heartbeatTask;
+	DefaultHttpClient httpClient;
 	
 	public void onCreate() {
 		Log.i(appTag, "*** service created.");
@@ -109,6 +115,18 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		
 		startHeartbeatTimer();
 		startRssTimer();
+		
+		/* Apache HTTP Monstrosity*/
+		httpClient =  new DefaultHttpClient();
+		httpClient.getParams().setIntParameter(AllClientPNames.CONNECTION_TIMEOUT, 15 *1000);
+		httpClient.getParams().setIntParameter(AllClientPNames.SO_TIMEOUT, 30 *1000);
+	}
+
+	public void onStart(Intent start, int key) {
+		super.onStart(start,key);
+		push_queue = null; 
+		pushQueue();
+		rssdb.log("Pigon started");
 	}
 	
 	public void onDestroy() {
@@ -166,13 +184,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		locationManager.removeUpdates(this);
 	}
 
-	public void onStart(Intent start, int key) {
-		super.onStart(start,key);
-		rssdb.log("date test: "+Util.DateTimeIso8601(1273546315000L));
-		pushQueue();
-		rssdb.log("Pigon started");
-	}
-	
 	@Override
 	public IBinder onBind(Intent intent) {
 		rssdb.log("Pigeon onBind for "+intent.getAction());
@@ -239,7 +250,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		//ArrayList <NameValuePair> params = new ArrayList <NameValuePair>();
 		ArrayList<Map.Entry<String, String>> params = new ArrayList<Map.Entry<String, String>>();
 		addPostParameters(params, fix);
-		OAuthClient oclient = new OAuthClient(new HttpClient4());
+		
+		OAuthClient oclient = new OAuthClient(new HttpClient4(new HttpClientPool(){
+			public HttpClient getHttpClient(URL u)
+			{	return httpClient; 	}}));
 		OAuthAccessor accessor = LocationStorageProviders.defaultAccessor(this);
 		String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
 		params.add(new OAuth.Parameter("oauth_token", token_and_secret[0]));
