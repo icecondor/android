@@ -6,7 +6,6 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -69,6 +68,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	MediaPlayer mp;
 	private TimerTask heartbeatTask;
 	DefaultHttpClient httpClient;
+	OAuthClient oclient;
 	
 	public void onCreate() {
 		Log.i(appTag, "*** service created.");
@@ -120,6 +120,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		httpClient =  new DefaultHttpClient();
 		httpClient.getParams().setIntParameter(AllClientPNames.CONNECTION_TIMEOUT, 15 *1000);
 		httpClient.getParams().setIntParameter(AllClientPNames.SO_TIMEOUT, 30 *1000);
+		oclient = new OAuthClient(new HttpClient4(new HttpClientPool(){
+			public HttpClient getHttpClient(URL u)
+			{	return httpClient; 	}}));
+
 	}
 
 	public void onStart(Intent start, int key) {
@@ -251,9 +255,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		ArrayList<Map.Entry<String, String>> params = new ArrayList<Map.Entry<String, String>>();
 		addPostParameters(params, fix);
 		
-		OAuthClient oclient = new OAuthClient(new HttpClient4(new HttpClientPool(){
-			public HttpClient getHttpClient(URL u)
-			{	return httpClient; 	}}));
 		OAuthAccessor accessor = LocationStorageProviders.defaultAccessor(this);
 		String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
 		params.add(new OAuth.Parameter("oauth_token", token_and_secret[0]));
