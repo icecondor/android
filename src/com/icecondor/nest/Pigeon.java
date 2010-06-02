@@ -101,12 +101,17 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		ongoing_notification = new Notification(R.drawable.condorhead_statusbar, text, System
 				.currentTimeMillis());
 		ongoing_notification.flags = ongoing_notification.flags ^ Notification.FLAG_ONGOING_EVENT;
-		
+		ongoing_notification.setLatestEventInfo(this, "IceCondor", "Foreground!", contentIntent);
+
+
 		/* Preferences */
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
 		settings.registerOnSharedPreferenceChangeListener(this);
 		on_switch = settings.getBoolean(SETTING_PIGEON_TRANSMITTING, false);
 		if (on_switch) {
+			Log.i(appTag, "Requesting Foreground Priority");
+			startForeground(1, ongoing_notification);
+			Log.i(appTag, "Foreground Priority Requested");
 			startLocationUpdates();
 		}
 
@@ -123,7 +128,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		oclient = new OAuthClient(new HttpClient4(new HttpClientPool(){
 			public HttpClient getHttpClient(URL u)
 			{	return httpClient; 	}}));
-
 	}
 
 	public void onStart(Intent start, int key) {
@@ -138,14 +142,14 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		stopLocationUpdates();
 		rssdb.log("Pigon destroyed");
 		rssdb.close();
-		notificationManager.cancel(1);
+		//notificationManager.cancel(1);
 	}
 	
 	private void notificationStatusUpdate(String msg) {
 		ongoing_notification.setLatestEventInfo(this, "IceCondor",
 				msg, contentIntent);
 		ongoing_notification.when = System.currentTimeMillis();
-		notificationManager.notify(1, ongoing_notification);
+		//notificationManager.notify(1, ongoing_notification);
 	}
 	
 	private void notification(String msg) {
@@ -153,12 +157,12 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				System.currentTimeMillis());
 		// a contentView error is thrown if this line is not here
 		notification.setLatestEventInfo(this, "IceCondor Notice", msg, contentIntent);
-		notificationManager.notify(2, notification);
+		//notificationManager.notify(2, notification);
 	}
 	
 	private void notificationFlash(String msg) {
 		notification(msg);
-		notificationManager.cancel(2);
+		//notificationManager.cancel(2);
 	}
 
 	private void startLocationUpdates() {

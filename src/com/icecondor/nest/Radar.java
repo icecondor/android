@@ -71,6 +71,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	Drawable redMarker, greenMarker;
 	boolean first_fix;
 	GeoRss rssdb;
+	boolean pigeon_connected = false;
 	
     public void onCreate(Bundle savedInstanceState) {
     	Log.i(appTag, "onCreate");
@@ -147,7 +148,9 @@ public class Radar extends MapActivity implements ServiceConnection,
     @Override
     public void onPause() {
     	super.onPause();
-		unbindService(this);
+    	if(pigeon_connected) {
+    		unbindService(this);
+    	}
     	stopNeighborReadTimer();
     	Log.i(appTag, "onPause yeah");
     }
@@ -194,6 +197,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 			break;
 		case 6:
 			unbindService(this);
+			pigeon_connected = false;
 			stopService(pigeonIntent);
 			rssdb.log("Radar: pigeon told to stop");
 			finish();
@@ -323,6 +327,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	}
 	
 	public void onServiceConnected(ComponentName className, IBinder service) {
+		pigeon_connected = true;
 		Log.i(appTag, "onServiceConnected "+service);
 		pigeon = PigeonService.Stub.asInterface(service);
 		try {
@@ -340,6 +345,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	}
 	
 	public void onServiceDisconnected(ComponentName className) {
+		pigeon_connected = false;
 		Log.i(appTag, "onServiceDisconnected "+className);
 	}
 
