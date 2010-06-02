@@ -225,7 +225,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 						rssdb.log("** Starting queue push of size "+rssdb.countPositionQueueRemaining());
 						while ((oldest = rssdb.oldestUnpushedLocationQueue()).getCount() > 0) {
 							int id = oldest.getInt(oldest.getColumnIndex("_id"));
-							rssdb.log("queue push #"+id);
 							int result = pushLocation(locationFromJson(
 									                      oldest.getString(
 									                    oldest.getColumnIndex(GeoRss.POSITION_QUEUE_JSON))));
@@ -304,16 +303,15 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		last_local_fix = location;
 		long time_since_last_update = last_local_fix.getTime() - (last_fix == null?0:last_fix.getTime()); 
 		long record_frequency = Long.decode(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "180000"));
-		Log.i(appTag, "onLocationChanged: at:"+location.getLatitude()+" long:"+location.getLongitude() + " acc:"+
+		rssdb.log("pigeon onLocationChanged: at:"+location.getLatitude()+" long:"+location.getLongitude() + " acc:"+
 			       location.getAccuracy()+" "+ (time_since_last_update/1000)+" seconds since last update");
-		rssdb.log("Pigon location update. accuracy "+location.getAccuracy());
 
 		if (on_switch) {
 			if((last_local_fix.getAccuracy() < (last_fix == null?500000:last_fix.getAccuracy())) ||
 					time_since_last_update > record_frequency ) {
 				last_fix_http_status = 200;
 				long id = rssdb.addPosition(locationToJson(last_local_fix));
-				rssdb.log("queued location #"+id);
+				rssdb.log("Pigeon location queued. location #"+id);
 			}
 		}
 	}

@@ -211,7 +211,7 @@ public class GeoRss {
 		cv.put(ACTIVITY_DATE, Util.dateTimeIso8601NowLocalShort());
 		cv.put(ACTIVITY_DESCRIPTION, desc);
 		db.insert(GeoRss.ACTIVITY_TABLE, null, cv);
-		trimLog(200);
+		trimLog(400);
 	}
 	
 	private void trimLog(int limit) {
