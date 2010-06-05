@@ -109,7 +109,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		settings.registerOnSharedPreferenceChangeListener(this);
 		on_switch = settings.getBoolean(SETTING_PIGEON_TRANSMITTING, false);
 		if (on_switch) {
-			Log.i(appTag, "Requesting Foreground Priority");
 			startForeground(1, ongoing_notification);
 			Log.i(appTag, "Foreground Priority Requested");
 			startLocationUpdates();
@@ -167,8 +166,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
 	private void startLocationUpdates() {
 		long record_frequency = Long.decode(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "300000"));
-		Log.i(appTag, "requesting GPS updates with frequency "+record_frequency);
-		rssdb.log("requestLocationUpdates "+record_frequency);
+		rssdb.log("requesting Location Updates every "+ Util.millisecondsToWords(record_frequency));
 		locationManager.requestLocationUpdates(
 				LocationManager.GPS_PROVIDER, 
 				record_frequency, 
@@ -250,7 +248,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				" alt: "+fix.getAltitude() + " time: " + Util.DateTimeIso8601(fix.getTime()) +
 				" acc: "+fix.getAccuracy());
 		rssdb.log("pushing fix "+" time: " + Util.DateTimeIso8601(fix.getTime()) +
-				" acc: "+fix.getAccuracy());
+				"("+fix.getTime()+") acc: "+fix.getAccuracy());
 		if (settings.getBoolean(SETTING_BEEP_ON_FIX, false)) {
 			play_fix_beep();
 		}
@@ -328,6 +326,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			position.put("speed", lastLocalFix.getSpeed());
 			JSONObject jloc = new JSONObject();
 			jloc.put("location", position);
+			rssdb.log("locationToJson: "+jloc.toString());
 			return jloc.toString();
 		} catch (JSONException e) {
 			return "{\"ERROR\":\""+e.toString()+"\"}";
@@ -338,7 +337,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		try {
 			JSONObject j = new JSONObject(json);
 			JSONObject p = j.getJSONObject("location");
-			Log.i(appTag, "locationFromJson:"+json);
+			rssdb.log("locationFromJson:"+json);
 			Location l = new Location("");
 			l.setLatitude(p.getDouble("latitude"));
 			l.setLongitude(p.getDouble("longitude"));
