@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -56,7 +57,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	//private Timer wifi_scan_timer = new Timer();
 	static final String appTag = "Pigeon";
 	boolean on_switch = false;
-	private Location last_fix, last_local_fix;
+	private Location last_recorded_fix, last_pushed_fix, last_local_fix;
+	long last_pushed_time;
 	int last_fix_http_status;
 	Notification ongoing_notification;
 	NotificationManager notificationManager;
@@ -223,12 +225,13 @@ public class Pigeon extends Service implements Constants, LocationListener,
 						rssdb.log("** Starting queue push of size "+rssdb.countPositionQueueRemaining());
 						while ((oldest = rssdb.oldestUnpushedLocationQueue()).getCount() > 0) {
 							int id = oldest.getInt(oldest.getColumnIndex("_id"));
-							last_fix =  locationFromJson( oldest.getString(
+							last_pushed_fix =  locationFromJson( oldest.getString(
 							                    oldest.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)));
-							last_fix_http_status = pushLocation(last_fix);
+							last_fix_http_status = pushLocation(last_pushed_fix);
 							if (last_fix_http_status == 200) {
 								rssdb.log("queue push #"+id+" OK");
 								rssdb.mark_as_pushed(id);
+								last_pushed_time = System.currentTimeMillis();
 							} else {
 								rssdb.log("queue push #"+id+" FAIL");
 							}
@@ -299,14 +302,18 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				
 	public void onLocationChanged(Location location) {
 		last_local_fix = location;
-		long time_since_last_update = last_local_fix.getTime() - (last_fix == null?0:last_fix.getTime()); 
+		long time_since_last_update = last_local_fix.getTime() - (last_recorded_fix == null?0:last_recorded_fix.getTime()); 
 		long record_frequency = Long.decode(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "180000"));
-		rssdb.log("pigeon onLocationChanged: at:"+location.getLatitude()+" long:"+location.getLongitude() + " acc:"+
-			       location.getAccuracy()+" "+ (time_since_last_update/1000)+" seconds since last update");
+		rssdb.log("pigeon onLocationChanged: lat:"+location.getLatitude()+
+				  " long:"+location.getLongitude() + " acc:"+
+			       location.getAccuracy()+" "+ 
+			       (time_since_last_update/1000)+" seconds since last update");
 
 		if (on_switch) {
-			if((last_local_fix.getAccuracy() < (last_fix == null?500000:last_fix.getAccuracy())) ||
+			if((last_local_fix.getAccuracy() < (last_recorded_fix == null?
+					                            500000:last_recorded_fix.getAccuracy())) ||
 					time_since_last_update > record_frequency ) {
+				last_recorded_fix = last_local_fix;
 				last_fix_http_status = 200;
 				long id = rssdb.addPosition(locationToJson(last_local_fix));
 				rssdb.log("Pigeon location queued. location #"+id);
@@ -439,14 +446,13 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		public void run() {
 			String fix_part = "";
 			if (on_switch) {
-				if (last_fix != null) {
-					String ago = Util.timeAgoInWords(last_fix.getTime());
-					String http_status = "";
+				if (last_pushed_fix != null) {
+					String ago = Util.timeAgoInWords(last_pushed_time);
+					String fago = Util.timeAgoInWords(last_pushed_fix.getTime());
 					if (last_fix_http_status != 200) {
-						fix_part = last_fix.getProvider()+" publish error.";
+						fix_part = "publish error.";
 					} else {
-						fix_part = last_fix.getProvider()+" push"+http_status+" "+
-				                   ago+".";
+						fix_part = "push"+ ago+"/"+fago+".";
 			        }
 			                        
 			    }
@@ -502,7 +508,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		}
 		@Override
 		public Location getLastPushedFix() throws RemoteException {
-			return last_fix;		
+			return last_pushed_fix;		
 		}
 		@Override
 		public void refreshRSS() throws RemoteException {
