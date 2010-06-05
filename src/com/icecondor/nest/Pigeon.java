@@ -223,10 +223,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 						rssdb.log("** Starting queue push of size "+rssdb.countPositionQueueRemaining());
 						while ((oldest = rssdb.oldestUnpushedLocationQueue()).getCount() > 0) {
 							int id = oldest.getInt(oldest.getColumnIndex("_id"));
-							int result = pushLocation(locationFromJson(
-									                      oldest.getString(
-									                    oldest.getColumnIndex(GeoRss.POSITION_QUEUE_JSON))));
-							if (result == 200) {
+							last_fix =  locationFromJson( oldest.getString(
+							                    oldest.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)));
+							last_fix_http_status = pushLocation(last_fix);
+							if (last_fix_http_status == 200) {
 								rssdb.log("queue push #"+id+" OK");
 								rssdb.mark_as_pushed(id);
 							} else {
@@ -267,14 +267,14 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			omessage.getHeader("Result");
 			return 200;
 		} catch (OAuthException e) {
-			e.printStackTrace();
+			rssdb.log("push OAuthException "+e);
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
+			rssdb.log("push URISyntaxException "+e);
 		} catch (UnknownHostException e) {
-			Log.e(appTag, ""+e);
+			rssdb.log("push UnknownHostException "+e);
 		} catch (IOException e) {
 			// includes host not found
-			e.printStackTrace();
+			rssdb.log("push IOException "+e);
 		}
 		return 500; // something went wrong
 	}
@@ -326,7 +326,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			position.put("speed", lastLocalFix.getSpeed());
 			JSONObject jloc = new JSONObject();
 			jloc.put("location", position);
-			rssdb.log("locationToJson: "+jloc.toString());
 			return jloc.toString();
 		} catch (JSONException e) {
 			return "{\"ERROR\":\""+e.toString()+"\"}";
@@ -337,7 +336,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		try {
 			JSONObject j = new JSONObject(json);
 			JSONObject p = j.getJSONObject("location");
-			rssdb.log("locationFromJson:"+json);
 			Location l = new Location("");
 			l.setLatitude(p.getDouble("latitude"));
 			l.setLongitude(p.getDouble("longitude"));
@@ -348,7 +346,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			l.setSpeed(new Float(p.getDouble("speed")));
 			return l;
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
