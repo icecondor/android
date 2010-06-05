@@ -53,7 +53,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
                                                SharedPreferences.OnSharedPreferenceChangeListener {
 	private Timer heartbeat_timer;
 	private Timer rss_timer;
-	private Timer push_queue;
+	private Timer push_queue_timer;
 	//private Timer wifi_scan_timer = new Timer();
 	static final String appTag = "Pigeon";
 	boolean on_switch = false;
@@ -121,6 +121,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		
 		startHeartbeatTimer();
 		startRssTimer();
+		startPushQueueTimer();
 		
 		/* Apache HTTP Monstrosity*/
 		httpClient =  new DefaultHttpClient();
@@ -133,14 +134,13 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
 	public void onStart(Intent start, int key) {
 		super.onStart(start,key);
-		push_queue = null; 
-		pushQueue();
 		rssdb.log("Pigon started");
 	}
 	
 	public void onDestroy() {
 		stopRssTimer();
 		stopLocationUpdates();
+		stopPushQueueTimer();
 		rssdb.log("Pigon destroyed");
 		rssdb.close();
 		notificationManager.cancel(1);
@@ -216,35 +216,31 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
 	public void pushQueue() {
-		if(push_queue == null) {
-		push_queue = new Timer("Push Queue");
-		push_queue.schedule(
-				new TimerTask() {
-					public void run() {
-						Cursor oldest;
-						rssdb.log("** Starting queue push of size "+rssdb.countPositionQueueRemaining());
-						while ((oldest = rssdb.oldestUnpushedLocationQueue()).getCount() > 0) {
-							int id = oldest.getInt(oldest.getColumnIndex("_id"));
-							last_pushed_fix =  locationFromJson( oldest.getString(
-							                    oldest.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)));
-							last_fix_http_status = pushLocation(last_pushed_fix);
-							if (last_fix_http_status == 200) {
-								rssdb.log("queue push #"+id+" OK");
-								rssdb.mark_as_pushed(id);
-								last_pushed_time = System.currentTimeMillis();
-							} else {
-								rssdb.log("queue push #"+id+" FAIL");
-							}
-							oldest.close();
-						} 
-						rssdb.log("** Finished queue push. size = "+rssdb.countPositionQueueRemaining());
-					}
-				}, 0);
-		} else {
-			rssdb.log("PushQueue already running. "+push_queue);
-		}
+		Timer push_queue_timer_single = new Timer("Push Queue Single");
+		push_queue_timer_single.schedule(new PushQueueTask(), 0);
 	}
 
+	class PushQueueTask extends TimerTask {
+		public void run() {
+			Cursor oldest;
+			rssdb.log("** Starting queue push of size "+rssdb.countPositionQueueRemaining());
+			if ((oldest = rssdb.oldestUnpushedLocationQueue()).getCount() > 0) {
+				int id = oldest.getInt(oldest.getColumnIndex("_id"));
+				Location fix =  locationFromJson( oldest.getString(
+				                    oldest.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)));
+				int status = pushLocation(fix);
+				if (status == 200) {
+					rssdb.log("queue push #"+id+" OK");
+					rssdb.mark_as_pushed(id);
+				} else {
+					rssdb.log("queue push #"+id+" FAIL");
+				}
+				oldest.close();
+			} 
+			rssdb.log("** Finished queue push. size = "+rssdb.countPositionQueueRemaining());
+		}
+	}
+	
 	public int pushLocation(Location fix) {
 		Log.i(appTag, "sending id: "+settings.getString(SETTING_OPENID,"")+ " fix: " 
 				+fix.getLatitude()+" long: "+fix.getLongitude()+
@@ -258,7 +254,9 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		//ArrayList <NameValuePair> params = new ArrayList <NameValuePair>();
 		ArrayList<Map.Entry<String, String>> params = new ArrayList<Map.Entry<String, String>>();
 		addPostParameters(params, fix);
-		
+		last_pushed_fix = fix;
+		last_pushed_time = System.currentTimeMillis();
+
 		OAuthAccessor accessor = LocationStorageProviders.defaultAccessor(this);
 		String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
 		params.add(new OAuth.Parameter("oauth_token", token_and_secret[0]));
@@ -268,7 +266,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			Log.d(appTag, "invoke("+accessor+", POST, "+ICECONDOR_WRITE_URL+", "+params);
 			omessage = oclient.invoke(accessor, "POST",  ICECONDOR_WRITE_URL, params);
 			omessage.getHeader("Result");
-			return 200;
+			last_fix_http_status = 200;
+			return last_fix_http_status;
 		} catch (OAuthException e) {
 			rssdb.log("push OAuthException "+e);
 		} catch (URISyntaxException e) {
@@ -279,7 +278,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			// includes host not found
 			rssdb.log("push IOException "+e);
 		}
-		return 500; // something went wrong
+		last_fix_http_status = 500;
+		return last_fix_http_status; // something went wrong
 	}
 	
 	private void addPostParameters(ArrayList<Map.Entry<String, String>> dict, Location fix) {
@@ -317,6 +317,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				last_fix_http_status = 200;
 				long id = rssdb.addPosition(locationToJson(last_local_fix));
 				rssdb.log("Pigeon location queued. location #"+id);
+				pushQueue();
 			}
 		}
 	}
@@ -422,6 +423,15 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		rss_timer.cancel();
 	}
 	
+	private void startPushQueueTimer() {
+		push_queue_timer = new Timer("PushQueue");
+		push_queue_timer.scheduleAtFixedRate(new PushQueueTask(), 0, 30000);
+	}
+
+	private void stopPushQueueTimer() {
+		push_queue_timer.cancel();
+	}
+	
 	protected void updateRSS() {
 		new Timer().schedule(
 				new TimerTask() {
@@ -450,11 +460,9 @@ public class Pigeon extends Service implements Constants, LocationListener,
 					String ago = Util.timeAgoInWords(last_pushed_time);
 					String fago = Util.timeAgoInWords(last_pushed_fix.getTime());
 					if (last_fix_http_status != 200) {
-						fix_part = "publish error.";
-					} else {
-						fix_part = "push"+ ago+"/"+fago+".";
-			        }
-			                        
+						ago = "err.";
+					}
+					fix_part = "push "+ ago+"/"+fago+".";
 			    }
 				if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 					fix_part = "Warning: GPS set to disabled";
@@ -466,7 +474,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		    String beat_part = "";
 		    if (last_local_fix != null) {
 		    	String ago = Util.timeAgoInWords(last_local_fix.getTime());
-		    	beat_part = "fix "+ago;
+		    	beat_part = "fix "+ago+".";
 		    }
 		    String msg = fix_part+" "+beat_part+" "+queue_part;
 			notificationStatusUpdate(msg); 
