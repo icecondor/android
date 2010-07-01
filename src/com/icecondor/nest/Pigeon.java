@@ -111,8 +111,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		settings.registerOnSharedPreferenceChangeListener(this);
 		on_switch = settings.getBoolean(SETTING_PIGEON_TRANSMITTING, false);
 		if (on_switch) {
-			startForeground(1, ongoing_notification);
-			Log.i(appTag, "Foreground Priority Requested");
+			//startForeground(1, ongoing_notification);
 			startLocationUpdates();
 		}
 
