@@ -21,8 +21,8 @@ public class Util {
 	
 	public static String DateTimeIso8601(long offset) {
 		String date = DateTimeIso8601(offset, TimeZone.getTimeZone("GMT"));
-		if (Build.VERSION.SDK_INT == 7) {
-			// Android 2.1 timezone bug
+		if (Build.VERSION.SDK_INT >= 7) {
+			// Android 2.1,2.2 timezone bug
 			// http://code.google.com/p/android/issues/detail?id=8258
 			date = date.substring(0, 19)+"Z";
 		}
