@@ -477,7 +477,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		    }
 		    String msg = fix_part+" "+beat_part+" "+queue_part;
 			notificationStatusUpdate(msg); 
-			rssdb.log("heartbeat \""+msg+"\"");
 		}
 	};
 
