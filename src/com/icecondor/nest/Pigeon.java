@@ -215,7 +215,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
 	public void pushQueue() {
-		Timer push_queue_timer_single = new Timer("Push Queue Single");
+		Timer push_queue_timer_single = new Timer("Push Queue Single Timer");
 		push_queue_timer_single.schedule(new PushQueueTask(), 0);
 	}
 
@@ -400,13 +400,13 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
 	private void startHeartbeatTimer() {
-		heartbeat_timer = new Timer("Heartbeat");
+		heartbeat_timer = new Timer("Heartbeat Timer");
 		heartbeatTask = new HeartBeatTask();
 		heartbeat_timer.scheduleAtFixedRate(heartbeatTask, 0, 20000);
 	}
 	
 	private void startRssTimer() {
-		rss_timer = new Timer("RSS Reader");
+		rss_timer = new Timer("RSS Reader Timer");
 		long rss_read_frequency = Long.decode(settings.getString(SETTING_RSS_READ_FREQUENCY, "60000"));
 		Log.i(appTag, "starting rss timer at frequency "+rss_read_frequency);
 		rss_timer.scheduleAtFixedRate(
@@ -423,7 +423,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
 	private void startPushQueueTimer() {
-		push_queue_timer = new Timer("PushQueue");
+		push_queue_timer = new Timer("PushQueue Timer");
 		push_queue_timer.scheduleAtFixedRate(new PushQueueTask(), 0, 30000);
 	}
 
