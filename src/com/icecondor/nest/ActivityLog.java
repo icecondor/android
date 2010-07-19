@@ -1,16 +1,15 @@
 package com.icecondor.nest;
 
-import com.icecondor.nest.db.GeoRss;
-
 import android.app.ListActivity;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListAdapter;
 import android.widget.SimpleCursorAdapter;
+
+import com.icecondor.nest.db.GeoRss;
 
 public class ActivityLog extends ListActivity {
 	GeoRss rssdb;

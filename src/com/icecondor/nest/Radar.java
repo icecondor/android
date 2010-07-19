@@ -3,7 +3,6 @@ package com.icecondor.nest;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Date;
-import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -32,7 +31,6 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;

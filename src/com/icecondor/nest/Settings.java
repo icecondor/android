@@ -1,7 +1,5 @@
 package com.icecondor.nest;
 
-import com.icecondor.nest.db.LocationStorageProviders;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ComponentName;
@@ -11,21 +9,17 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.TabHost;
-import android.widget.TextView;
+
+import com.icecondor.nest.db.LocationStorageProviders;
 
 public class Settings extends PreferenceActivity implements ServiceConnection,    
                                                             Constants {
@@ -55,7 +49,7 @@ public class Settings extends PreferenceActivity implements ServiceConnection,
     public void onResume() {
     	super.onResume();
         Intent pigeon_service = new Intent(this, Pigeon.class);
-        boolean result = bindService(pigeon_service, this, 0); // 0 = do not auto-start
+        bindService(pigeon_service, this, 0); // 0 = do not auto-start
     	Log.i(appTag, "onResume");
         Preference auth_pref = getPreferenceScreen().findPreference("authentication");
         if (LocationStorageProviders.has_access_token(this)) {
