@@ -84,11 +84,12 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		Log.i(appTag, "GPS provider enabled: "+locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER));
 		last_local_fix = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		Log.i(appTag, "Last known GPS fix: "+last_local_fix);
+		Log.i(appTag, "Last known GPS fix: "+last_local_fix+" "+Util.DateTimeIso8601(last_local_fix.getTime()));
 		Log.i(appTag, "NETWORK provider enabled: "+locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER));
-		Log.i(appTag, "Last known NETWORK fix: "+locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
+		Location last_network_fix = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		Log.i(appTag, "Last known NETWORK fix: "+last_network_fix+" "+Util.DateTimeIso8601(last_network_fix.getTime()));
 		if (last_local_fix == null) { // fall back onto the network location
-			last_local_fix = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			last_local_fix = last_network_fix;
 		}
 		
 		/* WIFI */
@@ -233,8 +234,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				} else {
 					rssdb.log("queue push #"+id+" FAIL");
 				}
-				oldest.close();
 			} 
+			oldest.close();
 			rssdb.log("** Finished queue push. size = "+rssdb.countPositionQueueRemaining());
 		}
 	}

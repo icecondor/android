@@ -313,6 +313,9 @@ public class Radar extends MapActivity implements ServiceConnection,
 	}
 	
 	public int pigeonStatusTitle() {
+		if(pigeon_connected == false) {
+			return R.string.status_error;
+		}
 		try {
 			if(pigeon.isTransmitting()) {
 				return R.string.status_transmitting;
