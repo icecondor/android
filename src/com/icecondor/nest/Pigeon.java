@@ -126,9 +126,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		httpClient =  new DefaultHttpClient();
 		httpClient.getParams().setIntParameter(AllClientPNames.CONNECTION_TIMEOUT, 15 *1000);
 		httpClient.getParams().setIntParameter(AllClientPNames.SO_TIMEOUT, 30 *1000);
-		oclient = new OAuthClient(new HttpClient4(new HttpClientPool(){
-			public HttpClient getHttpClient(URL u)
-			{	return httpClient; 	}}));
+		oclient = new OAuthClient(new HttpClient4());
 	}
 
 	public void onStart(Intent start, int key) {
