@@ -7,8 +7,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
@@ -22,7 +25,8 @@ import android.widget.TabHost;
 import com.icecondor.nest.db.LocationStorageProviders;
 
 public class Settings extends PreferenceActivity implements ServiceConnection,    
-                                                            Constants {
+                                                            Constants,
+                                                            OnSharedPreferenceChangeListener {
 	TabHost myTabHost;
 	static final String appTag = "Settings";
 	PigeonService pigeon;
@@ -37,6 +41,8 @@ public class Settings extends PreferenceActivity implements ServiceConnection,
         super.onCreate(savedInstanceState);
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
 		addPreferencesFromResource(R.layout.settings);
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+		settings.registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
@@ -119,4 +125,16 @@ public class Settings extends PreferenceActivity implements ServiceConnection,
 				}})
 		.create();
 	}
+	
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+			String key) {
+		if (key.equals(SETTING_TRANSMISSION_FREQUENCY)) {
+	        Preference xmit_pref = getPreferenceScreen().findPreference(SETTING_TRANSMISSION_FREQUENCY);
+	        String minutes = Util.millisecondsToWords(Long.parseLong(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "")));
+	        xmit_pref.setSummary("every "+minutes);    
+		}
+		
+	}
+
 }
