@@ -216,13 +216,15 @@ public class GeoRss {
 	
 	private void trimLog(int limit) {
 		int count = count(GeoRss.ACTIVITY_TABLE);
-		if(count > limit) {
+		int excess_rows = count - limit;
+		if(excess_rows > 0) {
 			Cursor zombies = db.query(GeoRss.ACTIVITY_TABLE, new String[] {"_id"}, null,	
-					null, null, null, "_id asc", ""+(count - limit));
-			zombies.moveToLast();
-			int lowwater = zombies.getInt(zombies.getColumnIndex("_id"));
+					null, null, null, "_id asc", ""+excess_rows);
+			if(zombies.moveToLast()) {
+				int lowwater = zombies.getInt(zombies.getColumnIndex("_id"));
+				db.execSQL("DELETE from "+GeoRss.ACTIVITY_TABLE+" where _id > "+lowwater);
+			}
 			zombies.close();
-			db.execSQL("DELETE from "+GeoRss.ACTIVITY_TABLE+" where _id >= "+lowwater);
 		}
 	}
 

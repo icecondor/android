@@ -231,7 +231,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 					rssdb.log("queue push #"+id+" OK");
 					rssdb.mark_as_pushed(id);
 				} else {
-					rssdb.log("queue push #"+id+" FAIL");
+					rssdb.log("queue push #"+id+" FAIL "+status);
 				}
 			} 
 			oldest.close();
