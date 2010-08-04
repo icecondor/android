@@ -120,8 +120,8 @@ public class GeoRss {
 				null, null, "date desc", null);
 	}
 
-	public void insertShout(ContentValues cv) {
-		db.insert(GeoRss.SHOUTS_TABLE, null, cv);
+	public long insertShout(ContentValues cv) {
+		return db.insert(GeoRss.SHOUTS_TABLE, null, cv);
 	}
 
 	public String urlFor(String serviceName, String extra) {
