@@ -24,7 +24,7 @@ public class Util {
 		if (Build.VERSION.SDK_INT >= 7) {
 			// Android 2.1,2.2 timezone bug
 			// http://code.google.com/p/android/issues/detail?id=8258
-			date = date.substring(0, 19)+"Z";
+			date = date.substring(0, 19)+"+0000";
 		}
 		return date;
 	}
