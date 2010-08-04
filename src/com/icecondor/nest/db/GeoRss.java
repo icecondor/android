@@ -260,7 +260,7 @@ public class GeoRss {
 				items = doc.getElementsByTagName("entry");
 			}
 
-			Log.i(appTag, "" + items.getLength() + " items in feed");
+			Log.i(appTag, "" + items.getLength() + " items in "+urlString);
 			for (int i = 0; i < items.getLength(); i++) {
 				String guid = null, title = null, date = null;
 				float latitude = -100, longitude = -200;
