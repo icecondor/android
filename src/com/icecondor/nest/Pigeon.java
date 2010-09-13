@@ -2,7 +2,6 @@ package com.icecondor.nest;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Map;
@@ -15,10 +14,8 @@ import net.oauth.OAuthException;
 import net.oauth.OAuthMessage;
 import net.oauth.client.OAuthClient;
 import net.oauth.client.httpclient4.HttpClient4;
-import net.oauth.client.httpclient4.HttpClientPool;
 
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.params.AllClientPNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
@@ -28,7 +25,10 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Location;
@@ -70,6 +70,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	private TimerTask heartbeatTask;
 	DefaultHttpClient httpClient;
 	OAuthClient oclient;
+	private int last_battery_level;
 	
 	public void onCreate() {
 		Log.i(appTag, "*** service created.");
@@ -130,6 +131,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		httpClient.getParams().setIntParameter(AllClientPNames.CONNECTION_TIMEOUT, 15 *1000);
 		httpClient.getParams().setIntParameter(AllClientPNames.SO_TIMEOUT, 30 *1000);
 		oclient = new OAuthClient(new HttpClient4());
+		
+		/* Battery */
+		registerReceiver(new BatteryReceiver(), 
+				         new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 	}
 
 	public void onStart(Intent start, int key) {
@@ -253,7 +258,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		}
 		//ArrayList <NameValuePair> params = new ArrayList <NameValuePair>();
 		ArrayList<Map.Entry<String, String>> params = new ArrayList<Map.Entry<String, String>>();
-		addPostParameters(params, fix);
+		addPostParameters(params, fix, last_battery_level);
 		last_pushed_fix = fix;
 		last_pushed_time = System.currentTimeMillis();
 
@@ -282,7 +287,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		return last_fix_http_status; // something went wrong
 	}
 	
-	private void addPostParameters(ArrayList<Map.Entry<String, String>> dict, Location fix) {
+	private void addPostParameters(ArrayList<Map.Entry<String, String>> dict, Location fix, int lastBatteryLevel) {
 		dict.add(new Util.Parameter("location[latitude]", Double.toString(fix.getLatitude())));
 		dict.add(new Util.Parameter("location[longitude]", Double.toString(fix.getLongitude())));
 		dict.add(new Util.Parameter("location[altitude]", Double.toString(fix.getAltitude())));
@@ -298,6 +303,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		}
 		
 		dict.add(new Util.Parameter("location[timestamp]", Util.DateTimeIso8601(fix.getTime())));
+		dict.add(new Util.Parameter("location[batterylevel]", Integer.toString(lastBatteryLevel)));
 	}
 				
 	public void onLocationChanged(Location location) {
@@ -481,6 +487,13 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		}
 	};
 
+	private class BatteryReceiver extends BroadcastReceiver {
+	    @Override
+	    public void onReceive(Context context, Intent intent) {
+	      last_battery_level = intent.getIntExtra("level", 0);
+	    }
+	  };
+	  
     private final PigeonService.Stub pigeonBinder = new PigeonService.Stub() {
 		public boolean isTransmitting() throws RemoteException {
 			Log.i(appTag, "isTransmitting => "+on_switch);
