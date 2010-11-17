@@ -115,8 +115,8 @@ public class LocationStorageProviders extends SQLiteOpenHelper implements Consta
 		LocationStorageProviders locRepoDb = new LocationStorageProviders(ctx, "locationrepositories", null, 1);
 		SQLiteDatabase repoDb = locRepoDb.getWritableDatabase();
 		ContentValues values = new ContentValues();
-		values.put("access_token", access_token_and_secret[0]);
-		values.put("access_token_secret", access_token_and_secret[1]);
+		values.put("request_token", access_token_and_secret[0]);
+		values.put("request_token_secret", access_token_and_secret[1]);
 		repoDb.update(LOCATION_REPOSITORIES_TABLE, values, null, null);
 		repoDb.close();
 
@@ -127,8 +127,8 @@ public class LocationStorageProviders extends SQLiteOpenHelper implements Consta
 		SQLiteDatabase repoDb = locRepoDb.getReadableDatabase();
 		Cursor repos = repoDb.query(LocationStorageProviders.LOCATION_REPOSITORIES_TABLE, null, null, null, null, null, "_id asc");
 		repos.moveToFirst();
-		String token = repos.getString(repos.getColumnIndex("access_token"));
-		String secret = repos.getString(repos.getColumnIndex("access_token_secret"));		
+		String token = repos.getString(repos.getColumnIndex("request_token"));
+		String secret = repos.getString(repos.getColumnIndex("request_token_secret"));		
 		repoDb.close();
 		return new String[] {token, secret};
 	}
