@@ -2,9 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical" android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
+
+	<!--  top status bar -->
 	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="fill_parent" android:layout_height="wrap_content">
-		
+
 		<!-- bird block -->
 		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 			android:layout_width="wrap_content" android:layout_height="wrap_content">
@@ -40,6 +42,8 @@
 			</LinearLayout>
 		</LinearLayout>
 	</LinearLayout>
+
+	<!--  google map -->
 	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		android:id="@+id/radar" android:layout_width="fill_parent"
 		android:layout_height="fill_parent">
@@ -52,4 +56,14 @@
 			android:layout_alignParentBottom="true"
 			android:layout_centerHorizontal="true" />
 	</RelativeLayout>
+
+	<!-- Fences -->
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="fill_parent" android:layout_height="wrap_content">
+		<TextView android:id="@+id/fencelabel" android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:text="Fences" />
+
+	</LinearLayout>
+
+
 </LinearLayout>
