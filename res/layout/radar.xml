@@ -1,19 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/radar"
-    android:layout_width="fill_parent" 
-    android:layout_height="fill_parent">
-    <com.google.android.maps.MapView
-        android:layout_width="fill_parent" 
-        android:layout_height="fill_parent"
-        android:enabled="true"
-        android:clickable="true"
-        android:apiKey="0KVP3r7JZvW_x54-XBAVL9cBtUhRgVyvaCcQAPA"
-        android:id="@+id/radar_mapview"
-        />
-     <LinearLayout android:id="@+id/radar_mapview_zoom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" /> 
-</RelativeLayout>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="fill_parent" android:layout_height="wrap_content">
+		
+		<!-- bird block -->
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:layout_width="wrap_content" android:layout_height="wrap_content">
+			<ImageView android:id="@+id/topbird" android:src="@drawable/condor"
+				android:layout_width="40px" android:layout_height="wrap_content" />
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="wrap_content" android:layout_height="wrap_content"
+				android:orientation="vertical" android:layout_marginLeft="5px">
+				<TextView android:id="@+id/topbird2" android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:text="Last push" />
+				<TextView android:id="@+id/topbird3" android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:text="2min 0s" />
+				<TextView android:id="@+id/topbird3" android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:text="64m acc." />
+			</LinearLayout>
+		</LinearLayout>
+
+		<!--  gps block -->
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			android:layout_width="wrap_content" android:layout_height="wrap_content">
+			<ImageView android:id="@+id/topsat" android:src="@drawable/satellite"
+				android:layout_width="60px" android:layout_height="wrap_content" />
+			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="wrap_content" android:layout_height="wrap_content"
+				android:orientation="vertical">
+				<TextView android:id="@+id/satl1a" android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:text="Last fix" />
+				<TextView android:id="@+id/satl1b" android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:text="1min 30s" />
+				<TextView android:id="@+id/satl1b" android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:text="48m acc." />
+
+			</LinearLayout>
+		</LinearLayout>
+	</LinearLayout>
+	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/radar" android:layout_width="fill_parent"
+		android:layout_height="fill_parent">
+		<com.google.android.maps.MapView
+			android:layout_width="fill_parent" android:layout_height="fill_parent"
+			android:enabled="true" android:clickable="true"
+			android:apiKey="0KVP3r7JZvW_7kshUNfxpeMXT-gdjPZRFfbYAbA" android:id="@+id/radar_mapview" /> <!--"0KVP3r7JZvW_x54-XBAVL9cBtUhRgVyvaCcQAPA" production map key-->
+		<LinearLayout android:id="@+id/radar_mapview_zoom"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:layout_alignParentBottom="true"
+			android:layout_centerHorizontal="true" />
+	</RelativeLayout>
+</LinearLayout>
