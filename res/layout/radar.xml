@@ -20,7 +20,7 @@
 				<TextView android:id="@+id/satl1a" android:layout_width="wrap_content"
 					android:layout_height="wrap_content" android:text="GPS age" />
 				<TextView android:id="@+id/satl1b" android:layout_width="wrap_content"
-					android:layout_height="wrap_content" android:text="" />
+					android:layout_height="wrap_content" android:text="---" />
 
 			</LinearLayout>
 		</LinearLayout>
@@ -37,7 +37,7 @@
 				<TextView android:id="@+id/topbird2" android:layout_width="wrap_content"
 					android:layout_height="wrap_content" android:text="Pushed" />
 				<TextView android:id="@+id/topbird3" android:layout_width="wrap_content"
-					android:layout_height="wrap_content" android:text="" />
+					android:layout_height="wrap_content" android:text="---" />
 			</LinearLayout>
 		</LinearLayout>
 

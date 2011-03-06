@@ -482,6 +482,9 @@ public class Radar extends MapActivity implements ServiceConnection,
 			if(last_local_fix != null) {
 				runOnUiThread(new UpdateGpsBlock());
 			}
+			if(last_pushed_fix != null) {
+				runOnUiThread(new UpdateBirdBlock());
+			}
 		}
 	}
 	
