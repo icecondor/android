@@ -238,6 +238,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				if (status == 200) {
 					rssdb.log("queue push #"+id+" OK");
 					rssdb.mark_as_pushed(id);
+					broadcastBirdFix(fix);
 				} else {
 					rssdb.log("queue push #"+id+" FAIL "+status);
 				}
@@ -331,8 +332,13 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 
 	private void broadcastGpsFix(Location location) {
-		rssdb.log("Broadcast new GPS fix");
 		Intent intent = new Intent(GPS_FIX_ACTION);
+		intent.putExtra("location", location);
+		sendBroadcast(intent);	
+	}
+
+	private void broadcastBirdFix(Location location) {
+		Intent intent = new Intent(BIRD_FIX_ACTION);
 		intent.putExtra("location", location);
 		sendBroadcast(intent);	
 	}

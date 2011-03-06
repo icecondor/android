@@ -77,6 +77,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	boolean pigeon_connected = false;
 	Timer heartbeat_timer;
 	Location last_pushed_fix, last_local_fix;
+	BroadcastReceiver gps_fix_receiver, bird_fix_receiver;
 
 	
     public void onCreate(Bundle savedInstanceState) {
@@ -119,8 +120,10 @@ public class Radar extends MapActivity implements ServiceConnection,
         Log.i(appTag, "pigeon bind result="+result);
         startNeighborReadTimer();
         startHeartbeatTimer();
-        IntentFilter filter = new IntentFilter(GPS_FIX_ACTION);
-        registerReceiver(this.new GpsFixReceiver(), filter);
+        gps_fix_receiver = this.new GpsFixReceiver();
+        registerReceiver(gps_fix_receiver, new IntentFilter(GPS_FIX_ACTION));
+        bird_fix_receiver = this.new BirdFixReceiver();
+        registerReceiver(bird_fix_receiver, new IntentFilter(BIRD_FIX_ACTION));
     }
     
     @Override
@@ -131,6 +134,8 @@ public class Radar extends MapActivity implements ServiceConnection,
     	}
     	stopNeighborReadTimer();
     	stopHeartbeatTimer();
+    	unregisterReceiver(gps_fix_receiver);
+    	unregisterReceiver(bird_fix_receiver);
     	Log.i(appTag, "onPause yeah");
     }
     
@@ -475,34 +480,42 @@ public class Radar extends MapActivity implements ServiceConnection,
 	class HeartBeatTask extends TimerTask {
 		public void run() {
 			if(last_local_fix != null) {
-				UpdateGpsBlock doit = new UpdateGpsBlock(last_local_fix);
-				runOnUiThread(doit);
+				runOnUiThread(new UpdateGpsBlock());
 			}
 		}
 	}
 	
+	public class UpdateBirdBlock implements Runnable {
+		@Override
+		public void run() {
+			TextView satl1b = (TextView)findViewById(R.id.topbird3); 
+			satl1b.setText(Util.timeAgoInWords(last_pushed_fix.getTime()));
+		}		
+	}
+	
 	public class UpdateGpsBlock implements Runnable {
-		Location location;
-		
-		public UpdateGpsBlock(Location location) {
-			this.location = location;
-		}
-		
 		@Override
 		public void run() {
 			TextView satl1b = (TextView)findViewById(R.id.satl1b); 
-			satl1b.setText(Util.timeAgoInWords(location.getTime()));
+			satl1b.setText(Util.timeAgoInWords(last_local_fix.getTime()));
 		}		
 	}
 	
 	public class GpsFixReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			Log.i(appTag, "GpsFixBroadcast received!");
 			Location location = (Location)intent.getExtras().get("location");
 			last_local_fix = location;
-			UpdateGpsBlock doit = new UpdateGpsBlock(last_local_fix);
-			runOnUiThread(doit);			
+			runOnUiThread(new UpdateGpsBlock());			
+		}		
+	}
+
+	public class BirdFixReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Location location = (Location)intent.getExtras().get("location");
+			last_pushed_fix = location;
+			runOnUiThread(new UpdateBirdBlock());			
 		}		
 	}
 }

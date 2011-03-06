@@ -37,7 +37,7 @@
 				<TextView android:id="@+id/topbird2" android:layout_width="wrap_content"
 					android:layout_height="wrap_content" android:text="Pushed" />
 				<TextView android:id="@+id/topbird3" android:layout_width="wrap_content"
-					android:layout_height="wrap_content" android:text="2min 0s" />
+					android:layout_height="wrap_content" android:text="" />
 			</LinearLayout>
 		</LinearLayout>
 
