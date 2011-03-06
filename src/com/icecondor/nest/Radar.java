@@ -54,6 +54,7 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
+import com.icecondor.nest.Pigeon.HeartBeatTask;
 import com.icecondor.nest.db.GeoRss;
 import com.icecondor.nest.db.LocationStorageProviders;
 import com.icecondor.nest.rss.GeoRssList;
@@ -74,6 +75,9 @@ public class Radar extends MapActivity implements ServiceConnection,
 	boolean first_fix;
 	GeoRss rssdb;
 	boolean pigeon_connected = false;
+	Timer heartbeat_timer;
+	Location last_pushed_fix, last_local_fix;
+
 	
     public void onCreate(Bundle savedInstanceState) {
     	Log.i(appTag, "onCreate");
@@ -107,6 +111,29 @@ public class Radar extends MapActivity implements ServiceConnection,
 		rssdb.open();
     }
     
+    @Override
+    public void onResume() {
+    	super.onResume();
+    	Log.i(appTag, "onResume");
+        boolean result = bindService(pigeonIntent, this, 0); // 0 = do not auto-start
+        Log.i(appTag, "pigeon bind result="+result);
+        startNeighborReadTimer();
+        startHeartbeatTimer();
+        IntentFilter filter = new IntentFilter(GPS_FIX_ACTION);
+        registerReceiver(this.new GpsFixReceiver(), filter);
+    }
+    
+    @Override
+    public void onPause() {
+    	super.onPause();
+    	if(pigeon_connected) {
+    		unbindService(this);
+    	}
+    	stopNeighborReadTimer();
+    	stopHeartbeatTimer();
+    	Log.i(appTag, "onPause yeah");
+    }
+    
     public void scrollToLastFix() {
     	try {
     		if (pigeon != null) {
@@ -137,27 +164,6 @@ public class Radar extends MapActivity implements ServiceConnection,
 			nearbys.setLastPushedFix(null);
 		}
 	}
-    
-    @Override
-    public void onResume() {
-    	super.onResume();
-    	Log.i(appTag, "onResume");
-        boolean result = bindService(pigeonIntent, this, 0); // 0 = do not auto-start
-        Log.i(appTag, "pigeon bind result="+result);
-        startNeighborReadTimer();
-        IntentFilter filter = new IntentFilter(GPS_FIX_ACTION);
-        registerReceiver(this.new GpsFixReceiver(), filter);
-    }
-    
-    @Override
-    public void onPause() {
-    	super.onPause();
-    	if(pigeon_connected) {
-    		unbindService(this);
-    	}
-    	stopNeighborReadTimer();
-    	Log.i(appTag, "onPause yeah");
-    }
     
 	@Override
 	protected boolean isRouteDisplayed() {
@@ -456,7 +462,25 @@ public class Radar extends MapActivity implements ServiceConnection,
 		super.onDestroy();
 	}
 	
-	 
+	private void startHeartbeatTimer() {
+		heartbeat_timer = new Timer("Heartbeat Timer");
+		HeartBeatTask heartbeatTask = new HeartBeatTask();
+		heartbeat_timer.scheduleAtFixedRate(heartbeatTask, 0, 2000);
+	}
+	
+	private void stopHeartbeatTimer() {
+		heartbeat_timer.cancel();
+	}
+
+	class HeartBeatTask extends TimerTask {
+		public void run() {
+			if(last_local_fix != null) {
+				UpdateGpsBlock doit = new UpdateGpsBlock(last_local_fix);
+				runOnUiThread(doit);
+			}
+		}
+	}
+	
 	public class UpdateGpsBlock implements Runnable {
 		Location location;
 		
@@ -472,15 +496,13 @@ public class Radar extends MapActivity implements ServiceConnection,
 	}
 	
 	public class GpsFixReceiver extends BroadcastReceiver {
-
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Log.i(appTag, "GpsFixBroadcast received!");
 			Location location = (Location)intent.getExtras().get("location");
-			UpdateGpsBlock doit = new UpdateGpsBlock(location);
-			runOnUiThread(doit);
-			
-		}
-		
+			last_local_fix = location;
+			UpdateGpsBlock doit = new UpdateGpsBlock(last_local_fix);
+			runOnUiThread(doit);			
+		}		
 	}
 }

@@ -18,9 +18,9 @@
 				android:layout_width="wrap_content" android:layout_height="wrap_content"
 				android:orientation="vertical">
 				<TextView android:id="@+id/satl1a" android:layout_width="wrap_content"
-					android:layout_height="wrap_content" android:text="GPS fix" />
+					android:layout_height="wrap_content" android:text="GPS age" />
 				<TextView android:id="@+id/satl1b" android:layout_width="wrap_content"
-					android:layout_height="wrap_content" android:text="1min 30s" />
+					android:layout_height="wrap_content" android:text="" />
 
 			</LinearLayout>
 		</LinearLayout>
