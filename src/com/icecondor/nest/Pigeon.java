@@ -140,6 +140,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	public void onStart(Intent start, int key) {
 		super.onStart(start,key);
 		rssdb.log("Pigon started");
+		broadcastGpsFix(last_local_fix);
 	}
 	
 	public void onDestroy() {
@@ -324,8 +325,16 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				long id = rssdb.addPosition(locationToJson(last_local_fix));
 				rssdb.log("Pigeon location queued. location #"+id);
 				pushQueue();
+				broadcastGpsFix(location);
 			}
 		}
+	}
+
+	private void broadcastGpsFix(Location location) {
+		rssdb.log("Broadcast new GPS fix");
+		Intent intent = new Intent(GPS_FIX_ACTION);
+		intent.putExtra("location", location);
+		sendBroadcast(intent);	
 	}
 
 	private String locationToJson(Location lastLocalFix) {
@@ -521,6 +530,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		}
 		public Location getLastFix() throws RemoteException {
 			if(on_switch) {
+				broadcastGpsFix(last_local_fix);
 				return last_local_fix;
 			} else {
 				return locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);

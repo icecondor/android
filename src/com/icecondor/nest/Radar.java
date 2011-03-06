@@ -24,9 +24,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -44,6 +47,7 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
@@ -141,6 +145,8 @@ public class Radar extends MapActivity implements ServiceConnection,
         boolean result = bindService(pigeonIntent, this, 0); // 0 = do not auto-start
         Log.i(appTag, "pigeon bind result="+result);
         startNeighborReadTimer();
+        IntentFilter filter = new IntentFilter(GPS_FIX_ACTION);
+        registerReceiver(this.new GpsFixReceiver(), filter);
     }
     
     @Override
@@ -448,5 +454,33 @@ public class Radar extends MapActivity implements ServiceConnection,
 	public void onDestroy() {
 		rssdb.close();
 		super.onDestroy();
+	}
+	
+	 
+	public class UpdateGpsBlock implements Runnable {
+		Location location;
+		
+		public UpdateGpsBlock(Location location) {
+			this.location = location;
+		}
+		
+		@Override
+		public void run() {
+			TextView satl1b = (TextView)findViewById(R.id.satl1b); 
+			satl1b.setText(Util.timeAgoInWords(location.getTime()));
+		}		
+	}
+	
+	public class GpsFixReceiver extends BroadcastReceiver {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Log.i(appTag, "GpsFixBroadcast received!");
+			Location location = (Location)intent.getExtras().get("location");
+			UpdateGpsBlock doit = new UpdateGpsBlock(location);
+			runOnUiThread(doit);
+			
+		}
+		
 	}
 }

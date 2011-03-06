@@ -24,5 +24,7 @@ public interface Constants {
 	public static final String SETTING_BEEP_ON_FIX = "beep on fix";
 	
 	public static final long DAY_IN_MILLISECONDS = 1000*60*60*24;
+	
+	public static final String GPS_FIX_ACTION = "com.icecondor.nest.GPS_FIX_ACTION";
 
 }
