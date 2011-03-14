@@ -140,7 +140,6 @@ public class Radar extends MapActivity implements ServiceConnection,
     		if (pigeon != null) {
 				mapController = mapView.getController();
 				Location fix = pigeon.getLastFix();
-				refreshBirdLocation();
 				if (fix != null) {
 					mapController.animateTo(new GeoPoint((int) (fix
 							.getLatitude() * 1000000), (int) (fix
@@ -154,15 +153,8 @@ public class Radar extends MapActivity implements ServiceConnection,
     }
 
 	private void refreshBirdLocation() {
-		try {
-			if (pigeon!=null) {
-				nearbys.setLastLocalFix(pigeon.getLastFix());
-				nearbys.setLastPushedFix(pigeon.getLastPushedFix());
-			}
-		} catch (RemoteException e) {
-			nearbys.setLastLocalFix(null);
-			nearbys.setLastPushedFix(null);
-		}
+		nearbys.setLastLocalFix(last_local_fix);
+		nearbys.setLastPushedFix(last_pushed_fix);
 	}
     
 	@Override
@@ -488,6 +480,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	public class UpdateBirdBlock implements Runnable {
 		@Override
 		public void run() {
+			refreshBirdLocation();
 			TextView satl1b = (TextView)findViewById(R.id.topbird3); 
 			satl1b.setText(Util.timeAgoInWords(last_pushed_fix.getTime()));
 		}		
@@ -496,6 +489,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	public class UpdateGpsBlock implements Runnable {
 		@Override
 		public void run() {
+			refreshBirdLocation();
 			TextView satl1b = (TextView)findViewById(R.id.satl1b); 
 			satl1b.setText(Util.timeAgoInWords(last_local_fix.getTime()));
 		}		
