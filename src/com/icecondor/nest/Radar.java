@@ -95,9 +95,8 @@ public class Radar extends MapActivity implements ServiceConnection,
         setTitle(getString(R.string.app_name) + " v" + ICECONDOR_VERSION);
 
         setContentView(R.layout.radar);
-        ViewGroup radar_zoom = (ViewGroup)findViewById(R.id.radar_mapview_zoom);
         mapView = (MapView) findViewById(R.id.radar_mapview);
-        radar_zoom.addView(mapView.getZoomControls());
+        mapView.setBuiltInZoomControls(true);
         mapController = mapView.getController();
         mapController.setZoom(15);
         nearbys = new MeOverlay();
