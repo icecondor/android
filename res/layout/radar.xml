@@ -11,7 +11,8 @@
 		<!--  gps block -->
 		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:layout_weight="0.9">
+			android:layout_weight="0.9" android:id="@+id/gpsblock"
+			android:clickable="true">
 			<ImageView android:id="@+id/topsat" android:src="@drawable/satellite"
 				android:layout_width="60px" android:layout_height="wrap_content" />
 			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -28,7 +29,8 @@
 		<!-- bird block -->
 		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:layout_weight="0.1">
+			android:layout_weight="0.1" android:id="@+id/birdblock"
+			android:clickable="true">
 			<ImageView android:id="@+id/topbird" android:src="@drawable/condor"
 				android:layout_width="30px" android:layout_height="wrap_content" />
 			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -49,12 +51,12 @@
 		android:id="@+id/botfence" android:layout_width="fill_parent"
 		android:layout_height="wrap_content" android:layout_alignParentBottom="true">
 		<TextView android:id="@+id/fencelabel" android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text="Fences:" />
+			android:layout_height="wrap_content" android:text="" />
 		<TextView android:id="@+id/fencelabel" android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text="PDX"
+			android:layout_height="wrap_content" android:text=""
 			android:layout_marginLeft="3px" android:background="#004400" />
 		<TextView android:id="@+id/fencelabel" android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text="Home"
+			android:layout_height="wrap_content" android:text=""
 			android:layout_marginLeft="3px" />
 
 	</LinearLayout>

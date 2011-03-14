@@ -44,8 +44,11 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.view.View.OnClickListener;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -105,6 +108,11 @@ public class Radar extends MapActivity implements ServiceConnection,
         flock = new FlockOverlay(redMarker, this);
         mapView.getOverlays().add(flock);
         
+        LinearLayout lg = (LinearLayout)findViewById(R.id.gpsblock);
+        lg.setOnClickListener(new GpsClickListener());        		
+        LinearLayout lb = (LinearLayout)findViewById(R.id.birdblock);
+        lb.setOnClickListener(new BirdClickListener());      		
+        
 		rssdb = new GeoRss(this);
 		rssdb.open();
     }
@@ -136,21 +144,22 @@ public class Radar extends MapActivity implements ServiceConnection,
     }
     
     public void scrollToLastFix() {
-    	try {
-    		if (pigeon != null) {
-				mapController = mapView.getController();
-				Location fix = pigeon.getLastFix();
-				if (fix != null) {
-					mapController.animateTo(new GeoPoint((int) (fix
-							.getLatitude() * 1000000), (int) (fix
+    	scrollToFix(last_local_fix);
+    }
+
+    public void scrollToLastPushedFix() {
+    	scrollToFix(last_pushed_fix);
+    }
+
+    public void scrollToFix(Location fix) {
+		mapController = mapView.getController();
+		if (fix != null) {
+			mapController.animateTo(new GeoPoint(
+					(int) (fix.getLatitude() * 1000000), (int) (fix
 							.getLongitude() * 1000000)));
-				}
-			}
-		} catch (RemoteException e) {
-			Log.e(appTag, "error reading fix from pigeon.");
-			e.printStackTrace();
 		}
     }
+    
 
 	private void refreshBirdLocation() {
 		nearbys.setLastLocalFix(last_local_fix);
@@ -510,6 +519,19 @@ public class Radar extends MapActivity implements ServiceConnection,
 			Location location = (Location)intent.getExtras().get("location");
 			last_pushed_fix = location;
 			runOnUiThread(new UpdateBirdBlock());			
+		}		
+	}
+	
+	public class GpsClickListener implements View.OnClickListener {
+		@Override
+		public void onClick(View v) {
+			scrollToLastFix();			
+		}		
+	}
+	public class BirdClickListener implements View.OnClickListener {
+		@Override
+		public void onClick(View v) {
+			scrollToLastPushedFix();			
 		}		
 	}
 }
