@@ -44,7 +44,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -54,7 +53,6 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
-import com.icecondor.nest.Pigeon.HeartBeatTask;
 import com.icecondor.nest.db.GeoRss;
 import com.icecondor.nest.db.LocationStorageProviders;
 import com.icecondor.nest.rss.GeoRssList;
@@ -115,14 +113,13 @@ public class Radar extends MapActivity implements ServiceConnection,
     public void onResume() {
     	super.onResume();
     	Log.i(appTag, "onResume");
-        boolean result = bindService(pigeonIntent, this, 0); // 0 = do not auto-start
-        Log.i(appTag, "pigeon bind result="+result);
         startNeighborReadTimer();
         startHeartbeatTimer();
         gps_fix_receiver = this.new GpsFixReceiver();
         registerReceiver(gps_fix_receiver, new IntentFilter(GPS_FIX_ACTION));
         bird_fix_receiver = this.new BirdFixReceiver();
         registerReceiver(bird_fix_receiver, new IntentFilter(BIRD_FIX_ACTION));
+        bindService(pigeonIntent, this, 0); // 0 = do not auto-start
     }
     
     @Override
@@ -143,7 +140,6 @@ public class Radar extends MapActivity implements ServiceConnection,
     		if (pigeon != null) {
 				mapController = mapView.getController();
 				Location fix = pigeon.getLastFix();
-				Log.i(appTag, "pigeon says last fix is " + fix);
 				refreshBirdLocation();
 				if (fix != null) {
 					mapController.animateTo(new GeoPoint((int) (fix
@@ -349,10 +345,12 @@ public class Radar extends MapActivity implements ServiceConnection,
 		pigeon = PigeonService.Stub.asInterface(service);
 		try {
 			Location fix = pigeon.getLastFix();
+			pigeon.getLastPushedFix(); // triggers UI update
 			if(first_fix == false) {
 				first_fix = true;
 		        if (fix != null) {
 		            scrollToLastFix();
+		            
 		        } else {
 		        	Toast.makeText(this, "Waiting for first location fix", Toast.LENGTH_SHORT).show();
 		        }

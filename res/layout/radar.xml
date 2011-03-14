@@ -35,7 +35,7 @@
 				android:layout_width="wrap_content" android:layout_height="wrap_content"
 				android:orientation="vertical" android:layout_marginLeft="5px">
 				<TextView android:id="@+id/topbird2" android:layout_width="wrap_content"
-					android:layout_height="wrap_content" android:text="Pushed" />
+					android:layout_height="wrap_content" android:text="Push age" />
 				<TextView android:id="@+id/topbird3" android:layout_width="wrap_content"
 					android:layout_height="wrap_content" android:text="---" />
 			</LinearLayout>
