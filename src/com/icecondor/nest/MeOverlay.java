@@ -16,6 +16,7 @@ public class MeOverlay extends Overlay {
 	Location last_local_fix, last_pushed_fix;
 	Point me = new Point();
 	Paint me_paint = new Paint();
+	Paint me_paint_center = new Paint();
 	Paint me_pushed_paint = new Paint();
 	java.text.DecimalFormat accuracy_format;
 	java.text.DecimalFormat latlong_format;
@@ -40,6 +41,7 @@ public class MeOverlay extends Overlay {
 		Log.i(appTag, "BirdOverlay constructed");
 		me_paint.setColor(Color.rgb(0, 0, 255));
 		me_paint.setAlpha(40);
+		me_paint_center.setColor(Color.rgb(0,0,0));
 		me_pushed_paint.setColor(Color.rgb(0, 0, 185));
 		me_pushed_paint.setAlpha(40);
 		latlong_format = new java.text.DecimalFormat("###.######");
@@ -49,11 +51,10 @@ public class MeOverlay extends Overlay {
 	@Override
 	public void draw(Canvas canvas, MapView mapView, boolean shadow) {
 		super.draw(canvas, mapView, shadow);
-		int h = canvas.getHeight();
+		//int h = canvas.getHeight();
 		//int w = canvas.getWidth();
 		//int mid_y = h /2;
 		//int mid_x = w /2;
-		Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		
 		//String msg = null;
 		if (last_local_fix != null) {
@@ -61,7 +62,8 @@ public class MeOverlay extends Overlay {
                     (int)(last_local_fix.getLatitude()*1000000), 
                     (int)(last_local_fix.getLongitude()*1000000));
 			mapView.getProjection().toPixels(geo_me, me);
-			canvas.drawCircle(me.x, me.y, 9, me_paint);
+			canvas.drawCircle(me.x, me.y, 15, me_paint);
+			canvas.drawCircle(me.x, me.y, 4, me_paint_center);
 			//msg = latlong_format.format(last_local_fix.getLatitude()) + " " + latlong_format.format(last_local_fix.getLongitude()) +
 			//      "    " + Util.timeAgoInWords(last_local_fix.getTime()) + "  " + accuracy_format.format(last_local_fix.getAccuracy())
 			//      + "m. acc.";
@@ -75,7 +77,7 @@ public class MeOverlay extends Overlay {
                     (int)(last_pushed_fix.getLongitude()*1000000));
 
 			mapView.getProjection().toPixels(geo_pushed_me, me);
-			canvas.drawCircle(me.x, me.y, 7, me_pushed_paint);
+			canvas.drawCircle(me.x, me.y, 10, me_pushed_paint);
 			
 		}
 	}
