@@ -174,13 +174,13 @@ public class Radar extends MapActivity implements ServiceConnection,
 	public boolean onCreateOptionsMenu(Menu menu) {
 		Log.i(appTag, "onCreateOptionsMenu");
 		boolean result = super.onCreateOptionsMenu(menu);
-		menu.add(Menu.NONE, 1, Menu.NONE, R.string.menu_last_fix).setIcon(android.R.drawable.ic_menu_mylocation);
-		menu.add(Menu.NONE, 2, Menu.NONE, R.string.menu_settings).setIcon(android.R.drawable.ic_menu_preferences);
+		//menu.add(Menu.NONE, 1, Menu.NONE, R.string.menu_last_fix).setIcon(android.R.drawable.ic_menu_mylocation);
 		menu.add(Menu.NONE, 3, Menu.NONE, R.string.menu_geo_rss).setIcon(R.drawable.bluerss);
 		menu.add(Menu.NONE, 4, Menu.NONE, pigeonStatusTitle()).setIcon(android.R.drawable.presence_invisible);
 		menu.add(Menu.NONE, 5, Menu.NONE, R.string.menu_feedback).setIcon(R.drawable.exclamation);
 		menu.add(Menu.NONE, 6, Menu.NONE, R.string.menu_exit).setIcon(android.R.drawable.ic_delete);
 		menu.add(Menu.NONE, 7, Menu.NONE, R.string.menu_log).setIcon(android.R.drawable.ic_menu_recent_history);
+		menu.add(Menu.NONE, 2, Menu.NONE, R.string.menu_settings).setIcon(android.R.drawable.ic_menu_preferences);
 		return result;
 	}
 	
