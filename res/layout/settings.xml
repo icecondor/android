@@ -19,6 +19,8 @@
                        />
   <CheckBoxPreference android:key="beep on fix"
             		  android:title="Beep on GPS fix" />
+  <CheckBoxPreference android:key="start on boot"
+            		  android:title="Start on boot" />
 
   <!-- <CheckBoxPreference android:key="wifi enabled" 
                       android:title="Use WiFi Location" /> -->
