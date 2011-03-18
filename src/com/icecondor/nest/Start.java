@@ -67,6 +67,16 @@ public class Start extends Activity implements ServiceConnection,
         	continueOnResume();
         }
     }
+    
+	public void onPause() {
+    	Log.i(appTag, "onPause");
+		super.onPause();
+		if(pigeon_bound) {
+			// its possible to pause before binding to pigeon
+			unbindService(this);
+		}
+		finish();
+	}
 
     public void continueOnResume() {
         startPigeon();
@@ -175,8 +185,6 @@ public class Start extends Activity implements ServiceConnection,
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
-		Log.i(appTag, "Creating Dialog "+id);
-
 		return new AlertDialog.Builder(this)
 			.setTitle("License")
 			.setMessage(R.string.license)
@@ -199,7 +207,7 @@ public class Start extends Activity implements ServiceConnection,
 		// Start the pigeon service
         startService(pigeon_intent);
         pigeon_bound = bindService(pigeon_intent, this, 0); // 0 = do not auto-start
-        Log.i(appTag, "pigeon bind result="+pigeon_bound);
+        Log.i(appTag, "startPigeon bind result="+pigeon_bound);
 	}
 	
 	private void stopPigeon() {
@@ -210,15 +218,6 @@ public class Start extends Activity implements ServiceConnection,
 		}
 	}
 	
-	public void onPause() {
-		super.onPause();
-		if(pigeon_bound) {
-			// its possible to pause before binding to pigeon
-			unbindService(this);
-		}
-		finish();
-	}
-
 	public void onServiceConnected(ComponentName className, IBinder service) {
 		Log.i(appTag, "onServiceConnected "+service);
 		pigeon = PigeonService.Stub.asInterface(service);

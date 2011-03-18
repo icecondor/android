@@ -210,24 +210,23 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		rssdb.log("Pigeon onBind for "+intent.getAction());
+		Log.i(appTag,"onBind for "+intent.toString());
 		return pigeonBinder;
 	}
 	
 	@Override
 	public void onRebind(Intent intent) {
-		rssdb.log("pigeon: onReBind for "+intent.getAction());
+		Log.i(appTag, "onReBind for "+intent.toString());
 	}
 	
 	@Override
 	public void onLowMemory() {
-		rssdb.log("onLowMemory");
+		rssdb.log("Pigeon: onLowMemory");
 	}
 	
 	@Override
 	public boolean onUnbind(Intent intent) {
-		Log.i(appTag, "onUnbind for "+intent.getAction());
-		rssdb.log("pigeon: onUnbind for "+intent.getAction());
+		Log.i(appTag, "Pigeon: onUnbind for "+intent.toString());
 		return false;
 	}
 	
@@ -548,14 +547,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			notificationFlash("Location reporting OFF.");
 		}
 		public Location getLastFix() throws RemoteException {
-			if(on_switch) {
-				if(last_local_fix != null) {
-				  broadcastGpsFix(last_local_fix);
-				}
-				return last_local_fix;
-			} else {
-				return locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+			if (last_local_fix != null) {
+				broadcastGpsFix(last_local_fix);
 			}
+			return last_local_fix;
 		}
 		@Override
 		public Location getLastPushedFix() throws RemoteException {

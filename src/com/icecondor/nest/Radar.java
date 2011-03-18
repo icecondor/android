@@ -164,6 +164,10 @@ public class Radar extends MapActivity implements ServiceConnection,
 	private void refreshBirdLocation() {
 		nearbys.setLastLocalFix(last_local_fix);
 		nearbys.setLastPushedFix(last_pushed_fix);
+		if(first_fix == false) {
+			first_fix = true;
+            scrollToLastFix();
+		}
 	}
     
 	@Override
@@ -346,16 +350,10 @@ public class Radar extends MapActivity implements ServiceConnection,
 		pigeon = PigeonService.Stub.asInterface(service);
 		try {
 			Location fix = pigeon.getLastFix();
-			pigeon.getLastPushedFix(); // triggers UI update
-			if(first_fix == false) {
-				first_fix = true;
-		        if (fix != null) {
-		            scrollToLastFix();
-		            
-		        } else {
-		        	Toast.makeText(this, "Waiting for first location fix", Toast.LENGTH_SHORT).show();
-		        }
+			if (fix == null) {
+				Toast.makeText(this, "Waiting for first location fix", Toast.LENGTH_SHORT).show();
 			}
+			pigeon.getLastPushedFix(); // triggers UI update
 		} catch (RemoteException e) {
 		}
 	}
