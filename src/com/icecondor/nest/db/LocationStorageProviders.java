@@ -146,12 +146,14 @@ public class LocationStorageProviders extends SQLiteOpenHelper implements Consta
 					             omessage.getParameter("oauth_token_secret")};
 		} catch (IOException e) {
 			e.printStackTrace();
+			throw new OauthError("Connection error. Please try again.");
 		} catch (OAuthException e) {
 			e.printStackTrace();
+			throw new OauthError("Authorization failed.");
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
+			throw new OauthError("Bad URL.");
 		}
-		return null;
 	}
 	
 	public static boolean has_access_token(Context ctx) {
@@ -166,4 +168,17 @@ public class LocationStorageProviders extends SQLiteOpenHelper implements Consta
 	public static void clearDefaultAccessToken(Context ctx) {
 		setDefaultAccessToken(new String[] {null, null}, ctx);
 	}
+
+	@SuppressWarnings("serial")
+	public static class OauthError extends RuntimeException {
+		String msg;
+		public OauthError(String string) {
+			this.msg = string;
+		}
+		public String getMessage() {
+			return msg;
+		}
+	}
+
 }
+

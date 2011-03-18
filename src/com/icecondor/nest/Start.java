@@ -34,6 +34,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.icecondor.nest.db.LocationStorageProviders;
+import com.icecondor.nest.db.LocationStorageProviders.OauthError;
 
 public class Start extends Activity implements ServiceConnection,
 												Constants {
@@ -93,16 +94,16 @@ public class Start extends Activity implements ServiceConnection,
 	    		Toast.makeText(this, "Finishing authentication", Toast.LENGTH_SHORT).show();
 	    		access_token_and_secret = LocationStorageProviders.getDefaultRequestToken(this);
 	    		Log.i(appTag, "Returned token (ignored): "+blessed_request_token+" Access token: "+access_token_and_secret[0]+" secret:"+access_token_and_secret[1]);
-	    		access_token_and_secret = LocationStorageProviders.convertToAccessTokenAndSecret(access_token_and_secret, this);
-				String openid = uri.getQueryParameter("openid");
 	    		String msg;
-	    		if(access_token_and_secret == null) {
-	    			msg = "OAUTH authentication failed.";
-	    		} else {
+	    		try {
+		    		access_token_and_secret = LocationStorageProviders.convertToAccessTokenAndSecret(access_token_and_secret, this);
+					String openid = uri.getQueryParameter("openid");
 	    			LocationStorageProviders.setDefaultAccessToken(access_token_and_secret, this);
 	    			msg = "Authentication succeded for "+openid+".";
 					settings.edit().putString(SETTING_OPENID, openid).commit();
 					pigeon.startTransmitting();
+	    		} catch (OauthError e) {
+	    			msg = e.getMessage();
 	    		}
 				Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     		}
