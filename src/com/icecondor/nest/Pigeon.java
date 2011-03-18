@@ -96,6 +96,12 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		} else {
 			Log.i(appTag, "Last known GPS fix: "+last_local_fix+" "+Util.DateTimeIso8601(last_local_fix.getTime()));			
 		}
+		Cursor oldest;
+		if ((oldest = rssdb.oldestPushedLocationQueue()).getCount() > 0) {
+			last_pushed_fix =  locationFromJson( oldest.getString(
+			                    oldest.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)));
+		}
+
 		
 		/* WIFI */
 		wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
@@ -242,6 +248,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				if (status == 200) {
 					rssdb.log("queue push #"+id+" OK");
 					rssdb.mark_as_pushed(id);
+					last_pushed_fix = fix;
+					last_pushed_time = System.currentTimeMillis();
 					broadcastBirdFix(fix);
 				} else {
 					rssdb.log("queue push #"+id+" FAIL "+status);
@@ -265,8 +273,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		//ArrayList <NameValuePair> params = new ArrayList <NameValuePair>();
 		ArrayList<Map.Entry<String, String>> params = new ArrayList<Map.Entry<String, String>>();
 		addPostParameters(params, fix, last_battery_level);
-		last_pushed_fix = fix;
-		last_pushed_time = System.currentTimeMillis();
 
 		OAuthAccessor accessor = LocationStorageProviders.defaultAccessor(this);
 		String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);

@@ -364,6 +364,13 @@ public class GeoRss {
 		return c;
 	}
 
+	public Cursor oldestPushedLocationQueue() {
+		Cursor c = db.query(GeoRss.POSITION_QUEUE_TABLE, null, POSITION_QUEUE_SENT+" IS NOT NULL",
+                null, null, null, "_id desc", "1");
+		c.moveToFirst();
+		return c;
+	}
+
 	public void mark_as_pushed(int id) {
 		ContentValues cv = new ContentValues(2);
 		cv.put(POSITION_QUEUE_SENT, Util.DateTimeIso8601Now());
