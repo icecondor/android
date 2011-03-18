@@ -71,6 +71,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	DefaultHttpClient httpClient;
 	OAuthClient oclient;
 	private int last_battery_level;
+	BatteryReceiver battery_receiver;
 	
 	public void onCreate() {
 		Log.i(appTag, "*** service created.");
@@ -133,7 +134,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		oclient = new OAuthClient(new HttpClient4());
 		
 		/* Battery */
-		registerReceiver(new BatteryReceiver(), 
+		battery_receiver = new BatteryReceiver();
+		registerReceiver(battery_receiver, 
 				         new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 	}
 
@@ -144,9 +146,11 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
 	public void onDestroy() {
+		unregisterReceiver(battery_receiver);
 		stopRssTimer();
 		stopLocationUpdates();
 		stopPushQueueTimer();
+		stopHeartbeatTimer();
 		rssdb.log("Pigon destroyed");
 		rssdb.close();
 		notificationManager.cancel(1);
@@ -426,7 +430,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		heartbeatTask = new HeartBeatTask();
 		heartbeat_timer.scheduleAtFixedRate(heartbeatTask, 0, 20000);
 	}
-	
+
+	private void stopHeartbeatTimer() {
+		heartbeat_timer.cancel();
+	}
 	private void startRssTimer() {
 		rss_timer = new Timer("RSS Reader Timer");
 		long rss_read_frequency = Long.decode(settings.getString(SETTING_RSS_READ_FREQUENCY, "60000"));
