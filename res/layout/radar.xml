@@ -13,13 +13,13 @@
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:layout_weight="0.9" android:id="@+id/gpsblock"
 			android:clickable="true">
-			<ImageView android:id="@+id/topsat" android:src="@drawable/satellite"
+			<ImageView android:id="@+id/saticon" 
 				android:layout_width="60px" android:layout_height="wrap_content" />
 			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 				android:layout_width="wrap_content" android:layout_height="wrap_content"
 				android:orientation="vertical">
 				<TextView android:id="@+id/satl1a" android:layout_width="wrap_content"
-					android:layout_height="wrap_content" android:text="GPS age" />
+					android:layout_height="wrap_content" android:text="---" />
 				<TextView android:id="@+id/satl1b" android:layout_width="wrap_content"
 					android:layout_height="wrap_content" android:text="---" />
 

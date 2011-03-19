@@ -48,6 +48,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -497,8 +498,19 @@ public class Radar extends MapActivity implements ServiceConnection,
 		@Override
 		public void run() {
 			refreshBirdLocation();
+			String provider = last_local_fix.getProvider();
+			ImageView saticon = (ImageView)findViewById(R.id.saticon);
+			TextView satl1a = (TextView)findViewById(R.id.satl1a); 
 			TextView satl1b = (TextView)findViewById(R.id.satl1b); 
 			satl1b.setText(Util.timeAgoInWords(last_local_fix.getTime()));
+			if(provider.equals("network")) {
+				satl1a.setText("Network age");
+				saticon.setImageResource(R.drawable.celltower);
+			}
+			if(provider.equals("gps")) {
+				satl1a.setText("GPS age");
+				saticon.setImageResource(R.drawable.gpssatellite);				
+			}
 		}		
 	}
 	
