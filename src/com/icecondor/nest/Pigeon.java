@@ -253,9 +253,9 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				} else {
 					rssdb.log("queue push #"+id+" FAIL "+status);
 				}
+				rssdb.log("** Finished queue push. size = "+rssdb.countPositionQueueRemaining());
 			} 
 			oldest.close();
-			rssdb.log("** Finished queue push. size = "+rssdb.countPositionQueueRemaining());
 		}
 	}
 	
@@ -530,7 +530,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			if (on_switch) {
 				Log.i(appTag, "startTransmitting: already transmitting");
 			} else {
-				Log.i(appTag, "startTransmitting");
+				rssdb.log("Pigeon: startTransmitting");
 				on_switch = true;
 				settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING, on_switch).commit();
 				startLocationUpdates();
@@ -539,7 +539,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			}
 		}
 		public void stopTransmitting() throws RemoteException {
-			Log.i(appTag, "stopTransmitting");
+			rssdb.log("Pigeon: stopTransmitting");
 			on_switch = false;
 			settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING,on_switch).commit();
 			stopLocationUpdates();
