@@ -112,7 +112,19 @@ public class Radar extends MapActivity implements ServiceConnection,
         LinearLayout lg = (LinearLayout)findViewById(R.id.gpsblock);
         lg.setOnClickListener(new GpsClickListener());        		
         LinearLayout lb = (LinearLayout)findViewById(R.id.birdblock);
-        lb.setOnClickListener(new BirdClickListener());      		
+        
+        if(LocationStorageProviders.has_access_token(this)) {
+            lb.setOnClickListener(new BirdClickListener());      
+        } else {
+    		ImageView birdicon = (ImageView)findViewById(R.id.birdicon);
+    		birdicon.setImageResource(R.drawable.record);
+    		TextView bird1a = (TextView)findViewById(R.id.topbird2); 
+    		bird1a.setText("Login");
+    		TextView bird1b = (TextView)findViewById(R.id.topbird3); 
+        	bird1b.setText("to begin");
+            lb.setOnClickListener(new LoginClickListener());      
+        }
+
         
 		rssdb = new GeoRss(this);
 		rssdb.open();
@@ -247,66 +259,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 				return false;
 			} else {
 				if(!LocationStorageProviders.has_access_token(this)) {
-					// Alert the user that login is required
-					(new AlertDialog.Builder(this)).setMessage(
-							"Login to the location storage provider at "
-									+ ICECONDOR_URL_SHORTNAME
-									+ " to activate position recording.")
-							.setPositiveButton("Proceed",
-									new DialogInterface.OnClickListener() {
-										public void onClick(DialogInterface dialog,
-												int whichButton) {
-											Log.i(appTag,"OAUTH request token retrieval");
-											Toast.makeText(Radar.this, "contacting server", Toast.LENGTH_SHORT).show();
-											// get the OAUTH request token
-											OAuthAccessor accessor = LocationStorageProviders
-													.defaultAccessor(Radar.this);
-											OAuthClient client = new OAuthClient(
-													new HttpClient4());
-											try {
-												client.getRequestToken(accessor);
-												String[] token_and_secret = new String[] {
-														accessor.requestToken,
-														accessor.tokenSecret };
-												Log.i(appTag, "request token: "
-														+ token_and_secret[0]
-														+ " secret:"
-														+ token_and_secret[1]);
-												LocationStorageProviders
-														.setDefaultRequestToken(
-																token_and_secret,
-																Radar.this);
-												Intent i = new Intent(
-														Intent.ACTION_VIEW);
-												String url = accessor.consumer.serviceProvider.userAuthorizationURL
-												+ "?oauth_token="
-												+ accessor.requestToken
-												+ "&oauth_callback="
-												+ accessor.consumer.callbackURL;
-												Log.i(appTag, "sending to "+url);
-												i.setData(Uri.parse(url));
-												startActivity(i);
-											} catch (IOException e) {
-												Toast.makeText(Radar.this, "server failed", Toast.LENGTH_SHORT).show();
-												e.printStackTrace();
-											} catch (OAuthException e) {
-												Toast.makeText(Radar.this, "server failed", Toast.LENGTH_SHORT).show();
-												e.printStackTrace();
-											} catch (URISyntaxException e) {
-												Toast.makeText(Radar.this, "server failed", Toast.LENGTH_SHORT).show();
-												e.printStackTrace();
-											}
-										}
-									}).setNegativeButton("Cancel",
-									new DialogInterface.OnClickListener() {
-										public void onClick(DialogInterface dialog,
-												int whichButton) {
-											/* User clicked Cancel so do some stuff */
-										}
-									})
-	
-							.show();
-					return false;
+					return loginDialog();
 				} else {
 					pigeon.startTransmitting();	
 					return true;
@@ -316,6 +269,69 @@ public class Radar extends MapActivity implements ServiceConnection,
 			Log.e(appTag, "togglePigeon: pigeon communication error");
 			return false;
 		}
+	}
+
+	private boolean loginDialog() {
+		// Alert the user that login is required
+		(new AlertDialog.Builder(this)).setMessage(
+				"Login to the location storage provider at "
+						+ ICECONDOR_URL_SHORTNAME
+						+ " to activate position recording.")
+				.setPositiveButton("Proceed",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int whichButton) {
+								Log.i(appTag,"OAUTH request token retrieval");
+								Toast.makeText(Radar.this, "contacting server", Toast.LENGTH_SHORT).show();
+								// get the OAUTH request token
+								OAuthAccessor accessor = LocationStorageProviders
+										.defaultAccessor(Radar.this);
+								OAuthClient client = new OAuthClient(
+										new HttpClient4());
+								try {
+									client.getRequestToken(accessor);
+									String[] token_and_secret = new String[] {
+											accessor.requestToken,
+											accessor.tokenSecret };
+									Log.i(appTag, "request token: "
+											+ token_and_secret[0]
+											+ " secret:"
+											+ token_and_secret[1]);
+									LocationStorageProviders
+											.setDefaultRequestToken(
+													token_and_secret,
+													Radar.this);
+									Intent i = new Intent(
+											Intent.ACTION_VIEW);
+									String url = accessor.consumer.serviceProvider.userAuthorizationURL
+									+ "?oauth_token="
+									+ accessor.requestToken
+									+ "&oauth_callback="
+									+ accessor.consumer.callbackURL;
+									Log.i(appTag, "sending to "+url);
+									i.setData(Uri.parse(url));
+									startActivity(i);
+								} catch (IOException e) {
+									Toast.makeText(Radar.this, "server failed", Toast.LENGTH_SHORT).show();
+									e.printStackTrace();
+								} catch (OAuthException e) {
+									Toast.makeText(Radar.this, "server failed", Toast.LENGTH_SHORT).show();
+									e.printStackTrace();
+								} catch (URISyntaxException e) {
+									Toast.makeText(Radar.this, "server failed", Toast.LENGTH_SHORT).show();
+									e.printStackTrace();
+								}
+							}
+						}).setNegativeButton("Cancel",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+									int whichButton) {
+								/* User clicked Cancel so do some stuff */
+							}
+						})
+
+				.show();
+		return false;
 	}
 	
 	public int pigeonStatusIcon() {
@@ -542,6 +558,13 @@ public class Radar extends MapActivity implements ServiceConnection,
 		@Override
 		public void onClick(View v) {
 			scrollToLastPushedFix();			
+		}		
+	}
+
+	public class LoginClickListener implements View.OnClickListener {
+		@Override
+		public void onClick(View v) {
+			loginDialog();			
 		}		
 	}
 }

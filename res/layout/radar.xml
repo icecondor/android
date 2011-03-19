@@ -31,7 +31,7 @@
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:layout_weight="0.1" android:id="@+id/birdblock"
 			android:clickable="true">
-			<ImageView android:id="@+id/topbird" android:src="@drawable/condor"
+			<ImageView android:id="@+id/birdicon" android:src="@drawable/condor"
 				android:layout_width="30px" android:layout_height="wrap_content" />
 			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 				android:layout_width="wrap_content" android:layout_height="wrap_content"
