@@ -45,6 +45,7 @@ import android.util.Log;
 
 import com.icecondor.nest.db.GeoRss;
 import com.icecondor.nest.db.LocationStorageProviders;
+import com.icecondor.nest.types.Gps;
 
 //look at android.permission.RECEIVE_BOOT_COMPLETED
 
@@ -99,9 +100,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		}
 		Cursor oldest;
 		if ((oldest = rssdb.oldestPushedLocationQueue()).getCount() > 0) {
-			last_pushed_fix =  locationFromJson( oldest.getString(
-			                    oldest.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)));
+			last_pushed_fix =  Gps.fromJson(oldest.getString(
+			                    oldest.getColumnIndex(GeoRss.POSITION_QUEUE_JSON))).getLocation();
 		}
+		oldest.close();
 
 		
 		/* WIFI */
@@ -246,15 +248,15 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			rssdb.log("** Starting queue push of size "+rssdb.countPositionQueueRemaining());
 			if ((oldest = rssdb.oldestUnpushedLocationQueue()).getCount() > 0) {
 				int id = oldest.getInt(oldest.getColumnIndex("_id"));
-				Location fix =  locationFromJson( oldest.getString(
+				Gps fix =  Gps.fromJson(oldest.getString(
 				                    oldest.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)));
 				int status = pushLocation(fix);
 				if (status == 200) {
 					rssdb.log("queue push #"+id+" OK");
 					rssdb.mark_as_pushed(id);
-					last_pushed_fix = fix;
+					last_pushed_fix = fix.getLocation();
 					last_pushed_time = System.currentTimeMillis();
-					broadcastBirdFix(fix);
+					broadcastBirdFix(fix.getLocation());
 				} else {
 					rssdb.log("queue push #"+id+" FAIL "+status);
 				}
@@ -264,7 +266,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		}
 	}
 	
-	public int pushLocation(Location fix) {
+	public int pushLocation(Gps gps) {
+		Location fix = gps.getLocation();
 		Log.i(appTag, "sending id: "+settings.getString(SETTING_OPENID,"")+ " fix: " 
 				+fix.getLatitude()+" long: "+fix.getLongitude()+
 				" alt: "+fix.getAltitude() + " time: " + Util.DateTimeIso8601(fix.getTime()) +
@@ -276,7 +279,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		}
 		//ArrayList <NameValuePair> params = new ArrayList <NameValuePair>();
 		ArrayList<Map.Entry<String, String>> params = new ArrayList<Map.Entry<String, String>>();
-		addPostParameters(params, fix, last_battery_level);
+		addPostParameters(params, fix, gps.getBattery());
 
 		OAuthAccessor accessor = LocationStorageProviders.defaultAccessor(this);
 		String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
@@ -337,7 +340,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 					time_since_last_update > record_frequency ) {
 				last_recorded_fix = last_local_fix;
 				last_fix_http_status = 200;
-				long id = rssdb.addPosition(locationToJson(last_local_fix));
+				Gps gps = new Gps();
+				gps.setLocation(last_local_fix);
+				gps.setBattery(last_battery_level);
+				long id = rssdb.addPosition(gps.toJson());
 				rssdb.log("Pigeon location queued. location #"+id);
 				pushQueue();
 				broadcastGpsFix(location);
@@ -357,42 +363,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		sendBroadcast(intent);	
 	}
 
-	private String locationToJson(Location lastLocalFix) {
-		try {
-		JSONObject position = new JSONObject();
-			position.put("latitude", lastLocalFix.getLatitude());
-			position.put("longitude", lastLocalFix.getLongitude());
-			position.put("time", lastLocalFix.getTime());
-			position.put("altitude", lastLocalFix.getAltitude());
-			position.put("accuracy", lastLocalFix.getAccuracy());
-			position.put("bearing", lastLocalFix.getBearing());
-			position.put("speed", lastLocalFix.getSpeed());
-			JSONObject jloc = new JSONObject();
-			jloc.put("location", position);
-			return jloc.toString();
-		} catch (JSONException e) {
-			return "{\"ERROR\":\""+e.toString()+"\"}";
-		}
-	}
-
-	private Location locationFromJson(String json) {
-		try {
-			JSONObject j = new JSONObject(json);
-			JSONObject p = j.getJSONObject("location");
-			Location l = new Location("");
-			l.setLatitude(p.getDouble("latitude"));
-			l.setLongitude(p.getDouble("longitude"));
-			l.setTime(p.getLong("time"));
-			l.setAltitude(p.getDouble("altitude"));
-			l.setAccuracy(new Float(p.getDouble("accuracy")));
-			l.setBearing(new Float(p.getDouble("bearing")));
-			l.setSpeed(new Float(p.getDouble("speed")));
-			return l;
-		} catch (JSONException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
 	
 	private void play_fix_beep() {
 		mp.start();
