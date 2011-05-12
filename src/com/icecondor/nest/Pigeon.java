@@ -72,6 +72,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	OAuthClient oclient;
 	private int last_battery_level;
 	BatteryReceiver battery_receiver;
+	private boolean ac_power;
 	
 	public void onCreate() {
 		Log.i(appTag, "*** service created.");
@@ -142,7 +143,11 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		/* Battery */
 		battery_receiver = new BatteryReceiver();
 		registerReceiver(battery_receiver, 
-				         new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+		         new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+		registerReceiver(battery_receiver, 
+		         new IntentFilter(Intent.ACTION_POWER_CONNECTED));
+		registerReceiver(battery_receiver, 
+		         new IntentFilter(Intent.ACTION_POWER_DISCONNECTED));
 	}
 
 	public void onStart(Intent start, int key) {
@@ -517,7 +522,16 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	private class BatteryReceiver extends BroadcastReceiver {
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
-	      last_battery_level = intent.getIntExtra("level", 0);
+	    	String action = intent.getAction();
+	    	if (action.equals("android.intent.action.BATTERY_CHANGED")) {
+	  	      last_battery_level = intent.getIntExtra("level", 0);
+	    	}
+	    	if (action.equals("android.intent.action.ACTION_POWER_CONNECTED")) {
+		    	ac_power = true;	    		
+	    	}
+	    	if (action.equals("android.intent.action.ACTION_POWER_DISCONNECTED")) {
+		    	ac_power = false;	    		
+	    	}
 	    }
 	  };
 	  
