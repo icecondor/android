@@ -86,9 +86,9 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
 		/* GPS */
 		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-		Log.i(appTag, "GPS provider enabled: "+locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER));
+		rssdb.log("GPS provider enabled: "+locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER));
 		last_local_fix = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		Log.i(appTag, "NETWORK provider enabled: "+locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER));
+		rssdb.log("NETWORK provider enabled: "+locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER));
 		Location last_network_fix = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 		if (last_local_fix == null) { 
 			if(last_network_fix != null) {
@@ -196,10 +196,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				LocationManager.GPS_PROVIDER, 
 				record_frequency, 
 				0.0F, this);
-		// Network provider takes no extra power but the accuracy is
-		// too low to be useful.
-		//locationManager.requestLocationUpdates(
-		//		LocationManager.NETWORK_PROVIDER, 60000L, 0.0F, pigeon);
+		locationManager.requestLocationUpdates(
+				LocationManager.NETWORK_PROVIDER, 
+				record_frequency, 
+				0.0F, this);
 //		Log.i(appTag, "kicking off wifi scan timer");
 //		wifi_scan_timer.scheduleAtFixedRate(
 //				new TimerTask() {
@@ -211,7 +211,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
 	private void stopLocationUpdates() {
-		rssdb.log("pigeon: stopping GPS updates");		
+		rssdb.log("pigeon: stopping location updates");		
 		locationManager.removeUpdates(this);
 	}
 
