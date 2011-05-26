@@ -103,9 +103,10 @@ public class Start extends Activity implements ServiceConnection,
 					settings.edit().putString(SETTING_OPENID, openid).commit();
 					pigeon.startTransmitting();
 	    		} catch (OauthError e) {
-	    			msg = e.getMessage();
+	    			msg = e.getMessage();	    			
 	    		}
 				Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+				Log.i(appTag, "processOauthToken: "+msg);
     		}
     	}
 	}

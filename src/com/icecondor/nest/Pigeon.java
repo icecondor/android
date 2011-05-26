@@ -307,6 +307,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
 	private void addPostParameters(ArrayList<Map.Entry<String, String>> dict, Location fix, int lastBatteryLevel) {
+		dict.add(new Util.Parameter("location[provider]", fix.getProvider()));
 		dict.add(new Util.Parameter("location[latitude]", Double.toString(fix.getLatitude())));
 		dict.add(new Util.Parameter("location[longitude]", Double.toString(fix.getLongitude())));
 		dict.add(new Util.Parameter("location[altitude]", Double.toString(fix.getAltitude())));
