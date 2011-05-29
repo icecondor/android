@@ -17,7 +17,6 @@ public class Gps extends Base {
 		 * "mHasBearing": false, "mHasAltitude": true, "mHasAccuracy": false,
 		 * "mAccuracy": 0.0, "mSpeed": 0.0, "mBearing": 0.0 }, "battery_level": 50 }
 		 */
-System.out.println(json);
 		try {
 			JSONObject j = new JSONObject(json);
 			JSONObject p = j.getJSONObject("location");
@@ -33,6 +32,8 @@ System.out.println(json);
 			
 			Gps gps = new Gps();
 			gps.setLocation(l);
+			gps.setBattery(j.getInt("battery_level"));
+			gps.setAC(j.getBoolean("ac_power"));
 			return gps;
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -55,6 +56,8 @@ System.out.println(json);
 			
 			JSONObject jloc = new JSONObject();
 			jloc.put("location", position);
+			jloc.put("battery_level", battery_level);
+			jloc.put("ac_power", ac_power);
 			return jloc.toString();
 		} catch (JSONException e) {
 			return "{\"ERROR\":\"" + e.toString() + "\"}";

@@ -6,6 +6,7 @@ abstract public class Base {
 
 	// "integral" fields
 	int battery_level;
+	boolean ac_power;
 
 	public void setBattery(int last_battery_level) {
 		battery_level = last_battery_level;
@@ -15,4 +16,11 @@ abstract public class Base {
 		return battery_level;
 	}
 
+	public void setAC(boolean last_ac_power) {
+		ac_power = last_ac_power;
+	}
+
+	public boolean getAC() {
+		return ac_power;
+	}
 }
