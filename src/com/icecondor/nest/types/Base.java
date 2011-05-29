@@ -1,9 +1,10 @@
 package com.icecondor.nest.types;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class Base {
-	protected static Gson gson = new Gson();
+	protected static Gson gson = new GsonBuilder().registerTypeAdapter(Gps.class, new LocationSerializer()).create();
 	
 	public String toJson() {
 		return gson.toJson(this);
