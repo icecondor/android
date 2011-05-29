@@ -21,7 +21,6 @@ public class Gps extends Base {
 			JSONObject j = new JSONObject(json);
 			JSONObject p = j.getJSONObject("location");
 			Location l = new Location(p.getString("provider"));
-			l.setProvider(p.getString("latitude"));
 			l.setLatitude(p.getDouble("latitude"));
 			l.setLongitude(p.getDouble("longitude"));
 			l.setTime(p.getLong("time"));
