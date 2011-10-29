@@ -8,7 +8,7 @@
     <ImageButton android:id="@+id/widget_bird_button"
      android:layout_height="64dp"
      android:layout_width="60dp"
-     android:src="@drawable/widget_bird"
+     android:src="@drawable/widget_bird_off"
      android:background="@drawable/icon_transparent"
      />
     
