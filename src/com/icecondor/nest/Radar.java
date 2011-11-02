@@ -228,7 +228,6 @@ public class Radar extends MapActivity implements ServiceConnection,
 			pigeon_connected = false;
 			stopService(pigeonIntent);
 			rssdb.log("Radar: pigeon told to stop");
-			finish();
 			break;
 		case 7:
 			startActivity(activityLogIntent);

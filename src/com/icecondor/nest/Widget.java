@@ -6,11 +6,13 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
-public class Widget extends AppWidgetProvider {
+public class Widget extends AppWidgetProvider implements Constants {
 	static final String appTag = "Widget";
 	static boolean on;
 	
@@ -31,6 +33,9 @@ public class Widget extends AppWidgetProvider {
 			if (on) {
 				pigeon_intent = new Intent("com.icecondor.nest.PIGEON_OFF");
 			} else {
+				context.startService(new Intent(context, Pigeon.class));
+				SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+				settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING,true).commit();
 				pigeon_intent = new Intent("com.icecondor.nest.PIGEON_ON");
 			}
 			context.sendBroadcast(pigeon_intent);

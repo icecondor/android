@@ -170,13 +170,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	
 	public void onDestroy() {
 		unregisterReceiver(battery_receiver);
-		stopRssTimer();
-		stopLocationUpdates();
-		stopPushQueueTimer();
-		stopHeartbeatTimer();
+		unregisterReceiver(widget_receiver);
+        stop_background();
 		rssdb.log("Pigon destroyed");
 		rssdb.close();
-		notificationManager.cancel(1);
 	}
 	
 	private void notificationStatusUpdate(String msg) {
@@ -483,9 +480,11 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	
 	protected void stop_background() {
 		on_switch = false;
-		settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING,on_switch).commit();
+		stopRssTimer();
 		stopLocationUpdates();
-		notificationFlash("Location reporting OFF.");
+		stopPushQueueTimer();
+		stopHeartbeatTimer();
+		settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING,on_switch).commit();
 		notificationManager.cancel(1);
 		Intent intent = new Intent("com.icecondor.nest.WIDGET_OFF");
 		sendBroadcast(intent);
@@ -541,7 +540,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	    public void onReceive(Context context, Intent intent) {
 	    	String action = intent.getAction();
 	    	if (action.equals("com.icecondor.nest.PIGEON_OFF")) {
-	    		stop_background();
+	    		stopSelf();
 	    	}
 	    	if (action.equals("com.icecondor.nest.PIGEON_ON")) {
 	    		start_background();
