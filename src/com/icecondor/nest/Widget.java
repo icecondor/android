@@ -12,6 +12,7 @@ import android.widget.RemoteViews;
 
 public class Widget extends AppWidgetProvider {
 	static final String appTag = "Widget";
+	static boolean on;
 	
 	@Override
 	public void onUpdate(Context context, AppWidgetManager mgr, int[] appWidgetIds) {
@@ -25,10 +26,29 @@ public class Widget extends AppWidgetProvider {
 		Log.i(appTag, intent.getAction());
 		super.onReceive(context, intent);
 		if ("PowerToggle".equals(intent.getAction())) {
+			Log.i(appTag, "PowerToggle: "+on);
+			Intent pigeon_intent;
+			if (on) {
+				pigeon_intent = new Intent("com.icecondor.nest.PIGEON_OFF");
+			} else {
+				pigeon_intent = new Intent("com.icecondor.nest.PIGEON_ON");
+			}
+			context.sendBroadcast(pigeon_intent);
+		}
+		if ("com.icecondor.nest.WIDGET_ON".equals(intent.getAction())) {
+			on = true;
 			ComponentName me=new ComponentName(context,Widget.class);
 			AppWidgetManager mgr=AppWidgetManager.getInstance(context);
 			RemoteViews views=buildView(context);
 			views.setImageViewResource(R.id.widget_bird_button, R.drawable.widget_bird_on);
+			mgr.updateAppWidget(me, views);
+		}
+		if ("com.icecondor.nest.WIDGET_OFF".equals(intent.getAction())) {
+			on = false;
+			ComponentName me=new ComponentName(context,Widget.class);
+			AppWidgetManager mgr=AppWidgetManager.getInstance(context);
+			RemoteViews views=buildView(context);
+			views.setImageViewResource(R.id.widget_bird_button, R.drawable.widget_bird_off);
 			mgr.updateAppWidget(me, views);
 		}
 	}

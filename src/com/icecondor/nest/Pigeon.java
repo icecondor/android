@@ -73,6 +73,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	OAuthClient oclient;
 	private int last_battery_level;
 	BatteryReceiver battery_receiver;
+	WidgetReceiver widget_receiver;
 	private boolean ac_power;
 	
 	public void onCreate() {
@@ -127,6 +128,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		if (on_switch) {
 			//startForeground(1, ongoing_notification);
 			startLocationUpdates();
+			sendBroadcast(new Intent("com.icecondor.nest.WIDGET_ON"));
 		}
 
 		/* Sound */
@@ -150,6 +152,12 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		         new IntentFilter(Intent.ACTION_POWER_CONNECTED));
 		registerReceiver(battery_receiver, 
 		         new IntentFilter(Intent.ACTION_POWER_DISCONNECTED));
+		
+		widget_receiver = new WidgetReceiver();
+		registerReceiver(widget_receiver,
+				new IntentFilter("com.icecondor.nest.PIGEON_OFF"));
+		registerReceiver(widget_receiver,
+				new IntentFilter("com.icecondor.nest.PIGEON_ON"));
 	}
 
 	public void onStart(Intent start, int key) {
@@ -461,6 +469,26 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				}, 0);
 	}
 	
+	protected void start_background() {
+		on_switch = true;
+		settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING, on_switch).commit();
+		startLocationUpdates();
+		notificationStatusUpdate("Waiting for fix.");				
+		notificationFlash("Location reporting ON.");
+		Intent intent = new Intent("com.icecondor.nest.WIDGET_ON");
+		sendBroadcast(intent);
+	}
+	
+	protected void stop_background() {
+		on_switch = false;
+		settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING,on_switch).commit();
+		stopLocationUpdates();
+		notificationFlash("Location reporting OFF.");
+		notificationManager.cancel(1);
+		Intent intent = new Intent("com.icecondor.nest.WIDGET_OFF");
+		sendBroadcast(intent);
+	}
+	
 	class HeartBeatTask extends TimerTask {
 		public void run() {
 			String fix_part = "";
@@ -505,7 +533,20 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	    	}
 	    }
 	  };
-	  
+
+	private class WidgetReceiver extends BroadcastReceiver {
+	    @Override
+	    public void onReceive(Context context, Intent intent) {
+	    	String action = intent.getAction();
+	    	if (action.equals("com.icecondor.nest.PIGEON_OFF")) {
+	    		stop_background();
+	    	}
+	    	if (action.equals("com.icecondor.nest.PIGEON_ON")) {
+	    		start_background();
+	    	}
+	    }
+	  };
+
     private final PigeonService.Stub pigeonBinder = new PigeonService.Stub() {
 		public boolean isTransmitting() throws RemoteException {
 			Log.i(appTag, "isTransmitting => "+on_switch);
@@ -516,20 +557,12 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				Log.i(appTag, "startTransmitting: already transmitting");
 			} else {
 				rssdb.log("Pigeon: startTransmitting");
-				on_switch = true;
-				settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING, on_switch).commit();
-				startLocationUpdates();
-				notificationStatusUpdate("Waiting for fix.");				
-				notificationFlash("Location reporting ON.");
+				start_background();
 			}
 		}
 		public void stopTransmitting() throws RemoteException {
 			rssdb.log("Pigeon: stopTransmitting");
-			on_switch = false;
-			settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING,on_switch).commit();
-			stopLocationUpdates();
-			notificationStatusUpdate("Location reporting is off.");				
-			notificationFlash("Location reporting OFF.");
+			stop_background();
 		}
 		public Location getLastFix() throws RemoteException {
 			if (last_local_fix != null) {
