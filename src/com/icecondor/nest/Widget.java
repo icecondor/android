@@ -53,6 +53,12 @@ public class Widget extends AppWidgetProvider {
 		}
 	}
 	
+	@Override
+	public void onEnabled(Context context) {
+		super.onEnabled(context);
+		context.sendBroadcast(new Intent("com.icecondor.nest.PIGEON_INQUIRE"));
+	}
+	
 	RemoteViews buildView(Context context) {
 		RemoteViews updateViews = new RemoteViews(context.getPackageName(), R.layout.widget);
 		Intent i = new Intent(context, Widget.class);

@@ -158,6 +158,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				new IntentFilter("com.icecondor.nest.PIGEON_OFF"));
 		registerReceiver(widget_receiver,
 				new IntentFilter("com.icecondor.nest.PIGEON_ON"));
+		registerReceiver(widget_receiver,
+				new IntentFilter("com.icecondor.nest.PIGEON_INQUIRE"));
 	}
 
 	public void onStart(Intent start, int key) {
@@ -543,6 +545,13 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	    	}
 	    	if (action.equals("com.icecondor.nest.PIGEON_ON")) {
 	    		start_background();
+	    	}
+	    	if (action.equals("com.icecondor.nest.PIGEON_INQUIRE")) {
+	    		if(on_switch) {
+	    			sendBroadcast(new Intent("com.icecondor.nest.WIDGET_ON"));
+	    		} else {
+	    			sendBroadcast(new Intent("com.icecondor.nest.WIDGET_ON"));
+	    		}
 	    	}
 	    }
 	  };
