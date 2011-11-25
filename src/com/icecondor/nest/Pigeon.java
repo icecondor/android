@@ -75,6 +75,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	BatteryReceiver battery_receiver;
 	WidgetReceiver widget_receiver;
 	private boolean ac_power;
+	Thread apiThread;
 	
 	public void onCreate() {
 		Log.i(appTag, "*** service created.");
@@ -134,6 +135,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		/* Sound */
 		mp = MediaPlayer.create(this, R.raw.beep);	
 		
+		/* Timers */
 		startHeartbeatTimer();
 		startRssTimer();
 		startPushQueueTimer();
@@ -160,6 +162,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				new IntentFilter("com.icecondor.nest.PIGEON_ON"));
 		registerReceiver(widget_receiver,
 				new IntentFilter("com.icecondor.nest.PIGEON_INQUIRE"));
+		
+		/* API Communication Thread */
+		apiThread = new NetThread();
+		apiThread.start();
 	}
 
 	public void onStart(Intent start, int key) {
