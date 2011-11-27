@@ -18,8 +18,6 @@ import net.oauth.client.httpclient4.HttpClient4;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.params.AllClientPNames;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -38,7 +36,9 @@ import android.location.LocationProvider;
 import android.media.MediaPlayer;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -75,7 +75,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	BatteryReceiver battery_receiver;
 	WidgetReceiver widget_receiver;
 	private boolean ac_power;
-	Thread apiThread;
+	NetThread apiThread;
+	Handler apiHandler;
 	
 	public void onCreate() {
 		Log.i(appTag, "*** service created.");
@@ -166,6 +167,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		/* API Communication Thread */
 		apiThread = new NetThread();
 		apiThread.start();
+		apiHandler = apiThread.getHandler();
 	}
 
 	public void onStart(Intent start, int key) {
@@ -273,10 +275,20 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				} else {
 					rssdb.log("queue push #"+id+" FAIL "+status);
 				}
+				pushLocationApi(fix);
 				rssdb.log("** Finished queue push. size = "+rssdb.countPositionQueueRemaining());
 			} 
 			oldest.close();
 		}
+	}
+	
+	public int pushLocationApi(Gps gps) {
+		Bundle bundle = new Bundle();
+		bundle.putString("json", gps.toJson());
+		Message msg = new Message();
+		msg.setData(bundle);
+		apiHandler.dispatchMessage(msg);
+		return 200;
 	}
 	
 	public int pushLocation(Gps gps) {
