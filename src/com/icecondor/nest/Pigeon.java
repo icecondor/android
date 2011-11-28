@@ -265,7 +265,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				int id = oldest.getInt(oldest.getColumnIndex("_id"));
 				Gps fix =  Gps.fromJson(oldest.getString(
 				                    oldest.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)));
-				int status = pushLocation(fix);
+				int status = pushLocationApi(fix);
 				if (status == 200) {
 					rssdb.log("queue push #"+id+" OK");
 					rssdb.mark_as_pushed(id);
@@ -275,7 +275,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				} else {
 					rssdb.log("queue push #"+id+" FAIL "+status);
 				}
-				pushLocationApi(fix);
 				rssdb.log("** Finished queue push. size = "+rssdb.countPositionQueueRemaining());
 			} 
 			oldest.close();
@@ -287,7 +286,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		bundle.putString("json", gps.toJson());
 		Message msg = new Message();
 		msg.setData(bundle);
-		apiHandler.dispatchMessage(msg);
+		rssdb.log("api push: "+msg.toString());
+		apiThread.getHandler().dispatchMessage(msg);
 		return 200;
 	}
 	

@@ -23,23 +23,24 @@ public class NetThread extends Thread implements Handler.Callback {
 	public void run() {
 		Log.i("netthread", "Starting NetThread");
 		Looper.prepare();
-        handler = new Handler();
-        if(netSock.isConnected() == false) { connect(); }
+        handler = new Handler(this);
+        if(netSock == null || netSock.isConnected() == false) { connect(); }
 		Looper.loop();        
     }
 	
 	Handler getHandler() {return handler;}
 	
 	public void connect() {
+		Log.i("netthread", "NetThread: connecting");
 		try {
 			InetAddress addr = InetAddress.getByName("donpark.org");
 			try {
-				Log.i("netthread", "NetThread: connecting");
 				netSock = new Socket(addr, 2020);
 				Log.i("netthread", "NetThread: connected");
 				if (netThreadListen != null && netThreadListen.isAlive()) { netThreadListen.destroy(); }
 				netThreadListen = new Listener();
 				netThreadListen.setHandler(handler);
+				netThreadListen.setSocket(netSock);
 				netThreadListen.start();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -51,14 +52,16 @@ public class NetThread extends Thread implements Handler.Callback {
 
 	@Override
 	public boolean handleMessage(Message msg) {
+		Log.i("netthread", "NetThread: handleMessage");
 		String str = msg.getData().getString("json");
 		Log.i("netthread", "NetThread: writing "+str);
 		try {
 			netSock.getOutputStream().write(str.getBytes());
+			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
+			return false;
 		}
-		return false;
 	}
 	
 	class Listener extends Thread {
@@ -70,14 +73,20 @@ public class NetThread extends Thread implements Handler.Callback {
 		public void run() {
 			try {
 				BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-				String line_in = reader.readLine();
-				Log.i("netthread", "NetThreadListener: read "+line_in);				
-				Bundle bundle = new Bundle();
-				bundle.putString("json", line_in);
-				Message msg = new Message();
-				msg.setData(bundle);
-				parentHandler.dispatchMessage(msg);
-			} catch (IOException e) {
+				while(true) {
+					Log.i("netthread", "NetThreadListener: listening");
+					String line_in = reader.readLine();
+					Log.i("netthread", "NetThreadListener: read "+line_in);				
+					Bundle bundle = new Bundle();
+					bundle.putString("json", line_in);
+					Log.i("netthread", "NetThreadListener: bundle built");								
+					
+					Message msg = new Message();
+					msg.setData(bundle);
+					Log.i("netthread", "NetThreadListener: msg built");								
+					//parentHandler.dispatchMessage(msg);
+				}
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
