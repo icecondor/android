@@ -40,8 +40,14 @@ public class Gps extends Base {
 		}
 
 	}
+	
+	public void freshen() {
+		
+	}
 
-	public String toJson() {
+	@Override
+	public JSONObject toJson() {
+		JSONObject jloc = new JSONObject();
 		try {
 			JSONObject position = new JSONObject();
 			position.put("provider", location.getProvider());
@@ -53,15 +59,15 @@ public class Gps extends Base {
 			position.put("bearing", location.getBearing());
 			position.put("speed", location.getSpeed());
 			
-			JSONObject jloc = new JSONObject();
 			jloc.put("location", position);
 			jloc.put("battery_level", battery_level);
 			jloc.put("ac_power", ac_power);
-			return jloc.toString();
 		} catch (JSONException e) {
-			return "{\"ERROR\":\"" + e.toString() + "\"}";
+			try {
+				jloc.put("error", e.toString());
+			} catch (JSONException e1) {}
 		}
-
+		return jloc;
 	}
 
 	public void setLocation(Location location) {

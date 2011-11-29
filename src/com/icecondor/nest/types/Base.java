@@ -1,8 +1,10 @@
 package com.icecondor.nest.types;
 
+import org.json.JSONObject;
+
 abstract public class Base {
 
-	abstract public String toJson();
+	abstract public JSONObject toJson();
 
 	// "integral" fields
 	int battery_level;

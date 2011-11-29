@@ -18,6 +18,8 @@ import net.oauth.client.httpclient4.HttpClient4;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.params.AllClientPNames;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -283,7 +285,12 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	
 	public int pushLocationApi(Gps gps) {
 		Bundle bundle = new Bundle();
-		bundle.putString("json", gps.toJson());
+		String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
+		JSONObject json = gps.toJson();
+		try {
+			json.put("oauth", token_and_secret[0]);
+		} catch (JSONException e) {}
+		bundle.putString("json", json.toString());
 		Message msg = new Message();
 		msg.setData(bundle);
 		rssdb.log("api push: "+msg.toString());
@@ -369,7 +376,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				Gps gps = new Gps();
 				gps.setLocation(last_local_fix);
 				gps.setBattery(last_battery_level);
-				long id = rssdb.addPosition(gps.toJson());
+				long id = rssdb.addPosition(gps.toJson().toString());
 				rssdb.log("Pigeon location queued. location #"+id);
 				pushQueue();
 				broadcastGpsFix(location);
