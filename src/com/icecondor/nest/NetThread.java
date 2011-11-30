@@ -1,12 +1,10 @@
 package com.icecondor.nest;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,7 +14,7 @@ import android.util.Log;
 
 public class NetThread extends Thread implements Handler.Callback {
 	Handler handler;
-	Socket netSock;
+	Socket netSock = new Socket();
 	Listener netThreadListen;
 
 	NetThread() {
@@ -28,7 +26,7 @@ public class NetThread extends Thread implements Handler.Callback {
 		Log.i("netthread", "run: "+currentThread());
 		Looper.prepare();
         handler = new Handler(this);
-        if(netSock == null || netSock.isConnected() == false) { connect(); }
+        connect();
 		Log.i("netthread", "Looping");
 		Looper.loop();        
     }
@@ -36,11 +34,13 @@ public class NetThread extends Thread implements Handler.Callback {
 	Handler getHandler() {return handler;}
 	
 	public void connect() {
-		Log.i("netthread", "connect: connecting");
-		try {
-			InetAddress addr = InetAddress.getByName("donpark.org");
+		InetSocketAddress addr = new InetSocketAddress("donpark.org",2020);
+		if (netSock.isConnected()) { try {netSock.close();} catch (IOException e) {}}
+		if (netSock.isClosed()) { netSock = new Socket(); }
+		while(!netSock.isConnected()) {
 			try {
-				netSock = new Socket(addr, 2020);
+				Log.i("netthread", "connecting: \""+currentThread().getName()+"\""+" #"+currentThread().getId());
+				netSock.connect(addr);
 				Log.i("netthread", "NetThread: connected");
 				if (netThreadListen != null && netThreadListen.isAlive()) { netThreadListen.destroy(); }
 				netThreadListen = new Listener();
@@ -49,10 +49,10 @@ public class NetThread extends Thread implements Handler.Callback {
 				netThreadListen.start();
 			} catch (IOException e) {
 				Log.i("netthread", e.toString());
+				// hold your horses
+				try {sleep(10000);} catch (InterruptedException e1) {}
 			}
-		} catch (UnknownHostException e) {
-			Log.i("netthread", e.toString());
-		}		
+		}
 	}
 
 	@Override
@@ -60,11 +60,11 @@ public class NetThread extends Thread implements Handler.Callback {
 		Log.i("netthread", "handleMessage: \""+currentThread().getName()+"\""+" #"+currentThread().getId());
 		String type = msg.getData().getString("type");
 		if(type.equals("socket")) {
+			Log.i("netthread", "handleMessage: socket closed");			
 			connect();
 		} else if (type.equals("message")) {
 			String str = msg.getData().getString("json");
-			Log.i("netthread", "handleMessage: socket connected is "+netSock.isConnected());			
-			return write(str);
+			Log.i("netthread", "handleMessage: dispatch: "+str);
 		}
 		return true;
 	}
@@ -72,19 +72,9 @@ public class NetThread extends Thread implements Handler.Callback {
 	public boolean write(String str) {
 		Log.i("netthread", "write: \""+currentThread().getName()+"\""+" #"+currentThread().getId());
 		try {
-			if (netSock != null && netSock.isConnected()) {
-				Log.i("netthread", "write: "+str);
-				netSock.getOutputStream().write(str.getBytes());
-				return true;
-			} else {
-				Log.i("netthread", "write: Socket is not connected");
-				Bundle obundle = new Bundle();
-				obundle.putString("type","socket");
-				obundle.putString("socket","closed");
-				Message omsg = new Message();
-				omsg.setData(obundle);
-				handler.dispatchMessage(omsg);
-			}
+			Log.i("netthread", "write: "+str);
+			netSock.getOutputStream().write(str.getBytes());
+			return true;
 		} catch (IOException e) {
 			Log.i("netthread", e.toString());
 		}
@@ -110,7 +100,7 @@ public class NetThread extends Thread implements Handler.Callback {
 					
 					Message msg = new Message();
 					msg.setData(bundle);
-					//parentHandler.dispatchMessage(msg);
+					parentHandler.dispatchMessage(msg);
 				}
 				Log.i("netthread", "NetThreadListener: Shutting down");
 				Bundle obundle = new Bundle();
