@@ -261,14 +261,15 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
 	class PushQueueTask extends TimerTask {
 		public void run() {
+			Log.i(appTag, "PushQueueTask: run \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
 			Cursor oldest;
 			rssdb.log("** Starting queue push of size "+rssdb.countPositionQueueRemaining());
 			if ((oldest = rssdb.oldestUnpushedLocationQueue()).getCount() > 0) {
 				int id = oldest.getInt(oldest.getColumnIndex("_id"));
 				Gps fix =  Gps.fromJson(oldest.getString(
 				                    oldest.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)));
-				int status = pushLocationApi(fix);
-				if (status == 200) {
+				boolean status = pushLocationApi(fix);
+				if (status == true) {
 					rssdb.log("queue push #"+id+" OK");
 					rssdb.mark_as_pushed(id);
 					last_pushed_fix = fix.getLocation();
@@ -283,19 +284,23 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		}
 	}
 	
-	public int pushLocationApi(Gps gps) {
+	public boolean pushLocationApi(Gps gps) {
 		Bundle bundle = new Bundle();
 		String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
 		JSONObject json = gps.toJson();
 		try {
 			json.put("oauth", token_and_secret[0]);
 		} catch (JSONException e) {}
+		rssdb.log("api push: "+json.toString());
+
+		/* The NetThread.handleMessage() was executing on the Push Timer thread
+		 * even after using Handler.dispatchMessage!
 		bundle.putString("json", json.toString());
 		Message msg = new Message();
 		msg.setData(bundle);
-		rssdb.log("api push: "+msg.toString());
-		apiThread.getHandler().dispatchMessage(msg);
-		return 200;
+		apiThread.getHandler().dispatchMessage(msg);		 
+		*/
+		return apiThread.write(json.toString());
 	}
 	
 	public int pushLocation(Gps gps) {
@@ -359,6 +364,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 				
 	public void onLocationChanged(Location location) {
+		Log.i(appTag, "onLocationChanged: Thread \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
 		last_local_fix = location;
 		long time_since_last_update = last_local_fix.getTime() - (last_recorded_fix == null?0:last_recorded_fix.getTime()); 
 		long record_frequency = Long.decode(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "180000"));
@@ -465,7 +471,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
 	private void startPushQueueTimer() {
-		push_queue_timer = new Timer("PushQueue Timer");
+		push_queue_timer = new Timer("Push Queue Timer");
 		push_queue_timer.scheduleAtFixedRate(new PushQueueTask(), 0, 30000);
 	}
 
