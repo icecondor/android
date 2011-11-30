@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.location.Location;
+import android.util.Log;
 
 public class Gps extends Base {
 	Location location;
@@ -19,7 +20,12 @@ public class Gps extends Base {
 		 */
 		try {
 			JSONObject j = new JSONObject(json);
-			JSONObject p = j.getJSONObject("location");
+			JSONObject p;
+			if (j.has("position")) {
+				p = j.getJSONObject("position");
+			} else {
+				p = j.getJSONObject("location");
+			}
 			Location l = new Location(p.getString("provider"));
 			l.setLatitude(p.getDouble("latitude"));
 			l.setLongitude(p.getDouble("longitude"));
@@ -35,7 +41,7 @@ public class Gps extends Base {
 			gps.setAC(j.getBoolean("ac_power"));
 			return gps;
 		} catch (JSONException e) {
-			e.printStackTrace();
+			Log.i("gps", "fromjson err: "+e);
 			return null;
 		}
 
@@ -59,12 +65,17 @@ public class Gps extends Base {
 			position.put("bearing", location.getBearing());
 			position.put("speed", location.getSpeed());
 			
-			jloc.put("location", position);
+			// api hack
+			jloc.put("type", "location");
+			jloc.put("username", "donpdonp");
+			
+			jloc.put("position", position);
 			jloc.put("battery_level", battery_level);
 			jloc.put("ac_power", ac_power);
 		} catch (JSONException e) {
+			Log.i("gps", "tojson err: "+e);
 			try {
-				jloc.put("error", e.toString());
+				jloc.put("error", "gps tojson err: "+e);
 			} catch (JSONException e1) {}
 		}
 		return jloc;

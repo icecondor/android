@@ -40,15 +40,16 @@ public class NetThread extends Thread implements Handler.Callback {
 		while(!netSock.isConnected()) {
 			try {
 				Log.i("netthread", "connecting: \""+currentThread().getName()+"\""+" #"+currentThread().getId());
-				netSock.connect(addr);
+				netSock.connect(addr, 10000);
 				Log.i("netthread", "NetThread: connected");
+				Log.i("netthread", "netThreadListen: "+netThreadListen);
 				if (netThreadListen != null && netThreadListen.isAlive()) { netThreadListen.destroy(); }
 				netThreadListen = new Listener();
 				netThreadListen.setHandler(handler);
 				netThreadListen.setSocket(netSock);
 				netThreadListen.start();
 			} catch (IOException e) {
-				Log.i("netthread", e.toString());
+				Log.i("netthread", "connect err: "+e);
 				// hold your horses
 				try {sleep(10000);} catch (InterruptedException e1) {}
 			}
@@ -76,7 +77,7 @@ public class NetThread extends Thread implements Handler.Callback {
 			netSock.getOutputStream().write(str.getBytes());
 			return true;
 		} catch (IOException e) {
-			Log.i("netthread", e.toString());
+			Log.i("netthread", "write err: "+e);
 		}
 		return false;
 	}
