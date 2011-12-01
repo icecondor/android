@@ -34,26 +34,31 @@ public class NetThread extends Thread implements Handler.Callback {
 	Handler getHandler() {return handler;}
 	
 	public void connect() {
-		InetSocketAddress addr = new InetSocketAddress("donpark.org",2020);
-		if (netSock.isConnected()) { try {netSock.close();} catch (IOException e) {}}
-		if (netSock.isClosed()) { netSock = new Socket(); }
+		Log.i("netthread", "connecting: \""+currentThread().getName()+"\""+" #"+currentThread().getId());
+		InetSocketAddress addr;
+		Log.i("netthread", "netSock connected:"+netSock.isConnected()+" closed:"+netSock.isClosed());
 		while(!netSock.isConnected()) {
 			try {
-				Log.i("netthread", "connecting: \""+currentThread().getName()+"\""+" #"+currentThread().getId());
+				addr = new InetSocketAddress("donpark.org",2020);
 				netSock.connect(addr, 10000);
 				Log.i("netthread", "NetThread: connected");
-				Log.i("netthread", "netThreadListen: "+netThreadListen);
-				if (netThreadListen != null && netThreadListen.isAlive()) { netThreadListen.destroy(); }
-				netThreadListen = new Listener();
-				netThreadListen.setHandler(handler);
-				netThreadListen.setSocket(netSock);
-				netThreadListen.start();
+				try {
+					Log.i("netthread", "netThreadListen: "+netThreadListen);
+					netThreadListen = new Listener();
+					netThreadListen.setHandler(handler);
+					netThreadListen.setSocket(netSock);
+					netThreadListen.start();
+				} catch (Exception e) {
+					Log.i("netthreadlistenlauncher", e.toString());
+				}
 			} catch (IOException e) {
-				Log.i("netthread", "connect err: "+e);
+				Log.i("netthread", "connect \""+currentThread().getName()+"\""+" #"+currentThread().getId()+" err: "+e);
 				// hold your horses
+				try {netSock.close(); netSock = new Socket();} catch (IOException e1) {}
 				try {sleep(10000);} catch (InterruptedException e1) {}
 			}
 		}
+		Log.i("netthread", "netSock finished connected:"+netSock.isConnected()+" closed:"+netSock.isClosed());
 	}
 
 	@Override
@@ -61,7 +66,8 @@ public class NetThread extends Thread implements Handler.Callback {
 		Log.i("netthread", "handleMessage: \""+currentThread().getName()+"\""+" #"+currentThread().getId());
 		String type = msg.getData().getString("type");
 		if(type.equals("socket")) {
-			Log.i("netthread", "handleMessage: socket closed");			
+			Log.i("netthread", "handleMessage: socket closed");	
+			netSock = new Socket();
 			connect();
 		} else if (type.equals("message")) {
 			String str = msg.getData().getString("json");
