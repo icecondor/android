@@ -14,6 +14,8 @@ import net.tootallnate.websocket.WebSocketClient;
 public class ApiSocket extends WebSocketClient {
 	Handler pigeon;
 	String token;
+	static String tag = "icecondor";
+	boolean connected = false;
 
 	public ApiSocket(String url, Handler h, String token) throws URISyntaxException {
 		super(new URI(url));
@@ -23,8 +25,8 @@ public class ApiSocket extends WebSocketClient {
 
 	@Override
 	public void onMessage(String message) {
-		Log.i("websocket","thread:"+Thread.currentThread());
-		Log.i("websocket","received: \""+message+"\"");
+		Log.i(tag,"thread: \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
+		Log.i(tag,"received: \""+message+"\"");
 		Bundle bundle = new Bundle();
 		bundle.putString("type","message");
 		bundle.putString("json", message);
@@ -36,17 +38,42 @@ public class ApiSocket extends WebSocketClient {
 
 	@Override
 	public void onOpen() {
-		Log.i("websocket","open");
+		Log.i(tag,"open \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
+		connected = true;
+		try {
+			send("{\"type\":\"auth\"}");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void onClose() {
-		Log.i("websocket","close");
+		Log.i(tag,"close \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
+		connected = false;
 	}
 
 	@Override
 	public void onIOError(IOException ex) {
-		Log.i("websocket",""+ex);
+		Log.i(tag,""+ex);
 	}
 
+	@Override
+	public void onPong() {
+		Log.i(tag, "onPong");
+	}
+
+	public boolean isConnected() { return connected; }
+
+	public boolean emit(String msg) {
+		if (isConnected()) {
+			try {
+				send(msg);
+				return true;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;		
+	}
 }

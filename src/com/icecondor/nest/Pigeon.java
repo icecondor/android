@@ -52,7 +52,8 @@ import com.icecondor.nest.types.Gps;
 //look at android.permission.RECEIVE_BOOT_COMPLETED
 
 public class Pigeon extends Service implements Constants, LocationListener,
-                                               SharedPreferences.OnSharedPreferenceChangeListener {
+                                               SharedPreferences.OnSharedPreferenceChangeListener,
+                                               Handler.Callback {
 	private Timer heartbeat_timer;
 	private Timer rss_timer;
 	private Timer push_queue_timer;
@@ -167,7 +168,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				new IntentFilter("com.icecondor.nest.PIGEON_INQUIRE"));
 		
 		/* API Communication Thread */
-		pigeonHandler = new Handler();
+		pigeonHandler = new Handler(this);
 		try {
 			apiSocket = new ApiSocket(ICECONDOR_API_URL, pigeonHandler, "token");
 		} catch (URISyntaxException e) {
@@ -304,13 +305,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		msg.setData(bundle);
 		apiThread.getHandler().dispatchMessage(msg);		 
 		*/
-		try {
-			apiSocket.send(json.toString());
-			return true;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
+		return apiSocket.emit(json.toString());
 	}
 	
 	public int pushLocation(Gps gps) {
@@ -635,5 +630,11 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			pushQueue();
 		}
     };
+
+	@Override
+	public boolean handleMessage(Message msg) {
+		rssdb.log("handleMessage: "+msg+" \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
+		return true;
+	}
 
 }
