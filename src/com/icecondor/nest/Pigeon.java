@@ -77,8 +77,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	BatteryReceiver battery_receiver;
 	WidgetReceiver widget_receiver;
 	private boolean ac_power;
-	NetThread apiThread;
-	Handler apiHandler;
+	ApiSocket apiSocket;
+	Handler pigeonHandler;
 	
 	public void onCreate() {
 		Log.i(appTag, "*** service created.");
@@ -167,9 +167,14 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				new IntentFilter("com.icecondor.nest.PIGEON_INQUIRE"));
 		
 		/* API Communication Thread */
-		apiThread = new NetThread();
-		apiThread.start();
-		apiHandler = apiThread.getHandler();
+		pigeonHandler = new Handler();
+		try {
+			apiSocket = new ApiSocket(ICECONDOR_API_URL, pigeonHandler);
+			apiSocket.connect();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void onStart(Intent start, int key) {
@@ -285,7 +290,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
 	public boolean pushLocationApi(Gps gps) {
-		Bundle bundle = new Bundle();
 		String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
 		JSONObject json = gps.toJson();
 		try {
@@ -295,12 +299,19 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
 		/* The NetThread.handleMessage() was executing on the Push Timer thread
 		 * even after using Handler.dispatchMessage!
+		Bundle bundle = new Bundle();
 		bundle.putString("json", json.toString());
 		Message msg = new Message();
 		msg.setData(bundle);
 		apiThread.getHandler().dispatchMessage(msg);		 
 		*/
-		return apiThread.write(json.toString());
+		try {
+			apiSocket.send(json.toString());
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 	
 	public int pushLocation(Gps gps) {
