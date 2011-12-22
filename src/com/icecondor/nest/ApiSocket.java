@@ -13,10 +13,12 @@ import net.tootallnate.websocket.WebSocketClient;
 
 public class ApiSocket extends WebSocketClient {
 	Handler pigeon;
+	String token;
 
-	public ApiSocket(String url, Handler h) throws URISyntaxException {
+	public ApiSocket(String url, Handler h, String token) throws URISyntaxException {
 		super(new URI(url));
 		pigeon = h;
+		this.token = token;
 	}
 
 	@Override

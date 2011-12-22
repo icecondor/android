@@ -169,10 +169,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		/* API Communication Thread */
 		pigeonHandler = new Handler();
 		try {
-			apiSocket = new ApiSocket(ICECONDOR_API_URL, pigeonHandler);
-			apiSocket.connect();
+			apiSocket = new ApiSocket(ICECONDOR_API_URL, pigeonHandler, "token");
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -180,6 +178,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	public void onStart(Intent start, int key) {
 		super.onStart(start,key);
 		rssdb.log("Pigon started");
+		apiSocket.connect();
 		broadcastGpsFix(last_local_fix);
 	}
 	
