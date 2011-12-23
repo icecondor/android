@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Currency;
+import java.util.Date;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -80,6 +82,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	private boolean ac_power;
 	ApiSocket apiSocket;
 	Handler pigeonHandler;
+	long reconnectLastTry;
 	
 	public void onCreate() {
 		Log.i(appTag, "*** service created.");
@@ -141,7 +144,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		
 		/* Timers */
 		startHeartbeatTimer();
-		startRssTimer();
+		//startRssTimer();
 		startPushQueueTimer();
 		
 		/* Apache HTTP Monstrosity*/
@@ -167,19 +170,36 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		registerReceiver(widget_receiver,
 				new IntentFilter("com.icecondor.nest.PIGEON_INQUIRE"));
 		
-		/* API Communication Thread */
+		/* Callbacks from the API Communication Thread */
 		pigeonHandler = new Handler(this);
-		try {
-			apiSocket = new ApiSocket(ICECONDOR_API_URL, pigeonHandler, "token");
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
+	}
+
+	protected void apiReconnect() {
+		if (reconnectLastTry < (System.currentTimeMillis()-(30*1000))) {
+			reconnectLastTry = System.currentTimeMillis();
+			rssdb.log("apiReconnect()");
+			if(apiSocket.isConnected()) {
+				try {
+					apiSocket.close();
+				} catch (IOException e) {
+				}
+				rssdb.log("Warning: Closing connected apiSocket");
+			}
+			try {
+				apiSocket = new ApiSocket(ICECONDOR_API_URL, pigeonHandler, "token");
+				apiSocket.connect();
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
+		} else {
+			rssdb.log("apiReconnect() ignored. last try is "+ (System.currentTimeMillis()-reconnectLastTry)/1000+" sec ago");
 		}
 	}
 
 	public void onStart(Intent start, int key) {
 		super.onStart(start,key);
+		apiReconnect();
 		rssdb.log("Pigon started");
-		apiSocket.connect();
 		broadcastGpsFix(last_local_fix);
 	}
 	
@@ -239,7 +259,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		Log.i(appTag,"onBind for "+intent.toString());
+		Log.i(appTag,"onBind for "+intent.getExtras());
 		return pigeonBinder;
 	}
 	
@@ -267,7 +287,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	class PushQueueTask extends TimerTask {
 		public void run() {
 			Cursor oldest;
-			rssdb.log("** queue push size "+rssdb.countPositionQueueRemaining()+"\""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId() );
+			rssdb.log("** queue push size "+rssdb.countPositionQueueRemaining()+"\" "+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId() );
 			if ((oldest = rssdb.oldestUnpushedLocationQueue()).getCount() > 0) {
 				int id = oldest.getInt(oldest.getColumnIndex("_id"));
 				Gps fix =  Gps.fromJson(oldest.getString(
@@ -292,16 +312,17 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		JSONObject json = gps.toJson();
 		try {
 			json.put("oauth", token_and_secret[0]);
+			rssdb.log("pushLocationApi: "+json.toString()+" isConnected():"+apiSocket.isConnected());
+			boolean pass = apiSocket.emit(json.toString());
+			if(pass == false) {
+				apiReconnect();
+			}
+			return pass;
 		} catch (JSONException e) {}
-		rssdb.log("pushLocationApi: "+json.toString());
-
-		rssdb.log("pushLocationApi: isConnected() "+apiSocket.isConnected());
-		boolean pass = apiSocket.emit(json.toString());
-		rssdb.log("pushLocationApi: emit() "+pass);
-		return pass;
+		return false;
 	}
 	
-	public int pushLocation(Gps gps) {
+	public int pushLocationRest(Gps gps) {
 		Location fix = gps.getLocation();
 		Log.i(appTag, "sending id: "+settings.getString(SETTING_OPENID,"")+ " fix: " 
 				+fix.getLatitude()+" long: "+fix.getLongitude()+
