@@ -3,6 +3,8 @@ package com.icecondor.nest.types;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.icecondor.nest.Util;
+
 import android.location.Location;
 import android.util.Log;
 
@@ -26,14 +28,14 @@ public class Gps extends Base {
 			} else {
 				p = j.getJSONObject("location");
 			}
-			Location l = new Location(p.getString("provider"));
+			Location l = new Location(j.getString("provider"));
+			l.setTime(Util.DateRfc822(j.getString("date")).getTime());
 			l.setLatitude(p.getDouble("latitude"));
 			l.setLongitude(p.getDouble("longitude"));
-			l.setTime(p.getLong("time"));
 			l.setAltitude(p.getDouble("altitude"));
 			l.setAccuracy(new Float(p.getDouble("accuracy")));
-			l.setBearing(new Float(p.getDouble("bearing")));
-			l.setSpeed(new Float(p.getDouble("speed")));
+			l.setBearing(new Float(j.getDouble("heading")));
+			l.setSpeed(new Float(j.getDouble("velocity")));
 			
 			Gps gps = new Gps();
 			gps.setLocation(l);
@@ -56,20 +58,19 @@ public class Gps extends Base {
 		JSONObject jloc = new JSONObject();
 		try {
 			JSONObject position = new JSONObject();
-			position.put("provider", location.getProvider());
 			position.put("latitude", location.getLatitude());
 			position.put("longitude", location.getLongitude());
-			position.put("time", location.getTime());
 			position.put("altitude", location.getAltitude());
 			position.put("accuracy", location.getAccuracy());
-			position.put("bearing", location.getBearing());
-			position.put("speed", location.getSpeed());
 			
 			// api hack
 			jloc.put("type", "location");
 			jloc.put("username", "donpdonp");
-			
+			jloc.put("date", Util.DateTimeIso8601(location.getTime()));
+			jloc.put("provider", location.getProvider());
 			jloc.put("position", position);
+			jloc.put("heading", location.getBearing());
+			jloc.put("velocity", location.getSpeed());
 			jloc.put("battery_level", battery_level);
 			jloc.put("ac_power", ac_power);
 		} catch (JSONException e) {

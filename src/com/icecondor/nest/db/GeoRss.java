@@ -374,4 +374,8 @@ public class GeoRss {
 		cv.put(POSITION_QUEUE_SENT, Util.DateTimeIso8601Now());
 		db.update(POSITION_QUEUE_TABLE, cv, "_id = ?", new String[] {""+id});
 	}
+
+	public void empty_locations_queue() {
+		db.execSQL("DELETE from "+POSITION_QUEUE_TABLE);
+	}
 }
