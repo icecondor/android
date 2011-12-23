@@ -266,9 +266,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
 	class PushQueueTask extends TimerTask {
 		public void run() {
-			Log.i(appTag, "PushQueueTask: run \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
 			Cursor oldest;
-			rssdb.log("** Starting queue push of size "+rssdb.countPositionQueueRemaining());
+			rssdb.log("** queue push size "+rssdb.countPositionQueueRemaining()+"\""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId() );
 			if ((oldest = rssdb.oldestUnpushedLocationQueue()).getCount() > 0) {
 				int id = oldest.getInt(oldest.getColumnIndex("_id"));
 				Gps fix =  Gps.fromJson(oldest.getString(
@@ -283,7 +282,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				} else {
 					rssdb.log("queue push #"+id+" FAIL "+status);
 				}
-				rssdb.log("** Finished queue push. size = "+rssdb.countPositionQueueRemaining());
 			} 
 			oldest.close();
 		}
@@ -295,17 +293,12 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		try {
 			json.put("oauth", token_and_secret[0]);
 		} catch (JSONException e) {}
-		rssdb.log("api push: "+json.toString());
+		rssdb.log("pushLocationApi: "+json.toString());
 
-		/* The NetThread.handleMessage() was executing on the Push Timer thread
-		 * even after using Handler.dispatchMessage!
-		Bundle bundle = new Bundle();
-		bundle.putString("json", json.toString());
-		Message msg = new Message();
-		msg.setData(bundle);
-		apiThread.getHandler().dispatchMessage(msg);		 
-		*/
-		return apiSocket.emit(json.toString());
+		rssdb.log("pushLocationApi: isConnected() "+apiSocket.isConnected());
+		boolean pass = apiSocket.emit(json.toString());
+		rssdb.log("pushLocationApi: emit() "+pass);
+		return pass;
 	}
 	
 	public int pushLocation(Gps gps) {
@@ -407,17 +400,15 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		sendBroadcast(intent);	
 	}
 
-	
 	private void play_fix_beep() {
 		mp.start();
 	}
+
 	public void onProviderDisabled(String provider) {
-		Log.i(appTag, "provider "+provider+" disabled");
 		rssdb.log("provider "+provider+" disabled");
 	}
 
 	public void onProviderEnabled(String provider) {
-		Log.i(appTag, "provider "+provider+" enabled");		
 		rssdb.log("provider "+provider+" enabled");
 	}
 

@@ -66,6 +66,7 @@ public class ApiSocket extends WebSocketClient {
 	public boolean isConnected() { return connected; }
 
 	public boolean emit(String msg) {
+		Log.i(tag, "emit: "+msg);
 		if (isConnected()) {
 			try {
 				send(msg);
@@ -73,6 +74,8 @@ public class ApiSocket extends WebSocketClient {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		} else {
+			Log.i(tag, "emit: blocked! notConnected");
 		}
 		return false;		
 	}
