@@ -13,22 +13,21 @@ import android.view.View;
 import android.widget.RemoteViews;
 
 public class Widget extends AppWidgetProvider implements Constants {
-	static final String appTag = "Widget";
 	static boolean on;
 	
 	@Override
 	public void onUpdate(Context context, AppWidgetManager mgr, int[] appWidgetIds) {
-		Log.i(appTag, "onUpdate");
+		Log.i(APP_TAG, "Widget onUpdate");
 		super.onUpdate(context, mgr, appWidgetIds);
 		mgr.updateAppWidget(appWidgetIds, buildView(context));
 	}
 	
 	@Override
 	public void onReceive(Context context, Intent intent){
-		Log.i(appTag, intent.getAction());
+		Log.i(APP_TAG, "Widget onReceive "+intent.getAction()+" \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
 		super.onReceive(context, intent);
 		if ("PowerToggle".equals(intent.getAction())) {
-			Log.i(appTag, "PowerToggle: "+on);
+			Log.i(APP_TAG, "Widget PowerToggle from "+on);
 			Intent pigeon_intent;
 			if (on) {
 				pigeon_intent = new Intent("com.icecondor.nest.PIGEON_OFF");
@@ -38,6 +37,7 @@ public class Widget extends AppWidgetProvider implements Constants {
 				settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING,true).commit();
 				pigeon_intent = new Intent("com.icecondor.nest.PIGEON_ON");
 			}
+			Log.i(APP_TAG, "Widget PowerToggle broadcasting "+pigeon_intent);
 			context.sendBroadcast(pigeon_intent);
 		}
 		if ("com.icecondor.nest.WIDGET_ON".equals(intent.getAction())) {
@@ -62,6 +62,7 @@ public class Widget extends AppWidgetProvider implements Constants {
 	public void onEnabled(Context context) {
 		super.onEnabled(context);
 		context.sendBroadcast(new Intent("com.icecondor.nest.PIGEON_INQUIRE"));
+		Log.i(APP_TAG, "Widget onEnabled \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
 	}
 	
 	RemoteViews buildView(Context context) {

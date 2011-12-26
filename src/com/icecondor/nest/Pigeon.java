@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Currency;
-import java.util.Date;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -44,6 +42,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
+import android.os.Process;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -60,7 +59,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	private Timer rss_timer;
 	private Timer push_queue_timer;
 	//private Timer wifi_scan_timer = new Timer();
-	static final String appTag = "Pigeon";
 	boolean on_switch = false;
 	private Location last_recorded_fix, last_pushed_fix, last_local_fix;
 	long last_pushed_time;
@@ -85,7 +83,9 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	long reconnectLastTry;
 	
 	public void onCreate() {
-		Log.i(appTag, "*** service created.");
+		Log.i(APP_TAG, "*** Pigeon service created. "+
+				"\""+Thread.currentThread().getName()+"\""+" tid:"+Thread.currentThread().getId()+
+				" uid:"+Process.myUid());
 		super.onCreate();
 		
 		/* Database */
@@ -102,13 +102,16 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		if (last_local_fix == null) { 
 			if(last_network_fix != null) {
 				last_local_fix = last_network_fix; // fall back onto the network location
-				Log.i(appTag, "Last known NETWORK fix: "+last_network_fix+" "+Util.DateTimeIso8601(last_network_fix.getTime()));
+				rssdb.log("Last known NETWORK fix: "+last_network_fix+" "+
+						Util.DateTimeIso8601(last_network_fix.getTime()));
 			}
 		} else {
-			Log.i(appTag, "Last known GPS fix: "+last_local_fix+" "+Util.DateTimeIso8601(last_local_fix.getTime()));			
+			rssdb.log("Last known GPS fix: "+last_local_fix+" "+
+					Util.DateTimeIso8601(last_local_fix.getTime()));			
 		}
 		Cursor oldest;
 		if ((oldest = rssdb.oldestPushedLocationQueue()).getCount() > 0) {
+			rssdb.log("Oldest pushed fix found");
 			last_pushed_fix =  Gps.fromJson(oldest.getString(
 			                    oldest.getColumnIndex(GeoRss.POSITION_QUEUE_JSON))).getLocation();
 		}
@@ -245,11 +248,11 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				LocationManager.NETWORK_PROVIDER, 
 				record_frequency, 
 				0.0F, this);
-//		Log.i(appTag, "kicking off wifi scan timer");
+//		Log.i(APP_TAG, "kicking off wifi scan timer");
 //		wifi_scan_timer.scheduleAtFixedRate(
 //				new TimerTask() {
 //					public void run() {
-//						Log.i(appTag, "wifi: start scan (enabled:"+wifiManager.isWifiEnabled()+")");
+//						Log.i(APP_TAG, "wifi: start scan (enabled:"+wifiManager.isWifiEnabled()+")");
 //						wifiManager.startScan();
 //					}
 //				}, 0, 60000);		
@@ -262,13 +265,13 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		Log.i(appTag,"onBind for "+intent.getExtras());
+		Log.i(APP_TAG,"onBind for "+intent.getExtras());
 		return pigeonBinder;
 	}
 	
 	@Override
 	public void onRebind(Intent intent) {
-		Log.i(appTag, "onReBind for "+intent.toString());
+		Log.i(APP_TAG, "onReBind for "+intent.toString());
 	}
 	
 	@Override
@@ -278,7 +281,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	
 	@Override
 	public boolean onUnbind(Intent intent) {
-		Log.i(appTag, "Pigeon: onUnbind for "+intent.toString());
+		Log.i(APP_TAG, "Pigeon: onUnbind for "+intent.toString());
 		return false;
 	}
 	
@@ -290,11 +293,13 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	class PushQueueTask extends TimerTask {
 		public void run() {
 			Cursor oldest;
-			rssdb.log("** queue push size "+rssdb.countPositionQueueRemaining()+"\" "+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId() );
+			rssdb.log("** queue push size "+rssdb.countPositionQueueRemaining()+" \""+Thread.currentThread().getName()+"\""+" tid:"+Thread.currentThread().getId() );
 			if ((oldest = rssdb.oldestUnpushedLocationQueue()).getCount() > 0) {
 				int id = oldest.getInt(oldest.getColumnIndex("_id"));
+				rssdb.log("PushQueueTask oldest unpushed id "+id);
 				Gps fix =  Gps.fromJson(oldest.getString(
 				                    oldest.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)));
+				rssdb.log("PushQueueTask after Gps.fromJson");
 				boolean status = pushLocationApi(fix);
 				if (status == true) {
 					rssdb.log("queue push #"+id+" OK");
@@ -311,6 +316,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
 	public boolean pushLocationApi(Gps gps) {
+		rssdb.log("pushLocationApi: loading access token");
 		String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
 		JSONObject json = gps.toJson();
 		try {
@@ -321,13 +327,15 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				apiReconnect();
 			}
 			return pass;
-		} catch (JSONException e) {}
+		} catch (JSONException e) {
+			rssdb.log("pushLocationApi: JSONException "+e);
+		}
 		return false;
 	}
 	
 	public int pushLocationRest(Gps gps) {
 		Location fix = gps.getLocation();
-		Log.i(appTag, "sending id: "+settings.getString(SETTING_OPENID,"")+ " fix: " 
+		Log.i(APP_TAG, "sending id: "+settings.getString(SETTING_OPENID,"")+ " fix: " 
 				+fix.getLatitude()+" long: "+fix.getLongitude()+
 				" alt: "+fix.getAltitude() + " time: " + Util.DateTimeIso8601(fix.getTime()) +
 				" acc: "+fix.getAccuracy());
@@ -346,7 +354,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		accessor.tokenSecret = token_and_secret[1];
 		try {
 			OAuthMessage omessage;
-			Log.d(appTag, "invoke("+accessor+", POST, "+ICECONDOR_WRITE_URL+", "+params);
+			Log.d(APP_TAG, "invoke("+accessor+", POST, "+ICECONDOR_WRITE_URL+", "+params);
 			omessage = oclient.invoke(accessor, "POST",  ICECONDOR_WRITE_URL, params);
 			omessage.getHeader("Result");
 			last_fix_http_status = 200;
@@ -386,7 +394,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 				
 	public void onLocationChanged(Location location) {
-		Log.i(appTag, "onLocationChanged: Thread \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
+		Log.i(APP_TAG, "onLocationChanged: Thread \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
 		last_local_fix = location;
 		long time_since_last_update = last_local_fix.getTime() - (last_recorded_fix == null?0:last_recorded_fix.getTime()); 
 		long record_frequency = Long.decode(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "180000"));
@@ -441,13 +449,13 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		if (status ==  LocationProvider.TEMPORARILY_UNAVAILABLE) {status_msg = "TEMPORARILY_UNAVAILABLE";}
 		if (status ==  LocationProvider.OUT_OF_SERVICE) {status_msg = "OUT_OF_SERVICE";}
 		if (status ==  LocationProvider.AVAILABLE) {status_msg = "AVAILABLE";}
-		Log.i(appTag, "provider "+provider+" status changed to "+status_msg);
+		Log.i(APP_TAG, "provider "+provider+" status changed to "+status_msg);
 		rssdb.log("GPS "+status_msg);
 	}
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences prefs, String pref_name) {
-		Log.i(appTag, "shared preference changed: "+pref_name);		
+		Log.i(APP_TAG, "shared preference changed: "+pref_name);		
 		if (pref_name.equals(SETTING_TRANSMISSION_FREQUENCY)) {
 			if (on_switch) {
 				stopLocationUpdates();
@@ -476,11 +484,11 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	private void startRssTimer() {
 		rss_timer = new Timer("RSS Reader Timer");
 		long rss_read_frequency = Long.decode(settings.getString(SETTING_RSS_READ_FREQUENCY, "60000"));
-		Log.i(appTag, "starting rss timer at frequency "+rss_read_frequency);
+		Log.i(APP_TAG, "starting rss timer at frequency "+rss_read_frequency);
 		rss_timer.scheduleAtFixedRate(
 				new TimerTask() {
 					public void run() {
-						Log.i(appTag, "rss_timer fired");
+						Log.i(APP_TAG, "rss_timer fired");
 						updateRSS();
 					}
 				}, 0, rss_read_frequency);
@@ -503,15 +511,15 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		new Timer().schedule(
 				new TimerTask() {
 					public void run() {
-						Log.i(appTag, "rss_timer fired");
+						Log.i(APP_TAG, "rss_timer fired");
 						Cursor geoRssUrls = rssdb.findFeeds();
 						while (geoRssUrls.moveToNext()) {
 							try {
 								rssdb.readGeoRss(geoRssUrls);
 							} catch (ClientProtocolException e) {
-								Log.i(appTag, "http protocol exception "+e);
+								Log.i(APP_TAG, "http protocol exception "+e);
 							} catch (IOException e) {
-								Log.i(appTag, "io error "+e);
+								Log.i(APP_TAG, "io error "+e);
 							}
 						}
 						geoRssUrls.close();						
@@ -608,12 +616,12 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
     private final PigeonService.Stub pigeonBinder = new PigeonService.Stub() {
 		public boolean isTransmitting() throws RemoteException {
-			Log.i(appTag, "isTransmitting => "+on_switch);
+			Log.i(APP_TAG, "isTransmitting => "+on_switch);
 			return on_switch;
 		}
 		public void startTransmitting() throws RemoteException {
 			if (on_switch) {
-				Log.i(appTag, "startTransmitting: already transmitting");
+				Log.i(APP_TAG, "startTransmitting: already transmitting");
 			} else {
 				rssdb.log("Pigeon: startTransmitting");
 				start_background();

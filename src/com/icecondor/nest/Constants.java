@@ -28,5 +28,7 @@ public interface Constants {
 	
 	public static final String GPS_FIX_ACTION = "com.icecondor.nest.GPS_FIX_ACTION";
 	public static final String BIRD_FIX_ACTION = "com.icecondor.nest.BIRD_FIX_ACTION";
+	
+	public static final String APP_TAG = "icecondor";
 
 }

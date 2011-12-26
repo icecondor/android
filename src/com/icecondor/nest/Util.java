@@ -9,8 +9,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import android.os.Build;
+import android.util.Log;
 
-public class Util {
+public class Util implements Constants {
 	public static String DateTimeIso8601Now() {
 		return Util.DateTimeIso8601(System.currentTimeMillis());
 	}
@@ -20,13 +21,13 @@ public class Util {
 	}
 	
 	public static String DateTimeIso8601(long offset) {
-		String date = DateTimeIso8601(offset, TimeZone.getTimeZone("GMT"));
+		String date_str = DateTimeIso8601(offset, TimeZone.getTimeZone("GMT"));
 		if (Build.VERSION.SDK_INT >= 7) {
 			// Android 2.1,2.2 timezone bug
 			// http://code.google.com/p/android/issues/detail?id=8258
-			date = date.substring(0, 19)+"+0000";
+			date_str = date_str.substring(0, 19)+"Z";
 		}
-		return date;
+		return date_str;
 	}
 	
 	public static String DateTimeIso8601(long offset, TimeZone tz) {
@@ -50,13 +51,18 @@ public class Util {
 				 new SimpleDateFormat("yyyyMMdd'T'HHmmss"),
 				 new SimpleDateFormat("yyyyMMdd")};
 		 
+		 if(date.endsWith("Z")) {
+			 date = date.substring(0, date.length()-1)+"+00:00";
+		 }
 		 Date parsed = null;
 		 for(int i=0; i < rfc822DateFormats.length; i++) {
 			 try {
 				parsed = rfc822DateFormats[i].parse(date);
 				break;
 			} catch (ParseException e) {
-				// not this one
+				if(i==rfc822DateFormats.length-1) {
+					Log.i(APP_TAG, "DateRfc822 parse failed on "+date);
+				}
 			}
 		 }
 		 return parsed;

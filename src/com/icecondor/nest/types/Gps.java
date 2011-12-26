@@ -3,15 +3,17 @@ package com.icecondor.nest.types;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.icecondor.nest.Constants;
 import com.icecondor.nest.Util;
 
 import android.location.Location;
 import android.util.Log;
 
-public class Gps extends Base {
+public class Gps extends Base implements Constants {
 	Location location;
 
 	public static Gps fromJson(String json) {
+		Log.i(APP_TAG, "Gps.fromJson: "+json);
 		/* GSON example:
 		 * JSON result { "location": { "mResults": [ 0.0, 0.0 ], "mProvider": "gps",
 		 * "mDistance": 0.0, "mTime": 1305208806000, "mAltitude": 0.0, "mLongitude":
@@ -42,8 +44,8 @@ public class Gps extends Base {
 			gps.setBattery(j.getInt("battery_level"));
 			gps.setAC(j.getBoolean("ac_power"));
 			return gps;
-		} catch (JSONException e) {
-			Log.i("gps", "fromjson err: "+e);
+		} catch (Exception e) {
+			Log.i(APP_TAG, "Gps.fromJson err: "+e);
 			return null;
 		}
 
