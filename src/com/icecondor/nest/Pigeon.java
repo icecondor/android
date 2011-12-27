@@ -465,8 +465,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			}
 		}
 		if (pref_name.equals(SETTING_RSS_READ_FREQUENCY)) {
-			stopRssTimer();
-			startRssTimer();
+			//stopRssTimer();
+			//startRssTimer();
 			notificationFlash("RSS Read frequency now "+Util.millisecondsToWords(
 						Long.parseLong(prefs.getString(pref_name, "N/A"))));
 		}
@@ -539,7 +539,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	
 	protected void stop_background() {
 		on_switch = false;
-		stopRssTimer();
+		//stopRssTimer();
 		stopLocationUpdates();
 		stopPushQueueTimer();
 		stopHeartbeatTimer();
