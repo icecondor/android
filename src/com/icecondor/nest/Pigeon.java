@@ -320,7 +320,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
 		JSONObject json = gps.toJson();
 		try {
-			json.put("oauth", token_and_secret[0]);
+			json.put("oauth_token", token_and_secret[0]);
+			json.put("username", token_and_secret[1]);
 			rssdb.log("pushLocationApi: "+json.toString()+" isConnected():"+apiSocket.isConnected());
 			boolean pass = apiSocket.emit(json.toString());
 			if(pass == false) {

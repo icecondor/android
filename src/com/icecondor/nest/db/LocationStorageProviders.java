@@ -87,7 +87,6 @@ public class LocationStorageProviders extends SQLiteOpenHelper implements Consta
 	}
 
 	public static void setDefaultAccessToken(String[] access_token_and_secret, Context ctx) {
-		Log.i("OAUTH", "access token = "+access_token_and_secret);
 		LocationStorageProviders locRepoDb = new LocationStorageProviders(ctx, "locationrepositories", null, 1);
 		SQLiteDatabase repoDb = locRepoDb.getWritableDatabase();
 		ContentValues values = new ContentValues();
