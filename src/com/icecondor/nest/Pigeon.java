@@ -192,6 +192,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			try {
 				apiSocket = new ApiSocket(ICECONDOR_API_URL, pigeonHandler, "token");
 				apiSocket.connect();
+				pushQueue();
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
