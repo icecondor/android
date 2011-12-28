@@ -67,7 +67,6 @@ public class Gps extends Base implements Constants {
 			
 			// api hack
 			jloc.put("type", "location");
-			jloc.put("username", "donpdonp");
 			jloc.put("date", Util.DateTimeIso8601(location.getTime()));
 			jloc.put("provider", location.getProvider());
 			jloc.put("position", position);

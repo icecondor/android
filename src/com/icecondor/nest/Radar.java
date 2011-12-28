@@ -280,46 +280,10 @@ public class Radar extends MapActivity implements ServiceConnection,
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog,
 									int whichButton) {
-								Log.i(appTag,"OAUTH request token retrieval");
-								Toast.makeText(Radar.this, "contacting server", Toast.LENGTH_SHORT).show();
-								// get the OAUTH request token
-								OAuthAccessor accessor = LocationStorageProviders
-										.defaultAccessor(Radar.this);
-								OAuthClient client = new OAuthClient(
-										new HttpClient4());
-								try {
-									client.getRequestToken(accessor);
-									String[] token_and_secret = new String[] {
-											accessor.requestToken,
-											accessor.tokenSecret };
-									Log.i(appTag, "request token: "
-											+ token_and_secret[0]
-											+ " secret:"
-											+ token_and_secret[1]);
-									LocationStorageProviders
-											.setDefaultRequestToken(
-													token_and_secret,
-													Radar.this);
 									Intent i = new Intent(
 											Intent.ACTION_VIEW);
-									String url = accessor.consumer.serviceProvider.userAuthorizationURL
-									+ "?oauth_token="
-									+ accessor.requestToken
-									+ "&oauth_callback="
-									+ accessor.consumer.callbackURL;
-									Log.i(appTag, "sending to "+url);
-									i.setData(Uri.parse(url));
+									i.setData(Uri.parse(ICECONDOR_LOGIN_URL));
 									startActivity(i);
-								} catch (IOException e) {
-									Toast.makeText(Radar.this, "server failed", Toast.LENGTH_SHORT).show();
-									e.printStackTrace();
-								} catch (OAuthException e) {
-									Toast.makeText(Radar.this, "server failed", Toast.LENGTH_SHORT).show();
-									e.printStackTrace();
-								} catch (URISyntaxException e) {
-									Toast.makeText(Radar.this, "server failed", Toast.LENGTH_SHORT).show();
-									e.printStackTrace();
-								}
 							}
 						}).setNegativeButton("Cancel",
 						new DialogInterface.OnClickListener() {

@@ -10,6 +10,7 @@ public interface Constants {
 	public static final String ICECONDOR_READ_URL = "http://icecondor.com/locations.json"; // use preference
 	public static final String ICECONDOR_OAUTH_REQUEST_URL = "http://icecondor.com/oauth/request_token";
 	public static final String ICECONDOR_OAUTH_AUTHORIZATION_URL = "http://icecondor.com/oauth/authorize";
+	public static final String ICECONDOR_LOGIN_URL = "http://icecondor.com/mobile/login";
 	public static final String ICECONDOR_OAUTH_ACCESS_URL = "http://icecondor.com/oauth/access_token";
 	public static final String ICECONDOR_OAUTH_CALLBACK = "icecondor-android-app:///";
 	public static final String GETSATISFACTION_URL = "http://getsatisfaction.com/icecondor";

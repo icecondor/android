@@ -85,28 +85,23 @@ public class Start extends Activity implements ServiceConnection,
     }
 
 	private void processOauthToken() throws RemoteException {
+		Log.i(appTag,"processOauthToken");
 		// extract the OAUTH request token if it exists
     	Uri uri = this.getIntent().getData();
     	if(uri != null) {
-    		String blessed_request_token = uri.getQueryParameter("oauth_token");
-    		if(blessed_request_token.length() > 0) {
-	    		String access_token_and_secret[];
-	    		Toast.makeText(this, "Finishing authentication", Toast.LENGTH_SHORT).show();
-	    		access_token_and_secret = LocationStorageProviders.getDefaultRequestToken(this);
-	    		Log.i(appTag, "Returned token (ignored): "+blessed_request_token+" Access token: "+access_token_and_secret[0]+" secret:"+access_token_and_secret[1]);
-	    		String msg;
-	    		try {
-		    		access_token_and_secret = LocationStorageProviders.convertToAccessTokenAndSecret(access_token_and_secret, this);
-					String openid = uri.getQueryParameter("openid");
-	    			LocationStorageProviders.setDefaultAccessToken(access_token_and_secret, this);
-	    			msg = "Authentication succeded for "+openid+".";
-					settings.edit().putString(SETTING_OPENID, openid).commit();
-					pigeon.startTransmitting();
-	    		} catch (OauthError e) {
-	    			msg = e.getMessage();	    			
-	    		}
+    		Log.i(appTag, uri.toString());
+    		String access_token = uri.getQueryParameter("access_token");
+    		String username = uri.getQueryParameter("username");
+			String email = uri.getQueryParameter("email");
+    		if(access_token != null && email != null && username != null) {
+	    		String[] access_token_and_secret =  {access_token, username};
+    			LocationStorageProviders.setDefaultAccessToken(access_token_and_secret, this);
+				settings.edit().putString(SETTING_OPENID, email).commit();
+				pigeon.startTransmitting();
+    			String msg = "Authentication succeded for "+email+".";
 				Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-				Log.i(appTag, "processOauthToken: "+msg);
+    		} else {
+				Toast.makeText(this, "Garbled Credentials", Toast.LENGTH_SHORT).show();    			
     		}
     	}
 	}
