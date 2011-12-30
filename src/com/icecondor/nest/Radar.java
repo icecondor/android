@@ -224,10 +224,9 @@ public class Radar extends MapActivity implements ServiceConnection,
 			startActivity(i);
 			break;
 		case 6:
-			unbindService(this);
-			pigeon_connected = false;
-			stopService(pigeonIntent);
+			stopPigeon();
 			rssdb.log("Radar: pigeon told to stop");
+			finish();
 			break;
 		case 7:
 			startActivity(activityLogIntent);
@@ -236,7 +235,6 @@ public class Radar extends MapActivity implements ServiceConnection,
 			try {
 				pigeon.pushFix();
 			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			break;
@@ -244,6 +242,14 @@ public class Radar extends MapActivity implements ServiceConnection,
 		
 		return false;
 	}
+
+    protected void stopPigeon() {
+        if(pigeon_connected) {
+            unbindService(this);
+            stopService(pigeonIntent);
+            pigeon_connected = false;
+        }
+    }
 	
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		boolean result = super.onPrepareOptionsMenu(menu);
@@ -254,12 +260,14 @@ public class Radar extends MapActivity implements ServiceConnection,
 	public boolean togglePigeon() {
 		try {
 			if (pigeon.isTransmitting()) {
+			    Log.i(APP_TAG, "togglePigeon: turning off");
 				pigeon.stopTransmitting();
 				return false;
 			} else {
 				if(!LocationStorageProviders.has_access_token(this)) {
 					return loginDialog();
 				} else {
+	                Log.i(APP_TAG, "togglePigeon: turning on");
 					pigeon.startTransmitting();	
 					return true;
 				}

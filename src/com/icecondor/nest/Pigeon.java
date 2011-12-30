@@ -180,7 +180,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	protected void apiReconnect() {
 		if (reconnectLastTry < (System.currentTimeMillis()-(30*1000))) {
 			reconnectLastTry = System.currentTimeMillis();
-			rssdb.log("apiReconnect() "+
+			rssdb.log("apiReconnect "+
 					"\""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId() );
 			if(apiSocket != null && apiSocket.isConnected()) {
 				try {
@@ -191,12 +191,13 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			}
 			try {
 				apiSocket = new ApiSocket(ICECONDOR_API_URL, pigeonHandler, "token");
+				rssdb.log("apiReconnect: connecting to "+ICECONDOR_API_URL);
 				apiSocket.connect();
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
 		} else {
-			rssdb.log("apiReconnect() ignored. last try is "+ 
+			rssdb.log("apiReconnect ignored. last try is "+ 
 					(System.currentTimeMillis()-reconnectLastTry)/1000+" sec ago "+
 					"\""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId() );
 		}
