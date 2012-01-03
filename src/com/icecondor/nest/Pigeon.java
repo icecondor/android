@@ -191,9 +191,13 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			}
 			try {
                 String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
-				apiSocket = new ApiSocket(ICECONDOR_API_URL, pigeonHandler, token_and_secret[0]);
-				rssdb.log("apiReconnect: connecting to "+ICECONDOR_API_URL);
-				apiSocket.connect();
+                apiSocket = new ApiSocket(ICECONDOR_API_URL, pigeonHandler, token_and_secret[0]);
+                if (token_and_secret[0] != null) {
+    				rssdb.log("apiReconnect: connecting to "+ICECONDOR_API_URL);
+    				apiSocket.connect();
+                } else {
+                    rssdb.log("apiReconnect ignored. no auth token yet.");                    
+                }
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
@@ -301,7 +305,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				rssdb.log("PushQueueTask oldest unpushed id "+id);
 				Gps fix =  Gps.fromJson(oldest.getString(
 				                    oldest.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)));
-				rssdb.log("PushQueueTask after Gps.fromJson");
 				boolean status = pushLocationApi(fix);
 				if (status == true) {
 					rssdb.log("queue push #"+id+" OK");
