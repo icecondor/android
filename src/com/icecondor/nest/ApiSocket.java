@@ -40,7 +40,7 @@ public class ApiSocket extends WebSocketClient implements Constants {
 		Log.i(APP_TAG,"ApiSocket open \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
 		connected = true;
 		try {
-			send("{\"type\":\"auth\"}");
+			send("{\"type\":\"auth\", \"oauth_token\":\""+token+"\"}");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

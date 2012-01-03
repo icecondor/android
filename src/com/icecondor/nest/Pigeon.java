@@ -190,7 +190,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				rssdb.log("Warning: Closing connected apiSocket");
 			}
 			try {
-				apiSocket = new ApiSocket(ICECONDOR_API_URL, pigeonHandler, "token");
+                String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
+				apiSocket = new ApiSocket(ICECONDOR_API_URL, pigeonHandler, token_and_secret[0]);
 				rssdb.log("apiReconnect: connecting to "+ICECONDOR_API_URL);
 				apiSocket.connect();
 			} catch (URISyntaxException e) {
@@ -317,13 +318,11 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
 	public boolean pushLocationApi(Gps gps) {
-		rssdb.log("pushLocationApi: loading access token");
-		String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
+        String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
 		JSONObject json = gps.toJson();
 		try {
-			json.put("oauth_token", token_and_secret[0]);
 			json.put("username", token_and_secret[1]);
-			rssdb.log("pushLocationApi: "+json.toString()+" isConnected():"+apiSocket.isConnected());
+			rssdb.log("pushLocationApi: "+json.toString());
 			boolean pass = apiSocket.emit(json.toString());
 			if(pass == false) {
 				apiReconnect();
