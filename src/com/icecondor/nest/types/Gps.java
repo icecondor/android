@@ -12,6 +12,10 @@ import android.util.Log;
 public class Gps extends Base implements Constants {
 	Location location;
 
+	public Gps() {
+	    super();
+	}
+	
 	public static Gps fromJson(String json) {
 		Log.i(APP_TAG, "Gps.fromJson: "+json);
 		/* GSON example:
@@ -40,6 +44,7 @@ public class Gps extends Base implements Constants {
 			l.setSpeed(new Float(j.getDouble("velocity")));
 			
 			Gps gps = new Gps();
+			gps.id = j.getString("id");
 			gps.setLocation(l);
 			gps.setBattery(j.getInt("battery_level"));
 			gps.setAC(j.getBoolean("ac_power"));
@@ -59,6 +64,7 @@ public class Gps extends Base implements Constants {
 	public JSONObject toJson() {
 		JSONObject jloc = new JSONObject();
 		try {
+		    jloc.put("id", id);
 			JSONObject position = new JSONObject();
 			position.put("latitude", location.getLatitude());
 			position.put("longitude", location.getLongitude());

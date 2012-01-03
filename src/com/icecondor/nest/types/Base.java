@@ -1,10 +1,18 @@
 package com.icecondor.nest.types;
 
+import java.util.UUID;
+
 import org.json.JSONObject;
 
 abstract public class Base {
 
-	abstract public JSONObject toJson();
+    abstract public JSONObject toJson();
+    
+    String id;
+    
+    public Base() {
+        id = UUID.randomUUID().toString();
+    }
 
 	// "integral" fields
 	int battery_level;
