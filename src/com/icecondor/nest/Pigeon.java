@@ -306,15 +306,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				Gps fix =  Gps.fromJson(oldest.getString(
 				                    oldest.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)));
 				boolean status = pushLocationApi(fix);
-				if (status == true) {
-					rssdb.log("queue push #"+id+" OK");
-					rssdb.mark_as_pushed(id);
-					last_pushed_fix = fix.getLocation();
-					last_pushed_time = System.currentTimeMillis();
-					broadcastBirdFix(fix.getLocation());
-				} else {
-					rssdb.log("queue push #"+id+" FAIL "+status);
-				}
 			} 
 			oldest.close();
 		}
@@ -416,7 +407,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				Gps gps = new Gps();
 				gps.setLocation(last_local_fix);
 				gps.setBattery(last_battery_level);
-				long id = rssdb.addPosition(gps.toJson().toString());
+				long id = rssdb.addToQueue(gps.getId(), gps.toJson().toString());
 				rssdb.log("Pigeon location queued. location #"+id);
 				pushQueue();
 				broadcastGpsFix(location);
@@ -660,8 +651,37 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
 	@Override
 	public boolean handleMessage(Message msg) {
-		rssdb.log("handleMessage: "+msg+" \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
+		rssdb.log("handleMessage: \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
+		try {
+            JSONObject json = new JSONObject(msg.getData().getString("json"));
+            dispatch(json);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 		return true;
+	}
+	
+	void dispatch(JSONObject json) {
+	    String type;
+        try {
+            type = json.getString("type");
+            rssdb.log("Dispatching type "+type);
+
+            if(type.equals("location")) {
+                String id = json.getString("id");
+                
+                rssdb.log("queue push #"+id+" OK");
+                rssdb.mark_as_pushed(id);
+                Cursor o = rssdb.readLocationQueue(id);
+                last_pushed_fix =  Gps.fromJson(o.getString(
+                                   o.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)))
+                                   .getLocation();
+                last_pushed_time = System.currentTimeMillis();
+                broadcastBirdFix(last_pushed_fix);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 	}
 
 }

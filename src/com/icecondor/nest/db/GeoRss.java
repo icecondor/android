@@ -51,7 +51,8 @@ public class GeoRss {
 	public static final String ACTIVITY_DATE = "date";
 	public static final String ACTIVITY_DESCRIPTION = "description";
 	
-	public static final String POSITION_QUEUE_TABLE = "position_queue";
+    public static final String POSITION_QUEUE_TABLE = "position_queue";
+    public static final String POSITION_QUEUE_ID = "id";
 	public static final String POSITION_QUEUE_CREATED_AT = "created_at";
 	public static final String POSITION_QUEUE_JSON = "json";
 	public static final String POSITION_QUEUE_SENT = "sent";
@@ -89,7 +90,7 @@ public class GeoRss {
 			db.execSQL("CREATE TABLE "+FEEDS_TABLE+" (_id integer primary key, service_name text, title text, extra text, username text, password text, "+FEEDS_UPDATED_AT+" datetime)");
 			db.execSQL("CREATE TABLE "+SHOUTS_TABLE+" (_id integer primary key, guid text unique on conflict replace, title text, lat float, long float, date datetime, feed_id integer)");
 			db.execSQL("CREATE TABLE "+ACTIVITY_TABLE+" (_id integer primary key, date datetime, type text, description text)");
-			db.execSQL("CREATE TABLE "+POSITION_QUEUE_TABLE+" (_id integer primary key, "+POSITION_QUEUE_JSON+" text, "+POSITION_QUEUE_CREATED_AT+" datetime, "+POSITION_QUEUE_SENT+" datetime)");
+			db.execSQL("CREATE TABLE "+POSITION_QUEUE_TABLE+" (_id integer primary key, "+POSITION_QUEUE_ID+" text, "+POSITION_QUEUE_JSON+" text, "+POSITION_QUEUE_CREATED_AT+" datetime, "+POSITION_QUEUE_SENT+" datetime)");
 		}
 	
 		@Override
@@ -138,10 +139,11 @@ public class GeoRss {
 		db.insert(GeoRss.FEEDS_TABLE, null, cv);
 	}
 
-	public long addPosition(String locationJson) {
+	public long addToQueue(String id, String json) {
 		ContentValues cv = new ContentValues(2);
 		cv.put(POSITION_QUEUE_CREATED_AT, Util.DateTimeIso8601Now());
-		cv.put(POSITION_QUEUE_JSON, locationJson);
+        cv.put(POSITION_QUEUE_JSON, json);
+        cv.put(POSITION_QUEUE_ID, id);
 		return db.insert(GeoRss.POSITION_QUEUE_TABLE, null, cv);		
 	}
 
@@ -369,10 +371,17 @@ public class GeoRss {
 		return c;
 	}
 
-	public void mark_as_pushed(int id) {
+    public Cursor readLocationQueue(String id) {
+        Cursor c = db.query(GeoRss.POSITION_QUEUE_TABLE, null, POSITION_QUEUE_ID+" = ?",
+                new String[] {id}, null, null, null, null);
+        c.moveToFirst();
+        return c;
+    }
+
+	public void mark_as_pushed(String id) {
 		ContentValues cv = new ContentValues(2);
 		cv.put(POSITION_QUEUE_SENT, Util.DateTimeIso8601Now());
-		db.update(POSITION_QUEUE_TABLE, cv, "_id = ?", new String[] {""+id});
+		db.update(POSITION_QUEUE_TABLE, cv, "id = ?", new String[] {id});
 	}
 
 	public void empty_locations_queue() {

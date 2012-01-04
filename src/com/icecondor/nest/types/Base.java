@@ -13,6 +13,10 @@ abstract public class Base {
     public Base() {
         id = UUID.randomUUID().toString();
     }
+    
+    public String getId() {
+        return id;
+    }
 
 	// "integral" fields
 	int battery_level;
