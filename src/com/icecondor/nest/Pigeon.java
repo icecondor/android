@@ -492,8 +492,9 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
 	private void startPushQueueTimer() {
-		push_queue_timer = new Timer("Push Queue Timer");
-		push_queue_timer.scheduleAtFixedRate(new PushQueueTask(), 0, 30000);
+	    rssdb.log("PushQueueTimer started at 30 seconds");
+	    push_queue_timer = new Timer("Push Queue Timer");
+	    push_queue_timer.scheduleAtFixedRate(new PushQueueTask(), 0, 30000);
 	}
 
 	private void stopPushQueueTimer() {
