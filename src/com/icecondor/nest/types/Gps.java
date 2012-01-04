@@ -55,10 +55,6 @@ public class Gps extends Base implements Constants {
 		}
 
 	}
-	
-	public void freshen() {
-		
-	}
 
 	@Override
 	public JSONObject toJson() {
