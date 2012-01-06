@@ -14,7 +14,7 @@
 	<string name="status_error">Pigeon Error</string>
 	<string name="menu_last_fix">Last Fix</string>
 	<string name="menu_feedback">Feedback</string>
-	<string name="menu_geo_rss">GeoRSS</string>
+	<string name="menu_geo_rss">Friends</string>
 	<string name="menu_geo_rss_add">Add a Service</string>
 	<string name="menu_geo_rss_detail_delete">Delete</string>
 	<string name="menu_exit">Exit</string>
@@ -22,5 +22,5 @@
 	<string name="dialog_openid">Enter a descriptive name or OpenID URL</string>
 	<string name="license">"IceCondor is a location logging and sharing tool. Use it for life-logging, friend tracking, and geofences. No warranty."</string>
 	<string name="spinner_location_service_prompt">Choose a service</string>
-	<string name="about">Thank you for using IceCondor - a GeoRSS reader and continuous location tracking tool for android. (C) 2009 Don Park</string>	
+	<string name="about">Thank you for using IceCondor - a location sharing tool for android. (C) 2012 Don Park</string>	
 </resources>

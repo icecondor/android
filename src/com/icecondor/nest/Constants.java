@@ -1,11 +1,11 @@
 package com.icecondor.nest;
 
 public interface Constants {
-	public static final int ICECONDOR_VERSION = 20120103;
+	public static final int ICECONDOR_VERSION = 20120106;
 	public static final String ICECONDOR_URL = "http://icecondor.com/"; 
 	public static final String ICECONDOR_API_URL = "ws://donpark.org:2040/"; 
 	public static final String ICECONDOR_URL_SHORTNAME = "icecondor.com"; // use preference
-	public static final String ICECONDOR_VERSION_CHECK_URL = "http://icecondor.com/version-beta"; // use preference
+	public static final String ICECONDOR_VERSION_CHECK_URL = "http://icecondor.com/version"; // use preference
 	public static final String ICECONDOR_WRITE_URL = "http://icecondor.com/locations.json"; // use preference
 	public static final String ICECONDOR_READ_URL = "http://icecondor.com/locations.json"; // use preference
 	public static final String ICECONDOR_OAUTH_REQUEST_URL = "http://icecondor.com/oauth/request_token";

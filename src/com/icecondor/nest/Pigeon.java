@@ -299,7 +299,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	class PushQueueTask extends TimerTask {
 		public void run() {
 			Cursor oldest;
-			rssdb.log("** queue pushf size "+rssdb.countPositionQueueRemaining()+" \""+Thread.currentThread().getName()+"\""+" tid:"+Thread.currentThread().getId() );
+			rssdb.log("** queue push size "+rssdb.countPositionQueueRemaining()+" \""+Thread.currentThread().getName()+"\""+" tid:"+Thread.currentThread().getId() );
 			if ((oldest = rssdb.oldestUnpushedLocationQueue()).getCount() > 0) {
 				int id = oldest.getInt(oldest.getColumnIndex("_id"));
 				Gps fix =  Gps.fromJson(oldest.getString(
