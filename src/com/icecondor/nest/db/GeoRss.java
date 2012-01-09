@@ -156,6 +156,11 @@ public class GeoRss {
 		return findRow(FEEDS_TABLE, row_id);
 	}
 	
+	public Cursor findFeedsByService(String service) {
+        return db.query(FEEDS_TABLE,null, FEEDS_SERVICENAME+" = ?",
+                        new String[] {service}, null, null, null);	    
+	}
+	
 	public Cursor findRow(String table, int row_id) {
 		return db.query(table,null, "_id = ?",
                 new String[] {""+row_id}, null, null, null);

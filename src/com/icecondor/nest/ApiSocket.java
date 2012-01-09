@@ -4,6 +4,12 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.icecondor.nest.db.GeoRss;
+
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -15,11 +21,13 @@ public class ApiSocket extends WebSocketClient implements Constants {
 	Handler pigeon;
 	String token;
 	boolean connected = false;
+	GeoRss rssdb;
 
-	public ApiSocket(String url, Handler h, String token) throws URISyntaxException {
+	public ApiSocket(String url, Handler h, String token, GeoRss rssdb) throws URISyntaxException {
 		super(new URI(url));
 		pigeon = h;
 		this.token = token;
+		this.rssdb = rssdb;
 	}
 
 	@Override
@@ -37,13 +45,26 @@ public class ApiSocket extends WebSocketClient implements Constants {
 
 	@Override
 	public void onOpen() {
-		Log.i(APP_TAG,"ApiSocket open \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
+		Log.i(APP_TAG,"ApiSocket onOpen \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
 		connected = true;
 		try {
 			send("{\"type\":\"auth\", \"oauth_token\":\""+token+"\"}");
+			/* follow our friends */
+			Cursor c = rssdb.findFeedsByService("IceCondor");
+			rssdb.log("apiSocket onOpen IceCondor friends "+c.getCount());
+			while(c.moveToNext()) {
+			    String username = c.getString(c.getColumnIndex(GeoRss.FEEDS_EXTRA));
+	            rssdb.log("apiSocket onOpen IceCondor following "+username);
+			    JSONObject j = new JSONObject();
+			    j.put("type", "follow");
+			    j.put("username", username);
+			    send(j.toString());
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		} catch (JSONException e) {
+            e.printStackTrace();
+        }
 	}
 
 	@Override

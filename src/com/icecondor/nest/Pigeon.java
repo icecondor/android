@@ -191,7 +191,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			}
 			try {
                 String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
-                apiSocket = new ApiSocket(ICECONDOR_API_URL, pigeonHandler, token_and_secret[0]);
+                apiSocket = new ApiSocket(ICECONDOR_API_URL, pigeonHandler, token_and_secret[0], rssdb);
                 if (token_and_secret[0] != null) {
     				rssdb.log("apiReconnect: connecting to "+ICECONDOR_API_URL);
     				apiSocket.connect();
