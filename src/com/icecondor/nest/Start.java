@@ -147,7 +147,9 @@ public class Start extends Activity implements ServiceConnection,
 				}
 
 			} catch (ClientProtocolException e) {
+			    Log.e(appTag, ""+e);
 			} catch (IOException e) {
+                Log.e(appTag, ""+e);
 			}
 
         }    	

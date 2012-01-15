@@ -321,7 +321,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				apiReconnect();
 			}
 			return pass;
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			rssdb.log("pushLocationApi: JSONException "+e);
 		}
 		return false;
