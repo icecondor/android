@@ -95,10 +95,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
 		/* GPS */
 		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-		rssdb.log("GPS provider enabled: "+locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER));
-		last_local_fix = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		rssdb.log("NETWORK provider enabled: "+locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER));
-		Location last_network_fix = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		last_local_fix = getLastLocationFor(LocationManager.GPS_PROVIDER);
+		Location last_network_fix = getLastLocationFor(LocationManager.NETWORK_PROVIDER);
 		if (last_local_fix == null) { 
 			if(last_network_fix != null) {
 				last_local_fix = last_network_fix; // fall back onto the network location
@@ -176,6 +174,12 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		/* Callbacks from the API Communication Thread */
 		pigeonHandler = new Handler(this);
 	}
+
+    protected Location getLastLocationFor(String provider) {
+        boolean enabled = locationManager.isProviderEnabled(provider);
+        rssdb.log("GPS provider enabled: "+enabled);
+        return locationManager.getLastKnownLocation(provider);
+    }
 
 	protected void apiReconnect() {
 		if (reconnectLastTry < (System.currentTimeMillis()-(30*1000))) {
