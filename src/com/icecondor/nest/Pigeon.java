@@ -96,8 +96,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		/* GPS */
 		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         last_local_fix = getBestLastLocation();
-        rssdb.log("Last known "+last_local_fix.getProvider()+" fix: "+last_local_fix+" "+
-                Util.DateTimeIso8601(last_local_fix.getTime()));            
+        if (last_local_fix != null) {
+            rssdb.log("Last known "+last_local_fix.getProvider()+" fix: "+last_local_fix+" "+
+                    Util.DateTimeIso8601(last_local_fix.getTime()));      
+        }
 
 		Cursor oldest;
 		if ((oldest = rssdb.oldestPushedLocationQueue()).getCount() > 0) {
@@ -116,11 +118,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		contentIntent = PendingIntent.getActivity(this, 0, new Intent(this,
 				Start.class), 0);
 		CharSequence text = getText(R.string.status_started);
-		ongoing_notification = new Notification(R.drawable.condorhead_statusbar, text, System
-				.currentTimeMillis());
-		ongoing_notification.flags = ongoing_notification.flags ^ Notification.FLAG_ONGOING_EVENT;
-		ongoing_notification.setLatestEventInfo(this, "IceCondor", "", contentIntent);
-
 
 		/* Preferences */
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -166,6 +163,14 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		/* Callbacks from the API Communication Thread */
 		pigeonHandler = new Handler(this);
 	}
+
+    protected Notification buildNotification() {
+        Notification notification = new Notification(R.drawable.condorhead_statusbar, null, System
+				.currentTimeMillis());
+		notification.flags = notification.flags ^ Notification.FLAG_ONGOING_EVENT;
+		notification.setLatestEventInfo(this, "IceCondor", "", contentIntent);
+		return notification;
+    }
 
 	protected Location getBestLastLocation() {
        Location last_gps_fix = getLastLocationFor(LocationManager.GPS_PROVIDER);
@@ -234,6 +239,9 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
 	private void notificationStatusUpdate(String msg) {
+	    if(ongoing_notification == null) {
+	        ongoing_notification = buildNotification();
+	    }
 		ongoing_notification.setLatestEventInfo(this, "IceCondor",
 				msg, contentIntent);
 		ongoing_notification.when = System.currentTimeMillis();
@@ -578,7 +586,9 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		    	beat_part = "fix "+ago+".";
 		    }
 		    String msg = fix_part+" "+beat_part+" "+queue_part;
-			notificationStatusUpdate(msg); 
+		    if(ongoing_notification != null) {
+		        notificationStatusUpdate(msg); 
+		    }
 		}
 	};
 
