@@ -369,7 +369,7 @@ public class GeoRss {
 		return c;
 	}
 
-	public Cursor oldestPushedLocationQueue() {
+	public Cursor oldestPushedLocations() {
 		Cursor c = db.query(GeoRss.POSITION_QUEUE_TABLE, null, POSITION_QUEUE_SENT+" IS NOT NULL",
                 null, null, null, "_id desc", "1");
 		c.moveToFirst();

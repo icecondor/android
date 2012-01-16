@@ -101,8 +101,9 @@ public class Pigeon extends Service implements Constants, LocationListener,
                     Util.DateTimeIso8601(last_local_fix.getTime()));      
         }
 
-		Cursor oldest;
-		if ((oldest = rssdb.oldestPushedLocationQueue()).getCount() > 0) {
+        /* Queue */
+		Cursor oldest = rssdb.oldestPushedLocations();
+		if (oldest.getCount() > 0) {
 			rssdb.log("Oldest pushed fix found");
 			last_pushed_fix =  Gps.fromJson(oldest.getString(
 			                    oldest.getColumnIndex(GeoRss.POSITION_QUEUE_JSON))).getLocation();
