@@ -95,18 +95,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
 		/* GPS */
 		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-		last_local_fix = getLastLocationFor(LocationManager.GPS_PROVIDER);
-		Location last_network_fix = getLastLocationFor(LocationManager.NETWORK_PROVIDER);
-		if (last_local_fix == null) { 
-			if(last_network_fix != null) {
-				last_local_fix = last_network_fix; // fall back onto the network location
-				rssdb.log("Last known NETWORK fix: "+last_network_fix+" "+
-						Util.DateTimeIso8601(last_network_fix.getTime()));
-			}
-		} else {
-			rssdb.log("Last known GPS fix: "+last_local_fix+" "+
-					Util.DateTimeIso8601(last_local_fix.getTime()));			
-		}
+        last_local_fix = getBestLastLocation();
+        rssdb.log("Last known "+last_local_fix.getProvider()+" fix: "+last_local_fix+" "+
+                Util.DateTimeIso8601(last_local_fix.getTime()));            
+
 		Cursor oldest;
 		if ((oldest = rssdb.oldestPushedLocationQueue()).getCount() > 0) {
 			rssdb.log("Oldest pushed fix found");
@@ -175,6 +167,20 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		pigeonHandler = new Handler(this);
 	}
 
+	protected Location getBestLastLocation() {
+       Location last_gps_fix = getLastLocationFor(LocationManager.GPS_PROVIDER);
+       Location last_network_fix = getLastLocationFor(LocationManager.NETWORK_PROVIDER);
+       Location winner = null;
+        if (last_gps_fix == null) { 
+            if(last_network_fix != null) {
+                winner = last_network_fix; // fall back onto the network location
+            }
+        } else {
+            winner = last_gps_fix;
+        }
+        return winner;
+	}
+	
     protected Location getLastLocationFor(String provider) {
         boolean enabled = locationManager.isProviderEnabled(provider);
         rssdb.log("GPS provider enabled: "+enabled);
