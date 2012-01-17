@@ -417,10 +417,9 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			       (time_since_last_update/1000)+" seconds since last update");
 
 		if (on_switch) {
-			if((last_local_fix.getAccuracy() < (last_recorded_fix == null?
-					                            500000:last_recorded_fix.getAccuracy())) ||
-					time_since_last_update > record_frequency ) {
-				last_recorded_fix = last_local_fix;
+			if(isAccuracyImproved(location, last_recorded_fix) ||
+			        time_since_last_update > record_frequency) {
+				last_recorded_fix = location;
 				last_fix_http_status = 200;
 				Gps gps = new Gps();
 				gps.setLocation(last_local_fix);
@@ -431,6 +430,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			}
 		}
 	}
+
+    protected boolean isAccuracyImproved(Location recent, Location older) {
+        return (recent.getAccuracy() < (older == null?500000:older.getAccuracy()));
+    }
 
 	private void broadcastGpsFix(Location location) {
 		Intent intent = new Intent(GPS_FIX_ACTION);
