@@ -189,7 +189,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	
     protected Location getLastLocationFor(String provider) {
         boolean enabled = locationManager.isProviderEnabled(provider);
-        rssdb.log("GPS provider enabled: "+enabled);
+        rssdb.log(provider+" provider enabled: "+enabled);
         return locationManager.getLastKnownLocation(provider);
     }
 
@@ -198,13 +198,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			reconnectLastTry = System.currentTimeMillis();
 			rssdb.log("apiReconnect "+
 					"\""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId() );
-			if(apiSocket != null && apiSocket.isConnected()) {
-				try {
-					apiSocket.close();
-				} catch (IOException e) {
-				}
-				rssdb.log("Warning: Closing connected apiSocket");
-			}
+			apiDisconnect();
 			try {
                 String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
                 apiSocket = new ApiSocket(ICECONDOR_API_URL, pigeonHandler, token_and_secret[0], rssdb);
@@ -224,6 +218,16 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		}
 	}
 
+    protected void apiDisconnect() {
+        if(apiSocket != null && apiSocket.isConnected()) {
+        	try {
+        		apiSocket.close();
+        	} catch (IOException e) {
+        	}
+        	rssdb.log("Warning: Closing connected apiSocket");
+        }
+    }
+
 	public void onStart(Intent start, int key) {
 		super.onStart(start,key);
 		apiReconnect();
@@ -234,7 +238,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	public void onDestroy() {
 		unregisterReceiver(battery_receiver);
 		unregisterReceiver(widget_receiver);
-        stop_background();
+        stopBackground();
 		rssdb.log("Pigon destroyed");
 		rssdb.close();
 	}
@@ -452,11 +456,11 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 
 	public void onProviderDisabled(String provider) {
-		rssdb.log("provider "+provider+" disabled");
+		rssdb.log("onProviderDisabled: "+provider);
 	}
 
 	public void onProviderEnabled(String provider) {
-		rssdb.log("provider "+provider+" enabled");
+        rssdb.log("onProviderEnabled: "+provider);
 	}
 
 	public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -543,9 +547,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				}, 0);
 	}
 	
-	protected void start_background() {
+	protected void startBackground() {
 		on_switch = true;
 		settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING, on_switch).commit();
+		apiReconnect();
 		startLocationUpdates();
 		notificationStatusUpdate("Waiting for fix.");				
 		notificationFlash("Location reporting ON.");
@@ -553,12 +558,13 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		sendBroadcast(intent);
 	}
 	
-	protected void stop_background() {
+	protected void stopBackground() {
 		on_switch = false;
 		//stopRssTimer();
 		stopLocationUpdates();
 		stopPushQueueTimer();
 		stopHeartbeatTimer();
+		apiDisconnect();
 		settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING,on_switch).commit();
 		notificationManager.cancel(1);
 		Intent intent = new Intent("com.icecondor.nest.WIDGET_OFF");
@@ -620,7 +626,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	    		stopSelf();
 	    	}
 	    	if (action.equals("com.icecondor.nest.PIGEON_ON")) {
-	    		start_background();
+	    		startBackground();
 	    	}
 	    	if (action.equals("com.icecondor.nest.PIGEON_INQUIRE")) {
 	    		if(on_switch) {
@@ -642,12 +648,12 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				Log.i(APP_TAG, "startTransmitting: already transmitting");
 			} else {
 				rssdb.log("Pigeon: startTransmitting");
-				start_background();
+				startBackground();
 			}
 		}
 		public void stopTransmitting() throws RemoteException {
 			rssdb.log("Pigeon: stopTransmitting");
-			stop_background();
+			stopBackground();
 		}
 		public Location getLastFix() throws RemoteException {
 			if (last_local_fix != null) {
