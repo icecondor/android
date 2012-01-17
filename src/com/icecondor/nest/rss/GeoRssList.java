@@ -57,6 +57,7 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 		super.onCreate(savedInstanceState);
 		Log.i(appTag, "onCreate");
 		setContentView(R.layout.georsslist);
+		setTitle(R.string.geo_rss_activity_title);
 		
         // Jump Points
         settingsIntent = new Intent(this, Settings.class);

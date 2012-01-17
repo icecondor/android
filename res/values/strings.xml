@@ -22,5 +22,6 @@
 	<string name="dialog_openid">Enter a descriptive name or OpenID URL</string>
 	<string name="license">"IceCondor is a location logging and sharing tool. Use it for life-logging, friend tracking, and geofences. No warranty."</string>
 	<string name="spinner_location_service_prompt">Choose a service</string>
-	<string name="about">Thank you for using IceCondor - a location sharing tool for android. (C) 2012 Don Park</string>	
+	<string name="about">Thank you for using IceCondor - a location sharing tool for android. (C) 2012 Don Park</string>
+	<string name="geo_rss_activity_title">Friends</string>	
 </resources>
