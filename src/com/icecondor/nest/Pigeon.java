@@ -37,6 +37,7 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.media.MediaPlayer;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -163,6 +164,12 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		
 		/* Callbacks from the API Communication Thread */
 		pigeonHandler = new Handler(this);
+		
+		/* Emulator ipv6 issue */
+		if ("google_sdk".equals( Build.PRODUCT )) {
+		    java.lang.System.setProperty("java.net.preferIPv6Addresses", "false");
+		    java.lang.System.setProperty("java.net.preferIPv4Stack", "true");
+		}
 	}
 
     protected Notification buildNotification() {
