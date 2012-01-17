@@ -60,6 +60,7 @@ public class ApiSocket extends WebSocketClient implements Constants {
 			    j.put("username", username);
 			    send(j.toString());
 			}
+			c.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (JSONException e) {
