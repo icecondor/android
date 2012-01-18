@@ -435,6 +435,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				Gps gps = new Gps();
 				gps.setLocation(last_local_fix);
 				gps.setBattery(last_battery_level);
+				gps.setAC(ac_power);
 				long id = rssdb.addToQueue(gps.getId(), gps.toJson().toString());
 				pushQueue();
 				broadcastGpsFix(location);
