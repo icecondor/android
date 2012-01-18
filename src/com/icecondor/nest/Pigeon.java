@@ -94,7 +94,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		rssdb.open();
 		rssdb.log("Pigon created");
 
-		/* GPS */
+		/* refresh last_local_fix from LocationManager */
 		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         last_local_fix = getBestLastLocation();
         if (last_local_fix != null) {
@@ -102,7 +102,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
                     Util.DateTimeIso8601(last_local_fix.getTime()));      
         }
 
-        /* Queue */
+        /* refresh last_pushed_fix from db */
 		Cursor oldest = rssdb.oldestPushedLocations();
 		if (oldest.getCount() > 0) {
 			rssdb.log("Oldest pushed fix found");
@@ -126,9 +126,11 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		settings.registerOnSharedPreferenceChangeListener(this);
 		on_switch = settings.getBoolean(SETTING_PIGEON_TRANSMITTING, false);
 		if (on_switch) {
-			//startForeground(1, ongoing_notification);
-			startLocationUpdates();
-			sendBroadcast(new Intent("com.icecondor.nest.WIDGET_ON"));
+		    //startForeground(1, ongoing_notification);
+		    startLocationUpdates();
+		    notificationStatusUpdate("Starting...");               
+		    notificationFlash("Location reporting ON.");
+		    sendBroadcast(new Intent("com.icecondor.nest.WIDGET_ON"));
 		}
 
 		/* Sound */
