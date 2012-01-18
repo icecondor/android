@@ -4,14 +4,18 @@ import android.app.ListActivity;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 import com.icecondor.nest.db.GeoRss;
 
-public class ActivityLog extends ListActivity {
+public class ActivityLog extends ListActivity implements Constants, 
+                                                         SimpleCursorAdapter.ViewBinder {
 	GeoRss rssdb;
 	LogObserver logob;
 
@@ -23,11 +27,12 @@ public class ActivityLog extends ListActivity {
 		rssdb.open();		
 
 		Cursor logs = rssdb.findActivityLogs();
-        ListAdapter adapter=new SimpleCursorAdapter(this,
+        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
                 R.layout.activitylog_row, logs,
                 new String[] {"date", "description"},
                 new int[] {R.id.date, R.id.description});
         logob = new LogObserver();
+        adapter.setViewBinder(this);
         setListAdapter(adapter);
 	}
 	
@@ -54,11 +59,24 @@ public class ActivityLog extends ListActivity {
 
 	class LogObserver extends DataSetObserver {
 		public void onChanged() {
+		    Log.i("LogObserver", "changed!");
 		}
 		public void onInvalidated() {
-			
+            Log.i("LogObserver", "invalidated!");			
 		}
 	}
+
+    @Override
+    public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+        TextView tv = (TextView) view;
+        String str = cursor.getString(columnIndex);
+        Log.i("setViewValue","binding column "+columnIndex);
+        if(columnIndex == cursor.getColumnIndex(GeoRss.ACTIVITY_DATE)) {
+            str = str.substring(11);
+        }
+        tv.setText(str);
+        return true;
+    }
 }
 
 
