@@ -48,7 +48,8 @@ public class ApiSocket extends WebSocketClient implements Constants {
 		Log.i(APP_TAG,"ApiSocket onOpen \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
 		connected = true;
 		try {
-			send("{\"type\":\"auth\", \"oauth_token\":\""+token+"\"}");
+            send("{\"type\":\"hello\", \"version\":\""+ICECONDOR_VERSION+"\"}");
+            send("{\"type\":\"auth\", \"oauth_token\":\""+token+"\"}");
 			/* follow our friends */
 			Cursor c = rssdb.findFeedsByService("IceCondor");
 			rssdb.log("apiSocket onOpen IceCondor friends "+c.getCount());
