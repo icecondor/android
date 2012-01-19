@@ -95,7 +95,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		/* Database */
 		rssdb = new GeoRss(this);
 		rssdb.open();
-		rssdb.log("Pigon created");
+		rssdb.log("Pigon created v"+ICECONDOR_VERSION);
 
 		/* refresh last_local_fix from LocationManager */
 		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -248,7 +248,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	public void onStart(Intent start, int key) {
 		super.onStart(start,key);
 		apiReconnect();
-		rssdb.log("Pigon started");
+		rssdb.log("Pigon started v"+ICECONDOR_VERSION);
 		broadcastGpsFix(last_local_fix);
 	}
 	
