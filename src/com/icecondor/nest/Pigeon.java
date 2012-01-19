@@ -445,7 +445,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		long record_frequency = Long.decode(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "180000"));
 		rssdb.log("pigeon onLocationChanged: lat:"+location.getLatitude()+
 				  " long:"+location.getLongitude() + " acc:"+
-			       location.getAccuracy()+" "+ 
+			       (int)location.getAccuracy()+"m "+ 
 			       (time_since_last_update/1000)+" seconds since last update");
 
 		if (on_switch) {
