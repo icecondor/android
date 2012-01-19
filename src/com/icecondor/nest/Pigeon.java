@@ -728,14 +728,17 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
             if(type.equals("location")) {
                 String id = json.getString("id");
-                rssdb.log("location id: "+id);
+                rssdb.log("location "+id+" "+status);
                 rssdb.mark_as_pushed(id);
                 Cursor o = rssdb.readLocationQueue(id);
-                last_pushed_fix =  Gps.fromJson(o.getString(
-                                   o.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)))
-                                   .getLocation();
-                last_pushed_time = System.currentTimeMillis();
-                broadcastBirdFix(last_pushed_fix);
+                Location pushed_fix =  Gps.fromJson(o.getString(
+                                       o.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)))
+                                       .getLocation();
+                if(pushed_fix.getTime() > last_pushed_fix.getTime()) {
+                    last_pushed_fix = pushed_fix;
+                    last_pushed_time = System.currentTimeMillis();                    
+                    broadcastBirdFix(last_pushed_fix);
+                }
             }
             
             if(type.equals("auth")) {
