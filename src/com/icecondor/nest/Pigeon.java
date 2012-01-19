@@ -212,7 +212,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
 	protected void apiReconnect() {
 		if (reconnectLastTry < (System.currentTimeMillis()-(30*1000))) {
-			reconnectLastTry = System.currentTimeMillis();
 			rssdb.log("apiReconnect "+
 					"\""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId() );
 			apiDisconnect();
@@ -220,6 +219,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
                 String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
                 apiSocket = new ApiSocket(ICECONDOR_API_URL, pigeonHandler, token_and_secret[0], rssdb);
                 if (token_and_secret[0] != null) {
+                    reconnectLastTry = System.currentTimeMillis();
     				rssdb.log("apiReconnect: connecting to "+ICECONDOR_API_URL);
     				apiSocket.connect();
                 } else {

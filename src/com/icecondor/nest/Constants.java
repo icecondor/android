@@ -1,9 +1,9 @@
 package com.icecondor.nest;
 
 public interface Constants {
-	public static final int ICECONDOR_VERSION = 20120107;
-	public static final String ICECONDOR_URL = "http://10.0.2.2:3100/"; 
-	public static final String ICECONDOR_API_URL = "ws://10.0.2.2:2040/"; 
+	public static final int ICECONDOR_VERSION = 20120108;
+	public static final String ICECONDOR_URL = "http://icecondor.com/"; 
+	public static final String ICECONDOR_API_URL = "ws://donpark.org:2040/"; 
 	public static final String ICECONDOR_URL_SHORTNAME = "icecondor.com"; // use preference
 	public static final String ICECONDOR_VERSION_CHECK_URL = "http://icecondor.com/version"; // use preference
 	public static final String ICECONDOR_WRITE_URL = "http://icecondor.com/locations.json"; // use preference
