@@ -139,11 +139,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		/* Sound */
 		mp = MediaPlayer.create(this, R.raw.beep);	
 		
-		/* Timers */
-		startHeartbeatTimer();
-		//startRssTimer();
-		startPushQueueTimer();
-		
 		/* Apache HTTP Monstrosity*/
 		httpClient =  new DefaultHttpClient();
 		httpClient.getParams().setIntParameter(AllClientPNames.CONNECTION_TIMEOUT, 15 *1000);
@@ -247,8 +242,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
 	public void onStart(Intent start, int key) {
 		super.onStart(start,key);
-		apiReconnect();
-		rssdb.log("Pigon started v"+ICECONDOR_VERSION);
+		rssdb.log("Pigon starting v"+ICECONDOR_VERSION);
+		startBackground();
 		broadcastGpsFix(last_local_fix);
 	}
 	
@@ -579,8 +574,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		on_switch = true;
 		settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING, on_switch).commit();
 		apiReconnect();
+        startHeartbeatTimer();
+        startPushQueueTimer();
 		startLocationUpdates();
-		notificationStatusUpdate("Waiting for fix.");				
+		notificationStatusUpdate(notificationStatusLine());				
 		notificationFlash("Location reporting ON.");
 		Intent intent = new Intent("com.icecondor.nest.WIDGET_ON");
 		sendBroadcast(intent);
@@ -601,29 +598,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	
 	class HeartBeatTask extends TimerTask {
 		public void run() {
-			String fix_part = "";
-			if (on_switch) {
-				if (last_pushed_fix != null) {
-					String ago = Util.timeAgoInWords(last_pushed_time);
-					String fago = Util.timeAgoInWords(last_pushed_fix.getTime());
-					if (last_fix_http_status != 200) {
-						ago = "err.";
-					}
-					fix_part = "push "+ ago+"/"+fago+".";
-			    }
-				if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-					fix_part = "Warning: GPS set to disabled";
-				}
-			} else {
-				fix_part = "Location reporting is off.";
-			}
-			String queue_part = ""+rssdb.countPositionQueueRemaining()+" queued.";
-		    String beat_part = "";
-		    if (last_local_fix != null) {
-		    	String ago = Util.timeAgoInWords(last_local_fix.getTime());
-		    	beat_part = "fix "+ago+".";
-		    }
-		    String msg = fix_part+" "+beat_part+" "+queue_part;
+			String msg = notificationStatusLine();
 		    if(ongoing_notification != null) {
 		        notificationStatusUpdate(msg); 
 		    }
@@ -750,5 +725,32 @@ public class Pigeon extends Service implements Constants, LocationListener,
             e.printStackTrace();
         }
 	}
+
+    protected String notificationStatusLine() {
+        String fix_part = "";
+        if (on_switch) {
+        	if (last_pushed_fix != null) {
+        		String ago = Util.timeAgoInWords(last_pushed_time);
+        		String fago = Util.timeAgoInWords(last_pushed_fix.getTime());
+        		if (last_fix_http_status != 200) {
+        			ago = "err.";
+        		}
+        		fix_part = "push "+ ago+"/"+fago+".";
+            }
+        	if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+        		fix_part = "Warning: GPS set to disabled";
+        	}
+        } else {
+        	fix_part = "Location reporting is off.";
+        }
+        String queue_part = ""+rssdb.countPositionQueueRemaining()+" queued.";
+        String beat_part = "";
+        if (last_local_fix != null) {
+        	String ago = Util.timeAgoInWords(last_local_fix.getTime());
+        	beat_part = "fix "+ago+".";
+        }
+        String msg = fix_part+" "+beat_part+" "+queue_part;
+        return msg;
+    }
 
 }
