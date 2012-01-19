@@ -45,6 +45,8 @@ import android.os.Message;
 import android.os.RemoteException;
 import android.os.Process;
 import android.preference.PreferenceManager;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.icecondor.nest.db.GeoRss;
@@ -68,6 +70,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	NotificationManager notificationManager;
 	LocationManager locationManager;
 	WifiManager wifiManager;
+	TelephonyManager telephonyManager;
 	PendingIntent contentIntent;
 	SharedPreferences settings;
 	GeoRss rssdb;
@@ -172,6 +175,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		    java.lang.System.setProperty("java.net.preferIPv6Addresses", "false");
 		    java.lang.System.setProperty("java.net.preferIPv4Stack", "true");
 		}
+		
+		/* telephony callbacks */
+		telephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+		telephonyManager.listen(new PhoneStateListener(), PhoneStateListener.LISTEN_DATA_CONNECTION_STATE);
 	}
 
     protected Notification buildNotification() {
@@ -328,7 +335,13 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		push_queue_timer_single.schedule(new PushQueueTask(), 0);
 	}
 
-	class PushQueueTask extends TimerTask {
+	private final class PhoneStateListener extends android.telephony.PhoneStateListener {
+	    //@Override
+	    //public void onDataConnectionStateChanged(int state, int networkType) {
+	    //}
+    }
+
+    class PushQueueTask extends TimerTask {
 		public void run() {
 			Cursor oldest;
 			rssdb.log("** queue push size "+rssdb.countPositionQueueRemaining()+" \""+Thread.currentThread().getName()+"\""+" tid:"+Thread.currentThread().getId() );
@@ -359,7 +372,11 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		return false;
 	}
 	
-	public int pushLocationRest(Gps gps) {
+	public void onDataConnectionChange(int state) {
+        rssdb.log("onDataConnectionChange "+state);
+    }
+
+    public int pushLocationRest(Gps gps) {
 		Location fix = gps.getLocation();
 		Log.i(APP_TAG, "sending id: "+settings.getString(SETTING_OPENID,"")+ " fix: " 
 				+fix.getLatitude()+" long: "+fix.getLongitude()+
@@ -478,8 +495,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		if (status ==  LocationProvider.TEMPORARILY_UNAVAILABLE) {status_msg = "TEMPORARILY_UNAVAILABLE";}
 		if (status ==  LocationProvider.OUT_OF_SERVICE) {status_msg = "OUT_OF_SERVICE";}
 		if (status ==  LocationProvider.AVAILABLE) {status_msg = "AVAILABLE";}
-		Log.i(APP_TAG, "provider "+provider+" status changed to "+status_msg);
-		rssdb.log("GPS "+status_msg);
+		rssdb.log("onStatusChanged: "+provider+" "+status_msg);
 	}
 
 	@Override
