@@ -177,8 +177,9 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		}
 		
 		/* telephony callbacks */
+		/* needs android.permission.READ_PHONE_STATE />
 		telephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-		telephonyManager.listen(new PhoneStateListener(), PhoneStateListener.LISTEN_DATA_CONNECTION_STATE);
+		telephonyManager.listen(new PhoneStateListener(), PhoneStateListener.LISTEN_DATA_CONNECTION_STATE); */
 	}
 
     protected Notification buildNotification() {
@@ -344,27 +345,28 @@ public class Pigeon extends Service implements Constants, LocationListener,
     class PushQueueTask extends TimerTask {
 		public void run() {
 			Cursor oldest;
-			rssdb.log("** queue push size "+rssdb.countPositionQueueRemaining()+" \""+Thread.currentThread().getName()+"\""+" tid:"+Thread.currentThread().getId() );
+			rssdb.log("** queue push size "+rssdb.countPositionQueueRemaining()+
+			          " \""+Thread.currentThread().getName()+"\""+" tid:"+
+			          Thread.currentThread().getId() );
 			if ((oldest = rssdb.oldestUnpushedLocationQueue()).getCount() > 0) {
-				int id = oldest.getInt(oldest.getColumnIndex("_id"));
 				Gps fix =  Gps.fromJson(oldest.getString(
 				                    oldest.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)));
 				boolean status = pushLocationApi(fix);
+	            if(status == false) {
+	                apiReconnect();
+	            }
 			} 
 			oldest.close();
 		}
 	}
 	
-	public boolean pushLocationApi(Gps gps) {
+	public boolean pushLocationApi(Gps fix) {
         String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
-		JSONObject json = gps.toJson();
+		JSONObject json = fix.toJson();
 		try {
 			json.put("username", token_and_secret[1]);
 			rssdb.log("pushLocationApi: "+json.toString());
 			boolean pass = apiSocket.emit(json.toString());
-			if(pass == false) {
-				apiReconnect();
-			}
 			return pass;
 		} catch (Exception e) {
 			rssdb.log("pushLocationApi: JSONException "+e);
@@ -706,11 +708,12 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
 	@Override
 	public boolean handleMessage(Message msg) {
+	    String json_str = msg.getData().getString("json");
 		try {
-            JSONObject json = new JSONObject(msg.getData().getString("json"));
+            JSONObject json = new JSONObject(json_str);
             dispatch(json);
         } catch (JSONException e) {
-            e.printStackTrace();
+            rssdb.log("handleMessage json:"+json_str+" err:"+e);
         }
 		return true;
 	}
@@ -719,7 +722,9 @@ public class Pigeon extends Service implements Constants, LocationListener,
         try {
             String type = json.getString("type");
             String status = json.getString("status");
-            rssdb.log("dispatch: type: "+type+" status:"+status+" \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
+            rssdb.log("dispatch: type: "+type+" status:"+status+
+                      " \""+Thread.currentThread().getName()+"\""+
+                      " #"+Thread.currentThread().getId());
 
             if(type.equals("location")) {
                 String id = json.getString("id");

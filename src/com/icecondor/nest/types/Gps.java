@@ -46,8 +46,12 @@ public class Gps extends Base implements Constants {
 			Gps gps = new Gps();
 			gps.id = j.getString("id");
 			gps.setLocation(l);
-			gps.setBattery(j.getInt("battery_level"));
-			gps.setAC(j.getBoolean("ac_power"));
+			if(j.has("battery_level")) {
+			    gps.setBattery(j.getInt("battery_level"));
+			}
+            if(j.has("ac_power")) {
+                gps.setAC(j.getBoolean("ac_power"));
+            }
 			return gps;
 		} catch (Exception e) {
 			Log.i(APP_TAG, "Gps.fromJson err: "+e);
@@ -77,11 +81,12 @@ public class Gps extends Base implements Constants {
 			jloc.put("battery_level", battery_level);
 			jloc.put("ac_power", ac_power);
 		} catch (JSONException e) {
-			Log.i("gps", "tojson err: "+e);
+			Log.i(APP_TAG, "Gps.toJson err: "+e);
 			try {
 				jloc.put("error", "gps tojson err: "+e);
 			} catch (JSONException e1) {}
 		}
+		Log.i(APP_TAG, "Gps.toJson built: "+jloc.toString());
 		return jloc;
 	}
 
