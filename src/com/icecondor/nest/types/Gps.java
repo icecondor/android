@@ -17,7 +17,6 @@ public class Gps extends Base implements Constants {
 	}
 	
 	public static Gps fromJson(String json) {
-		Log.i(APP_TAG, "Gps.fromJson: "+json);
 		/* GSON example:
 		 * JSON result { "location": { "mResults": [ 0.0, 0.0 ], "mProvider": "gps",
 		 * "mDistance": 0.0, "mTime": 1305208806000, "mAltitude": 0.0, "mLongitude":
@@ -86,7 +85,6 @@ public class Gps extends Base implements Constants {
 				jloc.put("error", "gps tojson err: "+e);
 			} catch (JSONException e1) {}
 		}
-		Log.i(APP_TAG, "Gps.toJson built: "+jloc.toString());
 		return jloc;
 	}
 
