@@ -70,7 +70,6 @@ public class ActivityLog extends ListActivity implements Constants,
     public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
         TextView tv = (TextView) view;
         String str = cursor.getString(columnIndex);
-        Log.i("setViewValue","binding column "+columnIndex);
         if(columnIndex == cursor.getColumnIndex(GeoRss.ACTIVITY_DATE)) {
             str = str.substring(11)+"\n"+str.substring(0, 10);
         }

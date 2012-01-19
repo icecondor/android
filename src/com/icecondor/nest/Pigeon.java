@@ -177,7 +177,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		}
 		
 		/* telephony callbacks */
-		/* needs android.permission.READ_PHONE_STATE />
+		/* needs android.permission.READ_PHONE_STATE
 		telephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
 		telephonyManager.listen(new PhoneStateListener(), PhoneStateListener.LISTEN_DATA_CONNECTION_STATE); */
 	}
