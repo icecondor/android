@@ -469,9 +469,16 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		sendBroadcast(intent);	
 	}
 
-	private void broadcastBirdFix(Location location) {
+    private void broadcastBirdFix(Location location) {
+        broadcastBirdFix(null, location);
+    }
+    
+    private void broadcastBirdFix(String username, Location location) {
 		Intent intent = new Intent(BIRD_FIX_ACTION);
 		intent.putExtra("location", location);
+		if(username != null) {
+		    intent.putExtra("username", username);		    
+		}
 		sendBroadcast(intent);	
 	}
 
@@ -745,9 +752,9 @@ public class Pigeon extends Service implements Constants, LocationListener,
         rssdb.log("location "+id+" "+status);
         rssdb.mark_as_pushed(id);
         Cursor o = rssdb.readLocationQueue(id);
-        Location pushed_fix =  Gps.fromJson(o.getString(
-                               o.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)))
-                               .getLocation();
+        Gps gps =  Gps.fromJson(o.getString(
+                               o.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)));
+        Location pushed_fix = gps.getLocation();
         if(pushed_fix.getTime() > last_pushed_fix.getTime()) {
             last_pushed_fix = pushed_fix;
             last_pushed_time = System.currentTimeMillis();

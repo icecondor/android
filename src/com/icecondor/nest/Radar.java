@@ -515,7 +515,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 		public void onReceive(Context context, Intent intent) {
 			Location location = (Location)intent.getExtras().get("location");
 			last_pushed_fix = location;
-			runOnUiThread(new UpdateBirdBlock());			
+			runOnUiThread(new UpdateBirdBlock());
 		}		
 	}
 	
