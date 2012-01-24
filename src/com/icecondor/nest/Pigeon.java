@@ -725,18 +725,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
                       " #"+Thread.currentThread().getId());
 
             if(type.equals("location")) {
-                String id = json.getString("id");
-                rssdb.log("location "+id+" "+status);
-                rssdb.mark_as_pushed(id);
-                Cursor o = rssdb.readLocationQueue(id);
-                Location pushed_fix =  Gps.fromJson(o.getString(
-                                       o.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)))
-                                       .getLocation();
-                if(pushed_fix.getTime() > last_pushed_fix.getTime()) {
-                    last_pushed_fix = pushed_fix;
-                    last_pushed_time = System.currentTimeMillis();                    
-                    broadcastBirdFix(last_pushed_fix);
-                }
+                doLocation(json, status);
             }
             
             if(type.equals("auth")) {
@@ -749,6 +738,22 @@ public class Pigeon extends Service implements Constants, LocationListener,
             e.printStackTrace();
         }
 	}
+
+    protected void doLocation(JSONObject json, String status)
+            throws JSONException {
+        String id = json.getString("id");
+        rssdb.log("location "+id+" "+status);
+        rssdb.mark_as_pushed(id);
+        Cursor o = rssdb.readLocationQueue(id);
+        Location pushed_fix =  Gps.fromJson(o.getString(
+                               o.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)))
+                               .getLocation();
+        if(pushed_fix.getTime() > last_pushed_fix.getTime()) {
+            last_pushed_fix = pushed_fix;
+            last_pushed_time = System.currentTimeMillis();
+            broadcastBirdFix(last_pushed_fix);
+        }
+    }
 
     protected String notificationStatusLine() {
         String fix_part = "";
