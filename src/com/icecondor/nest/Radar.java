@@ -149,7 +149,7 @@ public class Radar extends MapActivity implements ServiceConnection,
     	if(pigeon_connected) {
     		unbindService(this);
     	}
-    	stopNeighborReadTimer();
+    	//stopNeighborReadTimer();
     	stopHeartbeatTimer();
     	unregisterReceiver(gps_fix_receiver);
     	unregisterReceiver(bird_fix_receiver);
