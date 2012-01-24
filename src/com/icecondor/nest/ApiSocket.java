@@ -52,7 +52,7 @@ public class ApiSocket extends WebSocketClient implements Constants {
             send("{\"type\":\"auth\", \"oauth_token\":\""+token+"\"}");
 			/* follow our friends */
 			Cursor c = rssdb.findFeedsByService("IceCondor");
-			rssdb.log("apiSocket onOpen IceCondor friends "+c.getCount());
+			rssdb.log("apiSocket onOpen hello, auth, friend count "+c.getCount());
 			while(c.moveToNext()) {
 			    String username = c.getString(c.getColumnIndex(GeoRss.FEEDS_EXTRA));
 	            rssdb.log("apiSocket onOpen IceCondor following "+username);
