@@ -33,6 +33,7 @@ public class GeoRssDetail extends ListActivity implements ServiceConnection {
 	private int row_id;
 	PigeonService pigeon;
 	String service_name, service_extra;
+	Cursor shouts;
 	
     @Override
     protected void onCreate(Bundle icicle){
@@ -64,7 +65,7 @@ public class GeoRssDetail extends ListActivity implements ServiceConnection {
 		urlTextView.setText(service_extra);
 		feed.close();
 		
-		Cursor shouts = rssdb.findShouts(row_id);
+		shouts = rssdb.findShouts(row_id);
         ListAdapter adapter = new SimpleCursorAdapter(
                 this, // Context
                 android.R.layout.two_line_list_item,  // Specify the row template to use (here, two columns bound to the two retrieved cursor rows)
@@ -74,6 +75,11 @@ public class GeoRssDetail extends ListActivity implements ServiceConnection {
 
         // Bind to our new adapter.
         setListAdapter(adapter);
+    }
+    
+    @Override
+    protected void onPause() {
+        shouts.close();
     }
     
 	public boolean onCreateOptionsMenu(Menu menu) {
