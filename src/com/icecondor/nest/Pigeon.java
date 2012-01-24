@@ -696,7 +696,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	void dispatch(JSONObject json) {
         try {
             String type = json.getString("type");
-            String status = json.getString("status");
+            String status = json.has("status") ? json.getString("status") : "";
             rssdb.log("dispatch: type: "+type+" status:"+status+
                       " \""+Thread.currentThread().getName()+"\""+
                       " #"+Thread.currentThread().getId());
