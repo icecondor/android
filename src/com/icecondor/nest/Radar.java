@@ -134,7 +134,7 @@ public class Radar extends MapActivity implements ServiceConnection,
     public void onResume() {
     	super.onResume();
     	Log.i(appTag, "onResume");
-        startNeighborReadTimer();
+        //startNeighborReadTimer();
         startHeartbeatTimer();
         gps_fix_receiver = this.new GpsFixReceiver();
         registerReceiver(gps_fix_receiver, new IntentFilter(GPS_FIX_ACTION));
