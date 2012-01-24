@@ -8,4 +8,7 @@ interface PigeonService {
   Location getLastPushedFix();
   void refreshRSS();
   void pushFix();
+  void followFriend(String username);
+  void addFriend(String username);
+  void unFriend(String username);
 }

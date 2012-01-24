@@ -1,5 +1,7 @@
 package com.icecondor.nest.rss;
 
+import com.icecondor.nest.Pigeon;
+import com.icecondor.nest.PigeonService;
 import com.icecondor.nest.R;
 import com.icecondor.nest.R.id;
 import com.icecondor.nest.R.layout;
@@ -8,22 +10,29 @@ import com.icecondor.nest.db.GeoRss;
 
 import android.app.Activity;
 import android.app.ListActivity;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListAdapter;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class GeoRssDetail extends ListActivity {
+public class GeoRssDetail extends ListActivity implements ServiceConnection {
 	private static final String appTag = "GeoRssDetail";
 	public static final String RssDbIdKey = "georssid";
 	GeoRss rssdb;
 	private int row_id;
+	PigeonService pigeon;
+	String service_name, service_extra;
 	
     @Override
     protected void onCreate(Bundle icicle){
@@ -41,15 +50,18 @@ public class GeoRssDetail extends ListActivity {
     @Override
     protected void onResume() {
     	super.onResume();
+        Intent pigeon_service = new Intent(this, Pigeon.class);
+        bindService(pigeon_service, this, 0); // 0 = do not auto-start
+
     	// fill in fields on the screen
 		Cursor feed = rssdb.findFeed(row_id);
 		feed.moveToFirst();
-		String name = feed.getString(feed.getColumnIndex(GeoRss.FEEDS_SERVICENAME));
-		String url = feed.getString(feed.getColumnIndex(GeoRss.FEEDS_EXTRA));
+		service_name = feed.getString(feed.getColumnIndex(GeoRss.FEEDS_SERVICENAME));
+		service_extra = feed.getString(feed.getColumnIndex(GeoRss.FEEDS_EXTRA));
 		TextView msgTextView = (TextView)findViewById(R.id.georssdetail_header);
-		msgTextView.setText(name);
+		msgTextView.setText(service_name);
 		TextView urlTextView = (TextView)findViewById(R.id.georssdetail_url);
-		urlTextView.setText(url);
+		urlTextView.setText(service_extra);
 		feed.close();
 		
 		Cursor shouts = rssdb.findShouts(row_id);
@@ -83,6 +95,12 @@ public class GeoRssDetail extends ListActivity {
 
 	private void removeServiceFromDatabase() {
 		rssdb.deleteFeed(row_id);
+		try {
+            pigeon.unFriend(service_extra);
+            Toast.makeText(GeoRssDetail.this, "Unfriending "+service_extra, Toast.LENGTH_SHORT).show();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
 		finish(); // don't come back here
 		startActivity(new Intent(this, GeoRssList.class));
 	}
@@ -93,4 +111,12 @@ public class GeoRssDetail extends ListActivity {
 		super.onDestroy();
 	}
 
+	@Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+        pigeon = PigeonService.Stub.asInterface(service);
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+    }    
 }

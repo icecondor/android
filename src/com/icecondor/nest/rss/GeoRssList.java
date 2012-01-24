@@ -88,6 +88,7 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
     
     @Override
     public void onPause() {
+        feeds.close();
     	super.onPause();
 		unbindService(this);
     }
@@ -144,8 +145,8 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 					Log.i(appTag, "adding "+title);
 					insert_service(service, extra, title);
 					try {
-						pigeon.refreshRSS();
-						Toast.makeText(GeoRssList.this, "Refreshing GeoRSS feeds", Toast.LENGTH_SHORT).show();
+						pigeon.addFriend(extra);
+						Toast.makeText(GeoRssList.this, "Friending "+extra, Toast.LENGTH_SHORT).show();
 					} catch (RemoteException e) {
 						e.printStackTrace();
 					}

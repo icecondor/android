@@ -675,13 +675,36 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		public void refreshRSS() throws RemoteException {
 			updateRSS();
 		}
-		@Override 
-		public void pushFix() throws RemoteException {
-			pushQueue();
-		}
+        @Override
+        public void pushFix() throws RemoteException {
+            pushQueue();
+        }
+        @Override
+        public void addFriend(String username) throws RemoteException {
+            apiSocket.addFriend(username);
+        }
+        @Override
+        public void unFriend(String username) throws RemoteException {
+            apiSocket.unFriend(username);
+        }
+        @Override
+        public void followFriend(String username) throws RemoteException {
+            apiSocket.followFriend(username);
+        }
     };
 
-	@Override
+    private void followFriends() {
+        /* follow our friends */
+        Cursor c = rssdb.findFeedsByService("IceCondor");
+        rssdb.log("apiSocket onOpen hello, auth, friend count "+c.getCount());
+        while(c.moveToNext()) {
+            String username = c.getString(c.getColumnIndex(GeoRss.FEEDS_EXTRA));
+            apiSocket.followFriend(username);
+        }
+        c.close();
+    }
+
+    @Override
 	public boolean handleMessage(Message msg) {
 	    String json_str = msg.getData().getString("json");
 		try {
@@ -718,6 +741,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
             
             if(type.equals("auth")) {
                 if(status.equals("OK")) {
+                    followFriends();
                     pushQueue();
                 }
             }

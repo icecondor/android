@@ -7,15 +7,13 @@ import java.net.URISyntaxException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.icecondor.nest.db.GeoRss;
-
-import android.database.Cursor;
+import net.tootallnate.websocket.WebSocketClient;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import net.tootallnate.websocket.WebSocketClient;
+import com.icecondor.nest.db.GeoRss;
 
 public class ApiSocket extends WebSocketClient implements Constants {
 	Handler pigeon;
@@ -31,43 +29,29 @@ public class ApiSocket extends WebSocketClient implements Constants {
 	}
 
 	@Override
-	public void onMessage(String message) {
-		Log.i(APP_TAG,"ApiSocket thread: \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
-		Log.i(APP_TAG,"ApiSocket received: \""+message+"\"");
-		Bundle bundle = new Bundle();
-		bundle.putString("type","message");
-		bundle.putString("json", message);
-		
-		Message msg = new Message();
-		msg.setData(bundle);
-		pigeon.dispatchMessage(msg);
-	}
-
-	@Override
 	public void onOpen() {
 		Log.i(APP_TAG,"ApiSocket onOpen \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
 		connected = true;
 		try {
             send("{\"type\":\"hello\", \"version\":\""+ICECONDOR_VERSION+"\"}");
             send("{\"type\":\"auth\", \"oauth_token\":\""+token+"\"}");
-			/* follow our friends */
-			Cursor c = rssdb.findFeedsByService("IceCondor");
-			rssdb.log("apiSocket onOpen hello, auth, friend count "+c.getCount());
-			while(c.moveToNext()) {
-			    String username = c.getString(c.getColumnIndex(GeoRss.FEEDS_EXTRA));
-	            rssdb.log("apiSocket onOpen IceCondor following "+username);
-			    JSONObject j = new JSONObject();
-			    j.put("type", "follow");
-			    j.put("username", username);
-			    send(j.toString());
-			}
-			c.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (JSONException e) {
-            e.printStackTrace();
-        }
+		}
 	}
+
+    @Override
+    public void onMessage(String message) {
+        Log.i(APP_TAG,"ApiSocket thread: \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
+        Log.i(APP_TAG,"ApiSocket received: \""+message+"\"");
+        Bundle bundle = new Bundle();
+        bundle.putString("type","message");
+        bundle.putString("json", message);
+        
+        Message msg = new Message();
+        msg.setData(bundle);
+        pigeon.dispatchMessage(msg);
+    }
 
 	@Override
 	public void onClose() {
@@ -101,4 +85,42 @@ public class ApiSocket extends WebSocketClient implements Constants {
 		}
 		return false;		
 	}
+	
+    protected void followFriend(String username) {
+        try {
+            rssdb.log("following "+username);
+            JSONObject j = new JSONObject();
+            j.put("type", "follow");
+            j.put("username", username);
+            emit(j.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void addFriend(String username) {
+        try {
+            rssdb.log("friending "+username);
+            JSONObject j = new JSONObject();
+            j.put("type", "friend");
+            j.put("username", username);
+            emit(j.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void unFriend(String username) {
+        try {
+            rssdb.log("unfriending "+username);
+            JSONObject j = new JSONObject();
+            j.put("type", "friend");
+            j.put("username", username);
+            j.put("action", "remove");
+            emit(j.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
