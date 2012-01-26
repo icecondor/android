@@ -473,12 +473,28 @@ public class Radar extends MapActivity implements ServiceConnection,
 	}
 	
 	public class UpdateBirdBlock implements Runnable {
+	    String username;
+	    Location location;
+	    
 		@Override
 		public void run() {
-			refreshBirdLocation();
-			TextView satl1b = (TextView)findViewById(R.id.topbird3); 
-			satl1b.setText(Util.timeAgoInWords(last_pushed_fix.getTime()));
-		}		
+		    if(username == null) {
+    			refreshBirdLocation();
+    			TextView satl1b = (TextView)findViewById(R.id.topbird3); 
+    			satl1b.setText(Util.timeAgoInWords(last_pushed_fix.getTime()));
+		    } else {
+		        // update a particular user
+		    }
+		}
+
+        public void setUsername(String username) {
+            this.username = username;
+            
+        }
+
+        public void setLocation(Location location) {
+            this.location = location;
+        }		
 	}
 	
 	public class UpdateGpsBlock implements Runnable {
@@ -514,8 +530,12 @@ public class Radar extends MapActivity implements ServiceConnection,
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Location location = (Location)intent.getExtras().get("location");
+			String username = (String)intent.getExtras().get("username");
 			last_pushed_fix = location;
-			runOnUiThread(new UpdateBirdBlock());
+			UpdateBirdBlock bird = new UpdateBirdBlock();
+			bird.setUsername(username);
+			bird.setLocation(location);
+			runOnUiThread(bird);
 		}		
 	}
 	
