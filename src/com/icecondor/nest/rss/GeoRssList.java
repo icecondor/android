@@ -146,6 +146,7 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 					insert_service(service, extra, title);
 					try {
 						pigeon.addFriend(extra);
+						pigeon.followFriend(extra);
 						Toast.makeText(GeoRssList.this, "Friending "+extra, Toast.LENGTH_SHORT).show();
 					} catch (RemoteException e) {
 						e.printStackTrace();
