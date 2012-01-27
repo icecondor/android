@@ -770,19 +770,19 @@ public class Pigeon extends Service implements Constants, LocationListener,
         }
         if(json.has("username")) {
             String username = json.getString("username");
-            rssdb.log("location updating "+username);
             int service_id = rssdb.findFeedIdByServicenameAndExtra("IceCondor", username);
             Gps gps = Gps.fromJson(json);
             ContentValues cv = new ContentValues(2);
             cv.put("guid", gps.getId());
             cv.put("lat", gps.getLocation().getLatitude());
             cv.put("long", gps.getLocation().getLongitude());
-            cv.put(GeoRss.SHOUTS_DATE, json.getString("date"));
+            String date = Util.DateTimeIso8601(gps.getLocation().getTime());
+            cv.put(GeoRss.SHOUTS_DATE, date);
             cv.put(GeoRss.SHOUTS_TITLE, "");
             cv.put(GeoRss.SHOUTS_FEED_ID, service_id);
             rssdb.insertShout(cv);
             broadcastBirdUpdate(username);
-            rssdb.log("location updated "+username);
+            rssdb.log("location updated "+username+" "+date);
         }
     }
 

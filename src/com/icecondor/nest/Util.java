@@ -51,9 +51,16 @@ public class Util implements Constants {
 				 new SimpleDateFormat("yyyyMMdd'T'HHmmss"),
 				 new SimpleDateFormat("yyyyMMdd")};
 		 
+		 // Substitute Z with +00:00
 		 if(date.endsWith("Z")) {
 			 date = date.substring(0, date.length()-1)+"+00:00";
 		 }
+		 
+		 // Take off thousandths of a second 2012-01-27T08:01:32.354+00:00
+		 if(date.length() == 29) {
+		     date = date.substring(0,19) + date.substring(23,29);
+		 }
+		 
 		 Date parsed = null;
 		 for(int i=0; i < rfc822DateFormats.length; i++) {
 			 try {

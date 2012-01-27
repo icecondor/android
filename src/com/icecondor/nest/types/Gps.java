@@ -47,10 +47,15 @@ public class Gps extends Base implements Constants {
 			l.setTime(Util.DateRfc822(j.getString("date")).getTime());
 			l.setLatitude(p.getDouble("latitude"));
 			l.setLongitude(p.getDouble("longitude"));
-			l.setAltitude(p.getDouble("altitude"));
-			l.setAccuracy(new Float(p.getDouble("accuracy")));
-			l.setBearing(new Float(j.getDouble("heading")));
-			l.setSpeed(new Float(j.getDouble("velocity")));
+			if(p.has("altitude")) {
+			  l.setAltitude(p.getDouble("altitude"));
+			}
+			if(p.has("accuracy"))
+	            l.setAccuracy(new Float(p.getDouble("accuracy")));
+			if(j.has("heading"))
+			    l.setBearing(new Float(j.getDouble("heading")));
+			if(j.has("velocity"))
+			    l.setSpeed(new Float(j.getDouble("velocity")));
 			
 			Gps gps = new Gps();
 			gps.id = j.getString("id");
