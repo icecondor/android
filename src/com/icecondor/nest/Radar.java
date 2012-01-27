@@ -484,6 +484,7 @@ public class Radar extends MapActivity implements ServiceConnection,
     			satl1b.setText(Util.timeAgoInWords(last_pushed_fix.getTime()));
 		    } else {
 		        // update a particular user
+		        rssdb.log("mark for "+username);
 		    }
 		}
 
