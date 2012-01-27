@@ -151,11 +151,23 @@ public class GeoRss {
 		return  db.query(GeoRss.FEEDS_TABLE,null, null, null, null, null, null);
 	}
 
-
 	public Cursor findFeed(int row_id) {
 		return findRow(FEEDS_TABLE, row_id);
 	}
 	
+   public int findFeedIdByServicenameAndExtra(String service_name, String extra) {
+        Cursor c = db.query(GeoRss.FEEDS_TABLE, null, FEEDS_SERVICENAME+" = ? AND "+FEEDS_EXTRA+" = ?", 
+                            new String[] {service_name, extra}, null, null, null);
+        int answer;
+        if (c.moveToFirst()) {
+            answer = c.getInt(0);
+        } else {
+            answer = -1;
+        }
+        c.close();
+        return answer;
+    }
+
 	public Cursor findFeedsByService(String service) {
         return db.query(FEEDS_TABLE,null, FEEDS_SERVICENAME+" = ?",
                         new String[] {service}, null, null, null);	    

@@ -26,6 +26,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -469,16 +470,15 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		sendBroadcast(intent);	
 	}
 
-    private void broadcastBirdFix(Location location) {
-        broadcastBirdFix(null, location);
+    private void broadcastBirdUpdate(String username) {
+        Intent intent = new Intent(BIRD_UPDATE_ACTION);
+        intent.putExtra("username", username);
+        sendBroadcast(intent);  
     }
     
-    private void broadcastBirdFix(String username, Location location) {
+    private void broadcastBirdFix(Location location) {
 		Intent intent = new Intent(BIRD_FIX_ACTION);
 		intent.putExtra("location", location);
-		if(username != null) {
-		    intent.putExtra("username", username);		    
-		}
 		sendBroadcast(intent);	
 	}
 
@@ -726,39 +726,63 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	void dispatch(JSONObject json) {
         try {
             String type = json.getString("type");
-            String status = json.has("status") ? json.getString("status") : "";
-            rssdb.log("dispatch: type: "+type+" status:"+status+
+            rssdb.log("dispatch: type: "+type +
                       " \""+Thread.currentThread().getName()+"\""+
                       " #"+Thread.currentThread().getId());
 
             if(type.equals("location")) {
-                doLocation(json, status);
+                doLocation(json);
             }
             
             if(type.equals("auth")) {
-                if(status.equals("OK")) {
-                    followFriends();
-                    pushQueue();
-                }
+                doAuth(json);
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
 	}
+	
+	protected void doAuth(JSONObject json) throws JSONException {
+        String status = json.getString("status");
+        if(status.equals("OK")) {
+            followFriends();
+            pushQueue();
+        }
+	}
 
-    protected void doLocation(JSONObject json, String status)
+    protected void doLocation(JSONObject json)
             throws JSONException {
         String id = json.getString("id");
-        rssdb.log("location "+id+" "+status);
-        rssdb.mark_as_pushed(id);
-        Cursor o = rssdb.readLocationQueue(id);
-        Gps gps =  Gps.fromJson(o.getString(
-                               o.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)));
-        Location pushed_fix = gps.getLocation();
-        if(pushed_fix.getTime() > last_pushed_fix.getTime()) {
-            last_pushed_fix = pushed_fix;
-            last_pushed_time = System.currentTimeMillis();
-            broadcastBirdFix(last_pushed_fix);
+        // change protocol to have txids and respond to specific id
+        if(json.has("status")) {
+            String status = json.getString("status");
+            rssdb.log("location "+id+" "+status);
+            rssdb.mark_as_pushed(id);
+            Cursor o = rssdb.readLocationQueue(id);
+            Gps gps =  Gps.fromJson(o.getString(
+                                   o.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)));
+            Location pushed_fix = gps.getLocation();
+            if(pushed_fix.getTime() > last_pushed_fix.getTime()) {
+                last_pushed_fix = pushed_fix;
+                last_pushed_time = System.currentTimeMillis();
+                broadcastBirdFix(last_pushed_fix);
+            }
+        }
+        if(json.has("username")) {
+            String username = json.getString("username");
+            rssdb.log("location updating "+username);
+            int service_id = rssdb.findFeedIdByServicenameAndExtra("IceCondor", username);
+            Gps gps = Gps.fromJson(json);
+            ContentValues cv = new ContentValues(2);
+            cv.put("guid", gps.getId());
+            cv.put("lat", gps.getLocation().getLatitude());
+            cv.put("long", gps.getLocation().getLongitude());
+            cv.put(GeoRss.SHOUTS_DATE, json.getString("date"));
+            cv.put(GeoRss.SHOUTS_TITLE, "");
+            cv.put(GeoRss.SHOUTS_FEED_ID, service_id);
+            rssdb.insertShout(cv);
+            broadcastBirdUpdate(username);
+            rssdb.log("location updated "+username);
         }
     }
 

@@ -28,7 +28,8 @@ public interface Constants {
 	public static final long DAY_IN_MILLISECONDS = 1000*60*60*24;
 	
 	public static final String GPS_FIX_ACTION = "com.icecondor.nest.GPS_FIX_ACTION";
-	public static final String BIRD_FIX_ACTION = "com.icecondor.nest.BIRD_FIX_ACTION";
+    public static final String BIRD_FIX_ACTION = "com.icecondor.nest.BIRD_FIX_ACTION";
+    public static final String BIRD_UPDATE_ACTION = "com.icecondor.nest.BIRD_UPDATE_ACTION";
 	
 	public static final String APP_TAG = "icecondor";
 
