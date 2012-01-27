@@ -752,10 +752,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
     protected void doLocation(JSONObject json)
             throws JSONException {
-        String id = json.getString("id");
         // change protocol to have txids and respond to specific id
         if(json.has("status")) {
             String status = json.getString("status");
+            String id = json.getString("id");
             rssdb.log("location "+id+" "+status);
             rssdb.mark_as_pushed(id);
             Cursor o = rssdb.readLocationQueue(id);
