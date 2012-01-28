@@ -3,6 +3,7 @@ package com.icecondor.nest;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.channels.NotYetConnectedException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,9 +36,11 @@ public class ApiSocket extends WebSocketClient implements Constants {
 		try {
             send("{\"type\":\"hello\", \"version\":\""+ICECONDOR_VERSION+"\"}");
             send("{\"type\":\"auth\", \"oauth_token\":\""+token+"\"}");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		} catch (NotYetConnectedException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 	}
 
     @Override
@@ -60,13 +63,8 @@ public class ApiSocket extends WebSocketClient implements Constants {
 	}
 
 	@Override
-	public void onIOError(IOException ex) {
+	public void onError(Exception ex) {
 		Log.i(APP_TAG,"ApiSocket "+ex);
-	}
-
-	@Override
-	public void onPong() {
-		Log.i(APP_TAG, "ApiSocket onPong");
 	}
 
 	public boolean isConnected() { return connected; }
@@ -77,9 +75,11 @@ public class ApiSocket extends WebSocketClient implements Constants {
 			try {
 				send(msg);
 				return true;
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			} catch (NotYetConnectedException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 		} else {
 			Log.i(APP_TAG, "emit: blocked! notConnected");
 		}

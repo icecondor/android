@@ -233,10 +233,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
     protected void apiDisconnect() {
         if(apiSocket != null && apiSocket.isConnected()) {
-        	try {
-        		apiSocket.close();
-        	} catch (IOException e) {
-        	}
+       		apiSocket.close();
         	rssdb.log("Warning: Closing connected apiSocket");
         }
     }
