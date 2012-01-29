@@ -712,7 +712,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
     private void followFriends() {
         /* follow our friends */
         Cursor c = rssdb.findFeedsByService("IceCondor");
-        rssdb.log("following "+c.getCount()+" friends");
         while(c.moveToNext()) {
             String username = c.getString(c.getColumnIndex(GeoRss.FEEDS_EXTRA));
             apiSocket.followFriend(username);
@@ -723,7 +722,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
     private void unfollowFriends() {
         /* follow our friends */
         Cursor c = rssdb.findFeedsByService("IceCondor");
-        rssdb.log("unfollowing "+c.getCount()+" friends");
         while(c.moveToNext()) {
             String username = c.getString(c.getColumnIndex(GeoRss.FEEDS_EXTRA));
             apiSocket.unfollowFriend(username);
