@@ -695,15 +695,38 @@ public class Pigeon extends Service implements Constants, LocationListener,
         public void followFriend(String username) throws RemoteException {
             apiSocket.followFriend(username);
         }
+        @Override
+        public void unfollowFriend(String username) throws RemoteException {
+            apiSocket.unfollowFriend(username);
+        }
+        @Override
+        public void followFriends() throws RemoteException {
+            Pigeon.this.followFriends();
+        }
+        @Override
+        public void unfollowFriends() throws RemoteException {
+            Pigeon.this.unfollowFriends();
+        }
     };
 
     private void followFriends() {
         /* follow our friends */
         Cursor c = rssdb.findFeedsByService("IceCondor");
-        rssdb.log("apiSocket onOpen hello, auth, friend count "+c.getCount());
+        rssdb.log("following "+c.getCount()+" friends");
         while(c.moveToNext()) {
             String username = c.getString(c.getColumnIndex(GeoRss.FEEDS_EXTRA));
             apiSocket.followFriend(username);
+        }
+        c.close();
+    }
+    
+    private void unfollowFriends() {
+        /* follow our friends */
+        Cursor c = rssdb.findFeedsByService("IceCondor");
+        rssdb.log("unfollowing "+c.getCount()+" friends");
+        while(c.moveToNext()) {
+            String username = c.getString(c.getColumnIndex(GeoRss.FEEDS_EXTRA));
+            apiSocket.unfollowFriend(username);
         }
         c.close();
     }
@@ -742,7 +765,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	protected void doAuth(JSONObject json) throws JSONException {
         String status = json.getString("status");
         if(status.equals("OK")) {
-            followFriends();
+            // follow friends only during Radar
+            //followFriends();
             pushQueue();
         }
 	}

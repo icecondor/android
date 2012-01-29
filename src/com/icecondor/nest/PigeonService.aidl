@@ -9,6 +9,9 @@ interface PigeonService {
   void refreshRSS();
   void pushFix();
   void followFriend(String username);
+  void unfollowFriend(String username);
   void addFriend(String username);
   void unFriend(String username);
+  void followFriends();
+  void unfollowFriends();
 }

@@ -98,6 +98,18 @@ public class ApiSocket extends WebSocketClient implements Constants {
         }
     }
 
+    protected void unfollowFriend(String username) {
+        try {
+            rssdb.log("following "+username);
+            JSONObject j = new JSONObject();
+            j.put("type", "unfollow");
+            j.put("username", username);
+            emit(j.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     protected void addFriend(String username) {
         try {
             rssdb.log("friending "+username);

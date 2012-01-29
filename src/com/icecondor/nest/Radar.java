@@ -147,6 +147,11 @@ public class Radar extends MapActivity implements ServiceConnection,
     public void onPause() {
     	super.onPause();
     	if(pigeon_connected) {
+    	    try {
+                pigeon.unfollowFriends();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
     		unbindService(this);
     	}
     	//stopNeighborReadTimer();
@@ -342,6 +347,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 				Toast.makeText(this, "Waiting for first location fix", Toast.LENGTH_SHORT).show();
 			}
 			pigeon.getLastPushedFix(); // triggers UI update
+			pigeon.followFriends();
 		} catch (RemoteException e) {
 		}
 	}
