@@ -79,6 +79,7 @@ public class GeoRssDetail extends ListActivity implements ServiceConnection {
     
     @Override
     protected void onPause() {
+        super.onPause();
         shouts.close();
     }
     
