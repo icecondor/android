@@ -501,6 +501,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 		    } else {
 		        // update a particular user
 		        updateBirdShouts(username);
+		        mapView.invalidate();
 		    }
 		}
 
