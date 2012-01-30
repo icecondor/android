@@ -28,6 +28,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.icecondor.nest.Util;
+import com.icecondor.nest.types.Gps;
 
 
 public class GeoRss {
@@ -119,6 +120,18 @@ public class GeoRss {
 				null, null, "date desc", null);
 	}
 
+	public long insertShout(int service_id, Gps gps) {
+        ContentValues cv = new ContentValues(2);
+        cv.put("guid", gps.getId());
+        cv.put("lat", gps.getLocation().getLatitude());
+        cv.put("long", gps.getLocation().getLongitude());
+        String date = Util.DateTimeIso8601(gps.getLocation().getTime());
+        cv.put(GeoRss.SHOUTS_DATE, date);
+        cv.put(GeoRss.SHOUTS_TITLE, "");
+        cv.put(GeoRss.SHOUTS_FEED_ID, service_id);
+        return insertShout(cv);
+	}
+	
 	public long insertShout(ContentValues cv) {
 		return db.insert(GeoRss.SHOUTS_TABLE, null, cv);
 	}

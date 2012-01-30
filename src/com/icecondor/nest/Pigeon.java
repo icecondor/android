@@ -354,10 +354,9 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
 	public boolean pushLocationApi(Gps fix) {
-        String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
 		JSONObject json = fix.toJson();
 		try {
-			json.put("username", token_and_secret[1]);
+			json.put("username", getMyUsername());
 			rssdb.log("pushLocationApi: "+json.toString());
 			boolean pass = apiSocket.emit(json.toString());
 			return pass;
@@ -366,6 +365,11 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		}
 		return false;
 	}
+
+    protected String getMyUsername() {
+        String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
+        return token_and_secret[1];
+    }
 	
 	public void onDataConnectionChange(int state) {
         rssdb.log("onDataConnectionChange "+state);
@@ -790,18 +794,14 @@ public class Pigeon extends Service implements Constants, LocationListener,
         if(json.has("username")) {
             String username = json.getString("username");
             int service_id = rssdb.findFeedIdByServicenameAndExtra("IceCondor", username);
-            Gps gps = Gps.fromJson(json);
-            ContentValues cv = new ContentValues(2);
-            cv.put("guid", gps.getId());
-            cv.put("lat", gps.getLocation().getLatitude());
-            cv.put("long", gps.getLocation().getLongitude());
-            String date = Util.DateTimeIso8601(gps.getLocation().getTime());
-            cv.put(GeoRss.SHOUTS_DATE, date);
-            cv.put(GeoRss.SHOUTS_TITLE, "");
-            cv.put(GeoRss.SHOUTS_FEED_ID, service_id);
-            rssdb.insertShout(cv);
-            broadcastBirdUpdate(username);
-            rssdb.log("location updated "+username+" "+date);
+            if(service_id >= 0) {
+                Gps gps = Gps.fromJson(json);
+                rssdb.insertShout(service_id, gps);
+                broadcastBirdUpdate(username);
+                rssdb.log("location updated for "+username);
+            } else {
+                rssdb.log("ignoring location for unknown user "+username);
+            }
         }
     }
 
