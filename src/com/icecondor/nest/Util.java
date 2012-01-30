@@ -161,7 +161,7 @@ public class Util implements Constants {
 	public static String DateToShortDisplay(Date date) {
 		String date_string;
 		String[] months = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
-		String month_name = months[date.getMonth()-1];
+		String month_name = months[date.getMonth()];
 		String ampm;
 		int hours = date.getHours();
 		if(date.getHours() > 12) {
