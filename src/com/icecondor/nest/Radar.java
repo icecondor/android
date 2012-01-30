@@ -141,6 +141,7 @@ public class Radar extends MapActivity implements ServiceConnection,
         bird_fix_receiver = this.new BirdFixReceiver();
         registerReceiver(bird_fix_receiver, new IntentFilter(BIRD_FIX_ACTION));
         bindService(pigeonIntent, this, 0); // 0 = do not auto-start
+        updateBirds();
     }
     
     @Override
@@ -410,26 +411,35 @@ public class Radar extends MapActivity implements ServiceConnection,
 	protected void updateBirds() {
 		Cursor feeds = rssdb.findFeeds();
 		while(feeds.moveToNext()) {
-			long url_id = feeds.getLong(feeds.getColumnIndex(GeoRss.FEEDS_ID));
-			Log.i(appTag, "reading shouts db for #"+url_id+" "+feeds.getString(feeds.getColumnIndex(GeoRss.FEEDS_EXTRA)));
-			Cursor preshouts = rssdb.findPreShouts(url_id, System.currentTimeMillis());
-			if(preshouts.getCount() > 0) {
-				preshouts.moveToFirst();
-				Log.i(appTag, "preshout red "+preshouts.getString(preshouts.getColumnIndex("title")));
-				addBird(preshouts, redMarker);
-			}
-			preshouts.close();
-
-			Cursor postshouts = rssdb.findPostShouts(url_id, System.currentTimeMillis());
-			if (postshouts.getCount() > 0) {
-				postshouts.moveToFirst();
-				Log.i(appTag, "postshout green "+postshouts.getString(postshouts.getColumnIndex("title")));
-				addBird(postshouts, greenMarker);
-			}
-			postshouts.close();
+			long service_id = feeds.getLong(feeds.getColumnIndex(GeoRss.FEEDS_ID));
+			Log.i(appTag, "reading shouts db for #"+service_id+" "+feeds.getString(feeds.getColumnIndex(GeoRss.FEEDS_EXTRA)));
+			updateBirdShouts(service_id);
 		}
 		feeds.close();
 	}
+
+    protected void updateBirdShouts(String username) {
+        int service_id = rssdb.findFeedIdByServicenameAndExtra("IceCondor", username);
+        updateBirdShouts(service_id);
+    }
+    
+    protected void updateBirdShouts(long service_id) {
+        Cursor preshouts = rssdb.findPreShouts(service_id, System.currentTimeMillis());
+        if(preshouts.getCount() > 0) {
+        	preshouts.moveToFirst();
+        	Log.i(appTag, "preshout red "+preshouts.getString(preshouts.getColumnIndex("title")));
+        	addBird(preshouts, redMarker);
+        }
+        preshouts.close();
+
+        Cursor postshouts = rssdb.findPostShouts(service_id, System.currentTimeMillis());
+        if (postshouts.getCount() > 0) {
+        	postshouts.moveToFirst();
+        	Log.i(appTag, "postshout green "+postshouts.getString(postshouts.getColumnIndex("title")));
+        	addBird(postshouts, greenMarker);
+        }
+        postshouts.close();
+    }
 
 	private void addBird(Cursor displayShout, Drawable marker) {
 		String guid = displayShout.getString(displayShout.getColumnIndex("guid"));
@@ -490,7 +500,7 @@ public class Radar extends MapActivity implements ServiceConnection,
     			satl1b.setText(Util.timeAgoInWords(last_pushed_fix.getTime()));
 		    } else {
 		        // update a particular user
-		        rssdb.log("mark for "+username);
+		        updateBirdShouts(username);
 		    }
 		}
 

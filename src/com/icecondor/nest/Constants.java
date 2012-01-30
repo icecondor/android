@@ -1,7 +1,7 @@
 package com.icecondor.nest;
 
 public interface Constants {
-	public static final int ICECONDOR_VERSION = 20120119;
+	public static final int ICECONDOR_VERSION = 20120120;
 	public static final String ICECONDOR_URL = "http://icecondor.com/"; 
 	public static final String ICECONDOR_API_URL = "ws://donpark.org:2040/"; 
 	public static final String ICECONDOR_URL_SHORTNAME = "icecondor.com"; // use preference

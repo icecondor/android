@@ -472,7 +472,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 
     private void broadcastBirdUpdate(String username) {
-        Intent intent = new Intent(BIRD_UPDATE_ACTION);
+        Intent intent = new Intent(BIRD_FIX_ACTION);
         intent.putExtra("username", username);
         sendBroadcast(intent);  
     }
