@@ -207,7 +207,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
     }
 
 	protected void apiReconnect() {
-		if (reconnectLastTry < (System.currentTimeMillis()-(30*1000))) {
+		if (reconnectLastTry < (System.currentTimeMillis()-(20*1000))) {
 			rssdb.log("apiReconnect "+
 					"\""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId() );
 			apiDisconnect();
