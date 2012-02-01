@@ -1,14 +1,14 @@
 package com.icecondor.nest;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.channels.NotYetConnectedException;
 
+import net.tootallnate.websocket.WebSocketClient;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import net.tootallnate.websocket.WebSocketClient;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -64,7 +64,7 @@ public class ApiSocket extends WebSocketClient implements Constants {
 
 	@Override
 	public void onError(Exception ex) {
-		Log.i(APP_TAG,"ApiSocket "+ex);
+		Log.i(APP_TAG,"ApiSocket error: "+ex);
 	}
 
 	public boolean isConnected() { return connected; }
