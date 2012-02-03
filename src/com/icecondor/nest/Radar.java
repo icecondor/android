@@ -427,7 +427,6 @@ public class Radar extends MapActivity implements ServiceConnection,
         Cursor preshouts = rssdb.findPreShouts(service_id, System.currentTimeMillis());
         if(preshouts.getCount() > 0) {
         	preshouts.moveToFirst();
-        	Log.i(appTag, "preshout red "+preshouts.getString(preshouts.getColumnIndex("title")));
         	addBird(preshouts, redMarker);
         }
         preshouts.close();
@@ -435,7 +434,6 @@ public class Radar extends MapActivity implements ServiceConnection,
         Cursor postshouts = rssdb.findPostShouts(service_id, System.currentTimeMillis());
         if (postshouts.getCount() > 0) {
         	postshouts.moveToFirst();
-        	Log.i(appTag, "postshout green "+postshouts.getString(postshouts.getColumnIndex("title")));
         	addBird(postshouts, greenMarker);
         }
         postshouts.close();

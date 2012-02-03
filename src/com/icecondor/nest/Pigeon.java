@@ -120,8 +120,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		/* Websockets API */
         pigeonHandler = new Handler(this);        
         try {
-            String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
-            apiSocket = new ApiSocket(ICECONDOR_API_URL, pigeonHandler, token_and_secret[0], rssdb);
+            apiSocket = new ApiSocket(ICECONDOR_API_URL, pigeonHandler, rssdb);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -606,7 +605,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
         startPushQueueTimer();
 		startLocationUpdates();
 		notificationStatusUpdate(notificationStatusLine());				
-		notificationFlash("Location reporting ON.");
 		Intent intent = new Intent("com.icecondor.nest.WIDGET_ON");
 		sendBroadcast(intent);
 	}
@@ -631,10 +629,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		        notificationStatusUpdate(msg); 
 		    }
 		    if(!apiSocket.isConnected()) {
-		        Log.i(APP_TAG, "heartbeat: apiSocket says disconnected");
+		        Log.i(APP_TAG, "heartbeat: apiSocket disconnected");
 		        apiReconnect();
 		    } else {
-		        Log.i(APP_TAG, "heartbeat: apiSocket says connected");
+		        Log.i(APP_TAG, "heartbeat: apiSocket connected");
 		    }
 		}
 	};
@@ -762,7 +760,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
     @Override
 	public boolean handleMessage(Message msg) {
         String message_type = msg.getData().getString("type");
-        Log.i(APP_TAG, "handleMessage type: "+message_type);
         if(message_type.equals("open")) {
             onApiOpened();
         }
@@ -782,7 +779,9 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
     private void onApiOpened() {
-        notificationRebuild();        
+        notificationRebuild();
+        String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
+        apiSocket.auth(token_and_secret[0]);
     }
 
     private void onApiClosed() {

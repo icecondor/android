@@ -18,14 +18,12 @@ import com.icecondor.nest.db.GeoRss;
 
 public class ApiSocket extends WebSocketClient implements Constants {
 	Handler pigeon;
-	String token;
 	boolean connected = false;
 	GeoRss rssdb;
 
-	public ApiSocket(String url, Handler h, String token, GeoRss rssdb) throws URISyntaxException {
+	public ApiSocket(String url, Handler h, GeoRss rssdb) throws URISyntaxException {
 		super(new URI(url));
 		pigeon = h;
-		this.token = token;
 		this.rssdb = rssdb;
 	}
 
@@ -33,25 +31,18 @@ public class ApiSocket extends WebSocketClient implements Constants {
 	public void onOpen() {
 		Log.i(APP_TAG,"ApiSocket onOpen \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
 		connected = true;
+        emit("{\"type\":\"hello\", \"version\":\""+ICECONDOR_VERSION+"\"}");
         Bundle bundle = new Bundle();
         bundle.putString("type","open");
         
         Message msg = new Message();
         msg.setData(bundle);
         pigeon.dispatchMessage(msg);
-		try {
-            send("{\"type\":\"hello\", \"version\":\""+ICECONDOR_VERSION+"\"}");
-            send("{\"type\":\"auth\", \"oauth_token\":\""+token+"\"}");
-		} catch (NotYetConnectedException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 	}
 
     @Override
     public void onMessage(String message) {
-        Log.i(APP_TAG,"ApiSocket onMessage received: \""+message+"\" \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
+        Log.i(APP_TAG,"ApiSocket onMessage received: \""+message.trim()+"\" \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
         Bundle bundle = new Bundle();
         bundle.putString("type","message");
         bundle.putString("json", message);
@@ -147,4 +138,7 @@ public class ApiSocket extends WebSocketClient implements Constants {
         }
     }
 
+    protected void auth(String token) {
+        emit("{\"type\":\"auth\", \"oauth_token\":\""+token+"\"}");
+    }
 }
