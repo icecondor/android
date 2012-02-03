@@ -86,6 +86,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	ApiSocket apiSocket;
 	Handler pigeonHandler;
 	long reconnectLastTry;
+    private String ongoing_notification_msg;
 	
 	public void onCreate() {
 		Log.i(APP_TAG, "*** Pigeon service created. "+
@@ -115,6 +116,15 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		}
 		oldest.close();
 
+
+		/* Websockets API */
+        pigeonHandler = new Handler(this);        
+        try {
+            String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
+            apiSocket = new ApiSocket(ICECONDOR_API_URL, pigeonHandler, token_and_secret[0], rssdb);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
 		
 		/* WIFI */
 		wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
@@ -123,7 +133,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		contentIntent = PendingIntent.getActivity(this, 0, new Intent(this,
 				Start.class), 0);
-		CharSequence text = getText(R.string.status_started);
 
 		/* Preferences */
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -133,7 +142,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		    //startForeground(1, ongoing_notification);
 		    startLocationUpdates();
 		    notificationStatusUpdate("Starting...");               
-		    notificationFlash("Location reporting ON.");
 		    sendBroadcast(new Intent("com.icecondor.nest.WIDGET_ON"));
 		}
 
@@ -163,9 +171,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		registerReceiver(widget_receiver,
 				new IntentFilter("com.icecondor.nest.PIGEON_INQUIRE"));
 		
-		/* Callbacks from the API Communication Thread */
-		pigeonHandler = new Handler(this);
-		
 		/* Emulator ipv6 issue */
 		if ("google_sdk".equals( Build.PRODUCT )) {
 		    java.lang.System.setProperty("java.net.preferIPv6Addresses", "false");
@@ -179,7 +184,13 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 
     protected Notification buildNotification() {
-        Notification notification = new Notification(R.drawable.condorhead_statusbar, null, System
+        int icon;
+        if(apiSocket.isConnected()) {
+            icon = R.drawable.condorhead_statusbar;
+        } else {
+            icon = R.drawable.condorhead_statusbar_gray;
+        }
+        Notification notification = new Notification(icon, null, System
 				.currentTimeMillis());
 		notification.flags = notification.flags ^ Notification.FLAG_ONGOING_EVENT;
 		notification.setLatestEventInfo(this, "IceCondor", "", contentIntent);
@@ -208,22 +219,12 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
 	protected void apiReconnect() {
 		if (reconnectLastTry < (System.currentTimeMillis()-(20*1000))) {
-			rssdb.log("apiReconnect "+
+			Log.i(APP_TAG, "apiReconnect "+
 					"\""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId() );
 			apiDisconnect();
-			try {
-                String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
-                apiSocket = new ApiSocket(ICECONDOR_API_URL, pigeonHandler, token_and_secret[0], rssdb);
-                if (token_and_secret[0] != null) {
-                    reconnectLastTry = System.currentTimeMillis();
-    				rssdb.log("apiReconnect: connecting to "+ICECONDOR_API_URL);
-    				apiSocket.connect();
-                } else {
-                    rssdb.log("apiReconnect ignored. no auth token yet.");                    
-                }
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-			}
+            reconnectLastTry = System.currentTimeMillis();
+            rssdb.log("apiReconnect: connecting to "+ICECONDOR_API_URL);
+            apiSocket.connect();
 		} else {
 			rssdb.log("apiReconnect ignored. last try is "+ 
 					(System.currentTimeMillis()-reconnectLastTry)/1000+" sec ago "+
@@ -232,9 +233,15 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 
     protected void apiDisconnect() {
-        if(apiSocket != null && apiSocket.isConnected()) {
-       		apiSocket.close();
-        	rssdb.log("Warning: Closing connected apiSocket");
+        Log.i(APP_TAG, "apiReconnect "+
+                "\""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId() );
+        if(apiSocket != null) {
+            try {
+                apiSocket.close();
+                Log.i(APP_TAG, "apiDisconnect: apiSocket.close called");
+            } catch(IllegalStateException e) {
+                Log.i(APP_TAG, "apiDisconnect close error (ignored): "+e);
+            }
         }
     }
 
@@ -255,15 +262,28 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	
 	private void notificationStatusUpdate(String msg) {
 	    if(ongoing_notification == null) {
-	        ongoing_notification = buildNotification();
+            ongoing_notification = buildNotification();
 	    }
+	    // preserve the last message to rebuild the notification with a different icon later
+        ongoing_notification_msg = msg;
+	        
 		ongoing_notification.setLatestEventInfo(this, "IceCondor",
 				msg, contentIntent);
 		ongoing_notification.when = System.currentTimeMillis();
 		notificationManager.notify(1, ongoing_notification);
 	}
 	
-	private void notification(String msg) {
+	private void notificationRebuild() {
+	    notificationCancel();
+        ongoing_notification = null;
+        notificationStatusUpdate(ongoing_notification_msg);
+	}
+	
+	private void notificationCancel() {
+	    notificationManager.cancel(1);
+    }
+
+    private void notification(String msg) {
 		Notification notification = new Notification(R.drawable.condorhead_statusbar, msg,
 				System.currentTimeMillis());
 		// a contentView error is thrown if this line is not here
@@ -599,7 +619,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		stopHeartbeatTimer();
 		apiDisconnect();
 		settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING,on_switch).commit();
-		notificationManager.cancel(1);
+		notificationCancel();
 		Intent intent = new Intent("com.icecondor.nest.WIDGET_OFF");
 		sendBroadcast(intent);
 	}
@@ -609,6 +629,12 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			String msg = notificationStatusLine();
 		    if(ongoing_notification != null) {
 		        notificationStatusUpdate(msg); 
+		    }
+		    if(!apiSocket.isConnected()) {
+		        Log.i(APP_TAG, "heartbeat: apiSocket says disconnected");
+		        apiReconnect();
+		    } else {
+		        Log.i(APP_TAG, "heartbeat: apiSocket says connected");
 		    }
 		}
 	};
@@ -735,17 +761,35 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
     @Override
 	public boolean handleMessage(Message msg) {
-	    String json_str = msg.getData().getString("json");
-		try {
-            JSONObject json = new JSONObject(json_str);
-            dispatch(json);
-        } catch (JSONException e) {
-            rssdb.log("handleMessage json:"+json_str+" err:"+e);
+        String message_type = msg.getData().getString("type");
+        Log.i(APP_TAG, "handleMessage type: "+message_type);
+        if(message_type.equals("open")) {
+            onApiOpened();
+        }
+        if(message_type.equals("close")) {
+            onApiClosed();
+        }
+        if(message_type.equals("message")) {
+    	    String json_str = msg.getData().getString("json");
+    		try {
+                JSONObject json = new JSONObject(json_str);
+                dispatch(json);
+            } catch (JSONException e) {
+                rssdb.log("handleMessage json:"+json_str+" err:"+e);
+            }
         }
 		return true;
 	}
 	
-	void dispatch(JSONObject json) {
+    private void onApiOpened() {
+        notificationRebuild();        
+    }
+
+    private void onApiClosed() {
+        notificationRebuild();
+    }
+
+    void dispatch(JSONObject json) {
         try {
             String type = json.getString("type");
             rssdb.log("dispatch: type: "+type +

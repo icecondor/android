@@ -33,6 +33,12 @@ public class ApiSocket extends WebSocketClient implements Constants {
 	public void onOpen() {
 		Log.i(APP_TAG,"ApiSocket onOpen \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
 		connected = true;
+        Bundle bundle = new Bundle();
+        bundle.putString("type","open");
+        
+        Message msg = new Message();
+        msg.setData(bundle);
+        pigeon.dispatchMessage(msg);
 		try {
             send("{\"type\":\"hello\", \"version\":\""+ICECONDOR_VERSION+"\"}");
             send("{\"type\":\"auth\", \"oauth_token\":\""+token+"\"}");
@@ -45,8 +51,7 @@ public class ApiSocket extends WebSocketClient implements Constants {
 
     @Override
     public void onMessage(String message) {
-        Log.i(APP_TAG,"ApiSocket thread: \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
-        Log.i(APP_TAG,"ApiSocket received: \""+message+"\"");
+        Log.i(APP_TAG,"ApiSocket onMessage received: \""+message+"\" \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
         Bundle bundle = new Bundle();
         bundle.putString("type","message");
         bundle.putString("json", message);
@@ -60,11 +65,18 @@ public class ApiSocket extends WebSocketClient implements Constants {
 	public void onClose() {
 		Log.i(APP_TAG,"ApiSocket close \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
 		connected = false;
+        Bundle bundle = new Bundle();
+        bundle.putString("type","close");
+        
+        Message msg = new Message();
+        msg.setData(bundle);
+        pigeon.dispatchMessage(msg);
 	}
 
 	@Override
 	public void onError(Exception ex) {
 		Log.i(APP_TAG,"ApiSocket error: "+ex);
+		ex.printStackTrace();
 	}
 
 	public boolean isConnected() { return connected; }
