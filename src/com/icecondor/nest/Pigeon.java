@@ -22,7 +22,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import util.GrabURL;
+import util.GrabAndSavePicture;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -863,10 +863,12 @@ public class Pigeon extends Service implements Constants, LocationListener,
     protected void doFollow(JSONObject json)
                               throws JSONException {
         String username = json.getString("username");
-        String profile_url_mobile = json.getString("profile_url_mobile");
-        if(!Util.profilePictureExists(username)) {
-            GrabURL grabUrl = new GrabURL(httpClient);
-            grabUrl.execute(profile_url_mobile);
+        if(json.has("profile_url_mobile")) {
+            String profile_url_mobile = json.getString("profile_url_mobile");
+            if(!Util.profilePictureExists(username)) {
+                GrabAndSavePicture grabUrl = new GrabAndSavePicture(httpClient);
+                grabUrl.execute(profile_url_mobile, username);
+            }
         }
     }
     

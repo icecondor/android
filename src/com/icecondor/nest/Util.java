@@ -4,6 +4,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import java.util.TimeZone;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -175,7 +179,22 @@ public class Util implements Constants {
 	}
 	
 	public static boolean profilePictureExists(String username) {
-	    return false;
+	    File file = new File(profileFilename(username));
+	    return file.isFile();
 	}
 
+	public static String profileFilename(String username) {
+	    return ""+username;
+	}
+	
+	public static boolean profilePictureSave(String username, String picture_data) {
+	    try {
+            BufferedWriter buf = new BufferedWriter(new FileWriter(profileFilename(username)));
+            buf.write(picture_data);
+            buf.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return true;
+	}
 }
