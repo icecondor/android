@@ -863,8 +863,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
     protected void doFollow(JSONObject json)
                               throws JSONException {
         String username = json.getString("username");
-        if(json.has("profile_url_mobile")) {
-            String profile_url_mobile = json.getString("profile_url_mobile");
+        if(json.has("mobile_avatar_url")) {
+            String profile_url_mobile = json.getString("mobile_avatar_url");
             if(!Util.profilePictureExists(username)) {
                 GrabAndSavePicture grabUrl = new GrabAndSavePicture(httpClient);
                 grabUrl.execute(profile_url_mobile, username);
