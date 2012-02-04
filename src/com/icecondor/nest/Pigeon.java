@@ -217,13 +217,17 @@ public class Pigeon extends Service implements Constants, LocationListener,
     }
 
 	protected void apiReconnect() {
-		if (reconnectLastTry < (System.currentTimeMillis()-(20*1000))) {
+		if (reconnectLastTry < (System.currentTimeMillis()-(SERVER_CONNECT_TIMEOUT*1000))) {
 			Log.i(APP_TAG, "apiReconnect "+
 					"\""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId() );
 			apiDisconnect();
             reconnectLastTry = System.currentTimeMillis();
             rssdb.log("apiReconnect: connecting to "+ICECONDOR_API_URL);
-            apiSocket.connect();
+            try {
+                apiSocket.connect();
+            } catch ( IllegalStateException e) {
+                Log.i(APP_TAG, "apiReconnect: IllegalStateException ignored");
+            }
 		} else {
 			rssdb.log("apiReconnect ignored. last try is "+ 
 					(System.currentTimeMillis()-reconnectLastTry)/1000+" sec ago "+
