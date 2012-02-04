@@ -4,14 +4,20 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import java.util.TimeZone;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
@@ -187,14 +193,22 @@ public class Util implements Constants {
 	    return ""+username;
 	}
 	
-	public static boolean profilePictureSave(String username, String picture_data) {
+	public static void profilePictureSave(String username, String picture_data, Context ctx) {
 	    try {
-            BufferedWriter buf = new BufferedWriter(new FileWriter(profileFilename(username)));
-            buf.write(picture_data);
-            buf.close();
+	        FileOutputStream fos = ctx.openFileOutput(profileFilename(username), Context.MODE_PRIVATE);
+	        fos.write(picture_data.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return true;
 	}
+	
+    public static String profilePictureSave(String username, Context ctx) {
+        try {
+            FileInputStream fos = ctx.openFileInput(profileFilename(username));
+            return "";
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
