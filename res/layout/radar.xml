@@ -69,7 +69,7 @@
 		<com.google.android.maps.MapView
 			android:layout_width="fill_parent" android:layout_height="fill_parent"
 			android:enabled="true" android:clickable="true"
-			android:apiKey="0KVP3r7JZvW_x54-XBAVL9cBtUhRgVyvaCcQAPA" android:id="@+id/radar_mapview" />
+			android:apiKey="0KVP3r7JZvW8jEWt7qTjpJ8O4ghnBYuQCHiEcwA" android:id="@+id/radar_mapview" />
 		<!--"0KVP3r7JZvW_x54-XBAVL9cBtUhRgVyvaCcQAPA" production map key-->
 		<!--"0KVP3r7JZvW8jEWt7qTjpJ8O4ghnBYuQCHiEcwA" emulator map key-->
 	</RelativeLayout>

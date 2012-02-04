@@ -18,6 +18,7 @@ public class ActivityLog extends ListActivity implements Constants,
                                                          SimpleCursorAdapter.ViewBinder {
 	GeoRss rssdb;
 	LogObserver logob;
+	Cursor logs;
 
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,7 +27,7 @@ public class ActivityLog extends ListActivity implements Constants,
         rssdb = new GeoRss(this);
 		rssdb.open();		
 
-		Cursor logs = rssdb.findActivityLogs();
+		logs = rssdb.findActivityLogs();
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
                 R.layout.activitylog_row, logs,
                 new String[] {"date", "description"},
@@ -39,6 +40,7 @@ public class ActivityLog extends ListActivity implements Constants,
     @Override
     public void onPause() {
     	super.onPause();
+    	logs.close();
     	rssdb.close();
     }
     
