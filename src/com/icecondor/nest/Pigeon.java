@@ -16,10 +16,13 @@ import net.oauth.client.OAuthClient;
 import net.oauth.client.httpclient4.HttpClient4;
 
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.params.AllClientPNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import util.GrabURL;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -38,6 +41,7 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.media.MediaPlayer;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -761,6 +765,16 @@ public class Pigeon extends Service implements Constants, LocationListener,
         c.close();
     }
 
+    private void onApiOpened() {
+        notificationRebuild();
+        String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
+        apiSocket.auth(token_and_secret[0]);
+    }
+
+    private void onApiClosed() {
+        notificationRebuild();
+    }
+
     @Override
 	public boolean handleMessage(Message msg) {
         String message_type = msg.getData().getString("type");
@@ -782,16 +796,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		return true;
 	}
 	
-    private void onApiOpened() {
-        notificationRebuild();
-        String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
-        apiSocket.auth(token_and_secret[0]);
-    }
-
-    private void onApiClosed() {
-        notificationRebuild();
-    }
-
     void dispatch(JSONObject json) {
         try {
             String type = json.getString("type");
@@ -805,6 +809,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
             
             if(type.equals("auth")) {
                 doAuth(json);
+            }
+            
+            if(type.equals("follow")) {
+                doFollow(json);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -852,6 +860,16 @@ public class Pigeon extends Service implements Constants, LocationListener,
         }
     }
 
+    protected void doFollow(JSONObject json)
+                              throws JSONException {
+        String username = json.getString("username");
+        String profile_url_mobile = json.getString("profile_url_mobile");
+        if(!Util.profilePictureExists(username)) {
+            GrabURL grabUrl = new GrabURL(httpClient);
+            grabUrl.execute(profile_url_mobile);
+        }
+    }
+    
     protected String notificationStatusLine() {
         String fix_part = "";
         if (on_switch) {

@@ -173,5 +173,9 @@ public class Util implements Constants {
 		date_string = ""+hours+":"+date.getMinutes()+ampm+" "+month_name+" "+date.getDate();
 		return date_string;
 	}
+	
+	public static boolean profilePictureExists(String username) {
+	    return false;
+	}
 
 }
