@@ -1,5 +1,7 @@
 package com.icecondor.nest;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -186,7 +188,7 @@ public class Util implements Constants {
 
 	public static String profileDirectory(Context ctx) {
         File parent_dir = ctx.getFilesDir();
-        return parent_dir.getPath()+File.separator+parent_dir.getName()+File.separator+AVATAR_DIR;
+        return parent_dir.getPath()+File.separator+AVATAR_DIR;
 	}
 	
     protected static File profileFile(String username, Context ctx) {
@@ -194,12 +196,13 @@ public class Util implements Constants {
     }
     
 	public static void profilePictureSave(String username, byte[] content, Context ctx) {
-        (new File(profileDirectory(ctx))).mkdir();
+        boolean mdir = (new File(profileDirectory(ctx))).mkdir();
+        Log.i(APP_TAG, ""+profileDirectory(ctx)+" "+mdir);
         File avatar = profileFile(username, ctx);
 	    try {
-	        FileOutputStream fos = new FileOutputStream(avatar);
-	        fos.write(content);
-	        fos.close();
+	        BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(avatar));
+	        os.write(content);
+	        os.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -208,10 +211,10 @@ public class Util implements Constants {
     public static byte[] profilePictureLoad(String username, Context ctx) {
         try {
             File avatar = profileFile(username, ctx);
-            FileInputStream fis = new FileInputStream(avatar);
+            BufferedInputStream is = new BufferedInputStream(new FileInputStream(avatar));
             byte[] content = new byte[(int)avatar.length()];
-            fis.read(content,0,content.length);
-            fis.close();
+            is.read(content,0,content.length);
+            is.close();
             return content;
         } catch (IOException e) {
             e.printStackTrace();
