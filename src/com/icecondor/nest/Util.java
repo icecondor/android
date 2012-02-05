@@ -184,28 +184,33 @@ public class Util implements Constants {
 	    return file.isFile();
 	}
 
-	public static String profileFilename(String username) {
-	    return AVATAR_DIR+File.separator+username;
+	public static String profileDirectory(Context ctx) {
+        File parent_dir = ctx.getFilesDir();
+        return parent_dir.getPath()+File.separator+parent_dir.getName()+File.separator+AVATAR_DIR;
 	}
 	
+    protected static File profileFile(String username, Context ctx) {
+        return new File(profileDirectory(ctx)+File.separator+username);
+    }
+    
 	public static void profilePictureSave(String username, byte[] content, Context ctx) {
-        (new File(AVATAR_DIR)).mkdir();
+        (new File(profileDirectory(ctx))).mkdir();
+        File avatar = profileFile(username, ctx);
 	    try {
-	        FileOutputStream fos = ctx.openFileOutput(profileFilename(username), 
-	                                                  Context.MODE_PRIVATE);
+	        FileOutputStream fos = new FileOutputStream(avatar);
 	        fos.write(content);
 	        fos.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
 	}
-	
+
     public static byte[] profilePictureLoad(String username, Context ctx) {
         try {
-            File file = new File(profileFilename(username));
-            FileInputStream fis = ctx.openFileInput(profileFilename(username));
-            byte[] content = new byte[(int)file.length()];
-            fis.read(content,0,(int)file.length());
+            File avatar = profileFile(username, ctx);
+            FileInputStream fis = new FileInputStream(avatar);
+            byte[] content = new byte[(int)avatar.length()];
+            fis.read(content,0,content.length);
             fis.close();
             return content;
         } catch (IOException e) {
