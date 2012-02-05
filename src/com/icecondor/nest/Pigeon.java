@@ -22,7 +22,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import util.GrabAndSavePicture;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -57,6 +56,7 @@ import android.util.Log;
 import com.icecondor.nest.db.GeoRss;
 import com.icecondor.nest.db.LocationStorageProviders;
 import com.icecondor.nest.types.Gps;
+import com.icecondor.nest.util.GrabAndSavePicture;
 
 //look at android.permission.RECEIVE_BOOT_COMPLETED
 
