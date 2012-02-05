@@ -1,21 +1,16 @@
 package com.icecondor.nest;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
-import java.util.TimeZone;
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
+import java.util.TimeZone;
 
 import android.content.Context;
 import android.os.Build;
@@ -205,11 +200,14 @@ public class Util implements Constants {
         }
 	}
 	
-    public static String profilePictureLoad(String username, Context ctx) {
+    public static byte[] profilePictureLoad(String username, Context ctx) {
         try {
+            File file = new File(profileFilename(username));
             FileInputStream fis = ctx.openFileInput(profileFilename(username));
+            byte[] content = new byte[(int)file.length()];
+            fis.read(content,0,(int)file.length());
             fis.close();
-            return "";
+            return content;
         } catch (IOException e) {
             e.printStackTrace();
         }
