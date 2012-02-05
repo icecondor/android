@@ -190,21 +190,25 @@ public class Util implements Constants {
 	}
 
 	public static String profileFilename(String username) {
-	    return ""+username;
+	    return AVATAR_DIR+File.separator+username;
 	}
 	
-	public static void profilePictureSave(String username, String picture_data, Context ctx) {
+	public static void profilePictureSave(String username, byte[] content, Context ctx) {
+        (new File(AVATAR_DIR)).mkdir();
 	    try {
-	        FileOutputStream fos = ctx.openFileOutput(profileFilename(username), Context.MODE_PRIVATE);
-	        fos.write(picture_data.getBytes());
+	        FileOutputStream fos = ctx.openFileOutput(profileFilename(username), 
+	                                                  Context.MODE_PRIVATE);
+	        fos.write(content);
+	        fos.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
 	}
 	
-    public static String profilePictureSave(String username, Context ctx) {
+    public static String profilePictureLoad(String username, Context ctx) {
         try {
-            FileInputStream fos = ctx.openFileInput(profileFilename(username));
+            FileInputStream fis = ctx.openFileInput(profileFilename(username));
+            fis.close();
             return "";
         } catch (IOException e) {
             e.printStackTrace();

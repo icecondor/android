@@ -34,4 +34,5 @@ public interface Constants {
 	public static final String APP_TAG = "icecondor";
 
 	public static final int SERVER_CONNECT_TIMEOUT = 15;
+	public static final String AVATAR_DIR = "avatars";
 }
