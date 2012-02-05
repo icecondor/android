@@ -865,7 +865,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
         String username = json.getString("username");
         if(json.has("mobile_avatar_url")) {
             String profile_url_mobile = json.getString("mobile_avatar_url");
-            if(!Util.profilePictureExists(username)) {
+            if(!Util.profilePictureExists(username, this)) {
                 GrabAndSavePicture grabUrl = new GrabAndSavePicture(profile_url_mobile,
                                                                     username,
                                                                     httpClient, this);

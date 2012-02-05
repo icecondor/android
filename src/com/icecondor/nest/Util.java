@@ -179,8 +179,8 @@ public class Util implements Constants {
 		return date_string;
 	}
 	
-	public static boolean profilePictureExists(String username) {
-	    File file = new File(profileFilename(username));
+	public static boolean profilePictureExists(String username, Context ctx) {
+	    File file = profileFile(username, ctx);
 	    return file.isFile();
 	}
 
