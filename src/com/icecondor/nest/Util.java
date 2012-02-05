@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,6 +14,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import java.util.TimeZone;
+
+import com.icecondor.nest.util.Streams;
 
 import android.content.Context;
 import android.os.Build;
@@ -195,14 +198,13 @@ public class Util implements Constants {
         return new File(profileDirectory(ctx)+File.separator+username);
     }
     
-	public static void profilePictureSave(String username, byte[] content, Context ctx) {
+	public static void profilePictureSave(String username, InputStream imageStream, Context ctx) {
         boolean mdir = (new File(profileDirectory(ctx))).mkdir();
         Log.i(APP_TAG, ""+profileDirectory(ctx)+" "+mdir);
         File avatar = profileFile(username, ctx);
 	    try {
-	        BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(avatar));
-	        os.write(content);
-	        os.close();
+	        FileOutputStream os = new FileOutputStream(avatar);
+	        Streams.copy(imageStream, os, true);
         } catch (IOException e) {
             e.printStackTrace();
         }
