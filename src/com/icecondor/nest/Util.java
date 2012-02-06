@@ -1,7 +1,5 @@
 package com.icecondor.nest;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -15,11 +13,11 @@ import java.util.Date;
 import java.util.Map;
 import java.util.TimeZone;
 
-import com.icecondor.nest.util.Streams;
-
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
+
+import com.icecondor.nest.util.Streams;
 
 public class Util implements Constants {
 	public static String DateTimeIso8601Now() {
@@ -210,14 +208,10 @@ public class Util implements Constants {
         }
 	}
 
-    public static byte[] profilePictureLoad(String username, Context ctx) {
+    public static FileInputStream profilePictureLoad(String username, Context ctx) {
         try {
             File avatar = profileFile(username, ctx);
-            BufferedInputStream is = new BufferedInputStream(new FileInputStream(avatar));
-            byte[] content = new byte[(int)avatar.length()];
-            is.read(content,0,content.length);
-            is.close();
-            return content;
+            return new FileInputStream(avatar);
         } catch (IOException e) {
             e.printStackTrace();
         }

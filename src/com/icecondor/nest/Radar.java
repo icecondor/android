@@ -1,15 +1,9 @@
 package com.icecondor.nest;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import net.oauth.OAuthAccessor;
-import net.oauth.OAuthException;
-import net.oauth.client.OAuthClient;
-import net.oauth.client.httpclient4.HttpClient4;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -46,7 +40,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -424,6 +417,9 @@ public class Radar extends MapActivity implements ServiceConnection,
     }
     
     protected void updateBirdShouts(long service_id) {
+        
+        //BitmapFactory.decodeStream(in);
+        
         Cursor preshouts = rssdb.findPreShouts(service_id, System.currentTimeMillis());
         if(preshouts.getCount() > 0) {
         	preshouts.moveToFirst();
