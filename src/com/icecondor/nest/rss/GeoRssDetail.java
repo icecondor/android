@@ -1,20 +1,10 @@
 package com.icecondor.nest.rss;
 
-import com.icecondor.nest.Pigeon;
-import com.icecondor.nest.PigeonService;
-import com.icecondor.nest.R;
-import com.icecondor.nest.R.id;
-import com.icecondor.nest.R.layout;
-import com.icecondor.nest.R.string;
-import com.icecondor.nest.db.GeoRss;
-
-import android.app.Activity;
 import android.app.ListActivity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -25,6 +15,12 @@ import android.widget.ListAdapter;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.icecondor.nest.Pigeon;
+import com.icecondor.nest.PigeonService;
+import com.icecondor.nest.R;
+import com.icecondor.nest.Util;
+import com.icecondor.nest.db.GeoRss;
 
 public class GeoRssDetail extends ListActivity implements ServiceConnection {
 	private static final String appTag = "GeoRssDetail";
@@ -104,6 +100,7 @@ public class GeoRssDetail extends ListActivity implements ServiceConnection {
 		rssdb.deleteFeed(row_id);
 		try {
             pigeon.unFriend(service_extra);
+            Util.profilePictureDelete(service_extra, this);
             Toast.makeText(GeoRssDetail.this, "Unfriending "+service_extra, Toast.LENGTH_SHORT).show();
         } catch (RemoteException e) {
             e.printStackTrace();

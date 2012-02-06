@@ -217,4 +217,8 @@ public class Util implements Constants {
         }
         return null;
     }
+
+    public static void profilePictureDelete(String service_extra, Context ctx) {
+        profileFile(service_extra, ctx).delete();        
+    }
 }
