@@ -114,11 +114,17 @@ public class GeoRss {
 				null, null, "date asc", "1");
 	}
 
-	public Cursor findShouts(long url_id) {
-		return db.query(GeoRss.SHOUTS_TABLE, null, SHOUTS_FEED_ID+" = ?",
-				new String[] {String.valueOf(url_id)},
-				null, null, "date desc", null);
-	}
+    public Cursor findLastShout(long url_id) {
+        return db.query(GeoRss.SHOUTS_TABLE, null, SHOUTS_FEED_ID+" = ?",
+                new String[] {String.valueOf(url_id)},
+                null, null, "date desc", "1");
+    }
+
+    public Cursor findShouts(long url_id) {
+        return db.query(GeoRss.SHOUTS_TABLE, null, SHOUTS_FEED_ID+" = ?",
+                new String[] {String.valueOf(url_id)},
+                null, null, "date desc", null);
+    }
 
 	public long insertShout(int service_id, Gps gps) {
         ContentValues cv = new ContentValues(2);

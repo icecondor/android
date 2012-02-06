@@ -2,6 +2,7 @@ package com.icecondor.nest;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -73,6 +74,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	Timer heartbeat_timer;
 	Location last_pushed_fix, last_local_fix;
 	BroadcastReceiver gps_fix_receiver, bird_fix_receiver;
+	HashMap<String, Drawable> avatarCache;
 
 	
     public void onCreate(Bundle savedInstanceState) {
@@ -117,10 +119,12 @@ public class Radar extends MapActivity implements ServiceConnection,
         	bird1b.setText("to begin");
             lb.setOnClickListener(new LoginClickListener());      
         }
-
         
 		rssdb = new GeoRss(this);
 		rssdb.open();
+
+		/* Avatar image cache */
+		avatarCache = new HashMap<String, Drawable>();
     }
     
     @Override
@@ -404,38 +408,40 @@ public class Radar extends MapActivity implements ServiceConnection,
 	protected void updateBirds() {
 		Cursor feeds = rssdb.findFeeds();
 		while(feeds.moveToNext()) {
-			long service_id = feeds.getLong(feeds.getColumnIndex(GeoRss.FEEDS_ID));
-			Log.i(appTag, "reading shouts db for #"+service_id+" "+feeds.getString(feeds.getColumnIndex(GeoRss.FEEDS_EXTRA)));
-			updateBirdShouts(service_id);
+			String username = feeds.getString(feeds.getColumnIndex(GeoRss.FEEDS_EXTRA));
+			Log.i(appTag, "reading locations for"+username);
+			updateBirdShouts(username);
 		}
 		feeds.close();
 	}
-
+    
     protected void updateBirdShouts(String username) {
         int service_id = rssdb.findFeedIdByServicenameAndExtra("IceCondor", username);
-        updateBirdShouts(service_id);
-    }
-    
-    protected void updateBirdShouts(long service_id) {
+        Drawable avatar = loadUserAvatar(username);
+        if(avatar == null)
+            avatar = greenMarker;
         
-        //BitmapFactory.decodeStream(in);
-        
-        Cursor preshouts = rssdb.findPreShouts(service_id, System.currentTimeMillis());
-        if(preshouts.getCount() > 0) {
-        	preshouts.moveToFirst();
-        	addBird(preshouts, redMarker);
+        Cursor lastShout = rssdb.findLastShout(service_id);
+        if(lastShout.getCount() > 0) {
+        	lastShout.moveToFirst();
+        	addBird(lastShout, avatar);
         }
-        preshouts.close();
-
-        Cursor postshouts = rssdb.findPostShouts(service_id, System.currentTimeMillis());
-        if (postshouts.getCount() > 0) {
-        	postshouts.moveToFirst();
-        	addBird(postshouts, greenMarker);
-        }
-        postshouts.close();
+        lastShout.close();
     }
 
-	private void addBird(Cursor displayShout, Drawable marker) {
+	private Drawable loadUserAvatar(String username) {
+        if(!avatarCache.containsKey(username)) {
+            if(Util.profilePictureExists(username, this)) {
+                Drawable avatar = Drawable.createFromStream(
+                                         Util.profilePictureLoad(username, this), 
+                                         username);
+                avatarCache.put(username, avatar);
+            }
+        }
+        return avatarCache.get(username);
+    }
+
+    private void addBird(Cursor displayShout, Drawable marker) {
 		String guid = displayShout.getString(displayShout.getColumnIndex("guid"));
 		if (!flock.contains(guid)) {
 			GeoPoint point = new GeoPoint((int) (displayShout
