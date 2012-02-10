@@ -74,7 +74,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	boolean pigeon_connected = false;
 	Timer heartbeat_timer;
 	Location last_pushed_fix, last_local_fix;
-	BroadcastReceiver gps_fix_receiver, bird_fix_receiver;
+	BroadcastReceiver gps_fix_receiver, bird_fix_receiver, auth_ok_receiver;
 	HashMap<String, Drawable> avatarCache;
 
 	
@@ -138,6 +138,8 @@ public class Radar extends MapActivity implements ServiceConnection,
         registerReceiver(gps_fix_receiver, new IntentFilter(GPS_FIX_ACTION));
         bird_fix_receiver = this.new BirdFixReceiver();
         registerReceiver(bird_fix_receiver, new IntentFilter(BIRD_FIX_ACTION));
+        auth_ok_receiver = this.new AuthOkReceiver();
+        registerReceiver(auth_ok_receiver, new IntentFilter(AUTH_OK_ACTION));
         bindService(pigeonIntent, this, 0); // 0 = do not auto-start
         updateBirds();
     }
@@ -546,6 +548,17 @@ public class Radar extends MapActivity implements ServiceConnection,
 			last_local_fix = location;
 			runOnUiThread(new UpdateGpsBlock());			
 		}		
+	}
+
+	public class AuthOkReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			try {
+				pigeon.followFriends();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public class BirdFixReceiver extends BroadcastReceiver {

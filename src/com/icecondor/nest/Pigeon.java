@@ -503,6 +503,11 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		sendBroadcast(intent);	
 	}
 
+    private void broadcastAuthOK() {
+		Intent intent = new Intent(AUTH_OK_ACTION);
+		sendBroadcast(intent);	
+	}
+
 	private void play_fix_beep() {
 		mp.start();
 	}
@@ -829,6 +834,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
         if(status.equals("OK")) {
             // follow friends only during Radar
             //followFriends();
+            broadcastAuthOK();
             pushQueue();
         }
 	}
