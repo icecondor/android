@@ -4,6 +4,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.channels.NotYetConnectedException;
 
+import net.tootallnate.websocket.Framedata;
+import net.tootallnate.websocket.WebSocket;
 import net.tootallnate.websocket.WebSocketClient;
 
 import org.json.JSONException;
@@ -71,6 +73,18 @@ public class ApiSocket extends WebSocketClient implements Constants {
 	}
 
 	public boolean isConnected() { return connected; }
+	
+	@Override
+	public void onPing(WebSocket conn, Framedata f ) {
+		super.onPing(conn, f);
+		Log.i(APP_TAG,"ApiSocket onPing \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
+        Bundle bundle = new Bundle();
+        bundle.putString("type","ping");
+        
+        Message msg = new Message();
+        msg.setData(bundle);
+        pigeon.dispatchMessage(msg);
+	}
 
 	public boolean emit(String msg) {
 		Log.i(APP_TAG, "ApiSocket emit: "+msg);

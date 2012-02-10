@@ -86,6 +86,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	Handler pigeonHandler;
 	long reconnectLastTry;
     private String ongoing_notification_msg;
+	private long websocket_last_msg;
 	
 	public void onCreate() {
 		Log.i(APP_TAG, "*** Pigeon service created. "+
@@ -632,6 +633,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		        Log.i(APP_TAG, "heartbeat: apiSocket disconnected");
 		        apiReconnect();
 		    } else {
+		    	if(System.currentTimeMillis() - websocket_last_msg > 90*1000) {
+			        Log.i(APP_TAG, "heartbeat: missed ping");
+		    		apiDisconnect();
+		    	}
 		        Log.i(APP_TAG, "heartbeat: apiSocket connected");
 		    }
 		}
@@ -767,14 +772,22 @@ public class Pigeon extends Service implements Constants, LocationListener,
         notificationRebuild();
     }
 
+    private void onApiPing() {
+    }
+
     @Override
 	public boolean handleMessage(Message msg) {
         String message_type = msg.getData().getString("type");
+        websocket_last_msg = System.currentTimeMillis();
+
         if(message_type.equals("open")) {
             onApiOpened();
         }
         if(message_type.equals("close")) {
             onApiClosed();
+        }
+        if(message_type.equals("ping")) {
+            onApiPing();
         }
         if(message_type.equals("message")) {
     	    String json_str = msg.getData().getString("json");
