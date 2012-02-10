@@ -16,19 +16,16 @@ import net.oauth.client.OAuthClient;
 import net.oauth.client.httpclient4.HttpClient4;
 
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.params.AllClientPNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -40,16 +37,14 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.media.MediaPlayer;
 import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.os.RemoteException;
 import android.os.Process;
+import android.os.RemoteException;
 import android.preference.PreferenceManager;
-import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -240,7 +235,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 
     protected void apiDisconnect() {
-        Log.i(APP_TAG, "apiReconnect "+
+        Log.i(APP_TAG, "apiDisconnect "+
                 "\""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId() );
         if(apiSocket != null) {
             try {
@@ -372,9 +367,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				Gps fix =  Gps.fromJson(oldest.getString(
 				                    oldest.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)));
 				boolean status = pushLocationApi(fix);
-	            if(status == false) {
-	                apiReconnect();
-	            }
 			} 
 			oldest.close();
 		}
