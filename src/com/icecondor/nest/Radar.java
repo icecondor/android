@@ -410,7 +410,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 		Cursor feeds = rssdb.findFeeds();
 		while(feeds.moveToNext()) {
 			String username = feeds.getString(feeds.getColumnIndex(GeoRss.FEEDS_EXTRA));
-			Log.i(appTag, "reading locations for"+username);
+			Log.i(appTag, "reading locations for "+username);
 			updateBirdShouts(username);
 		}
 		feeds.close();
