@@ -87,7 +87,7 @@ public class ApiSocket extends WebSocketClient implements Constants {
 	}
 
 	public boolean emit(String msg) {
-		Log.i(APP_TAG, "ApiSocket emit: "+msg);
+		Log.i(APP_TAG, "ApiSocket emit: "+msg+" \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
 		if (isConnected()) {
 			try {
 				send(msg);

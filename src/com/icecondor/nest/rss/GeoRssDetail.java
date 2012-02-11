@@ -77,6 +77,7 @@ public class GeoRssDetail extends ListActivity implements ServiceConnection {
     protected void onPause() {
         super.onPause();
         shouts.close();
+        unbindService(this);
     }
     
 	public boolean onCreateOptionsMenu(Menu menu) {
