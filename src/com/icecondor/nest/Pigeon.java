@@ -809,9 +809,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
     void dispatch(JSONObject json) {
         try {
             String type = json.getString("type");
-            rssdb.log("dispatch: type: "+type +
-                      " \""+Thread.currentThread().getName()+"\""+
-                      " #"+Thread.currentThread().getId());
 
             if(type.equals("location")) {
                 doLocation(json);
@@ -832,8 +829,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	protected void doAuth(JSONObject json) throws JSONException {
         String status = json.getString("status");
         if(status.equals("OK")) {
-            // follow friends only during Radar
-            //followFriends();
             broadcastAuthOK();
             pushQueue();
         }
