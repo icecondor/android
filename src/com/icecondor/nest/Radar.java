@@ -150,11 +150,6 @@ public class Radar extends MapActivity implements ServiceConnection,
     	super.onPause();
     	Log.i(appTag, "radar: onPause");
     	if(pigeon_connected) {
-    	    try {
-                pigeon.unfollowFriends();
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
     		unbindService(this);
     	}
     	//stopNeighborReadTimer();
@@ -351,7 +346,6 @@ public class Radar extends MapActivity implements ServiceConnection,
 				Toast.makeText(this, "Waiting for first location fix", Toast.LENGTH_SHORT).show();
 			}
 			pigeon.getLastPushedFix(); // triggers UI update
-			pigeon.followFriends();
 		} catch (RemoteException e) {
 		}
 	}
@@ -557,11 +551,6 @@ public class Radar extends MapActivity implements ServiceConnection,
 	public class AuthOkReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			try {
-				pigeon.followFriends();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 

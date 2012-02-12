@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -88,7 +87,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	long reconnectLastTry;
     private String ongoing_notification_msg;
 	private long websocket_last_msg;
-	private Date binding_last;
+	private boolean activity_bound;
+	private boolean friends_followed;
 	
 	public void onCreate() {
 		Log.i(APP_TAG, "*** Pigeon service created. "+
@@ -330,14 +330,18 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	@Override
 	public IBinder onBind(Intent intent) {
 		Log.i(APP_TAG,"pigeon: onBind for "+intent.getExtras());
-		binding_last = new Date(System.currentTimeMillis());
+		activity_bound = true;
+		if(!friends_followed)
+			followFriends();
 		return pigeonBinder;
 	}
 	
 	@Override
 	public void onRebind(Intent intent) {
 		Log.i(APP_TAG, "pigeon: onReBind for "+intent.toString());
-		binding_last = new Date(System.currentTimeMillis());
+		activity_bound = true;
+		if(!friends_followed)
+			followFriends();
 	}
 	
 	@Override
@@ -348,7 +352,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	@Override
 	public boolean onUnbind(Intent intent) {
 		Log.i(APP_TAG, "pigeon: onUnbind for "+intent.toString());
-		binding_last = null;
+		activity_bound = false;
 		return true;
 	}
 	
@@ -642,13 +646,17 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		    if(!apiSocket.isConnected()) {
 		        apiReconnect();
 		    } else {
+		    	if(!activity_bound && friends_followed) {
+			        Log.i(APP_TAG, "heartbeat: activity unbound, unfollowing friends");
+		    		unfollowFriends();
+		    	}
 		    	if(System.currentTimeMillis() - websocket_last_msg > 90*1000) {
 			        Log.i(APP_TAG, "heartbeat: missed ping");
 		    		apiDisconnect();
 		    	}
 		    }
 		    Log.i(APP_TAG, "heartbeat: apiSocket "+apiSocket.isConnected()+" "+
-		    		"last bind:"+binding_last);
+		    		"activity_bound:"+activity_bound);
 		}
 	};
 
@@ -760,6 +768,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
             apiSocket.followFriend(username);
         }
         c.close();
+        friends_followed = true;
     }
     
     private void unfollowFriends() {
@@ -770,6 +779,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
             apiSocket.unfollowFriend(username);
         }
         c.close();
+        friends_followed = false;
     }
 
     private void onApiOpened() {
@@ -835,6 +845,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
         String status = json.getString("status");
         if(status.equals("OK")) {
             broadcastAuthOK();
+            if(activity_bound)
+            	followFriends();
             pushQueue();
         }
 	}

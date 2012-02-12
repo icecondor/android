@@ -24,6 +24,7 @@ public class ActivityLog extends ListActivity implements Constants,
 	LogObserver logob;
 	Cursor logs;
 	Intent pigeon_intent;
+	private boolean pigeon_bound;
 
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,8 +48,8 @@ public class ActivityLog extends ListActivity implements Constants,
     public void onResume() {
     	super.onResume();
     	Log.i(APP_TAG, "activity_log: onResume");
-	    boolean bound = bindService(pigeon_intent, this, 0); // 0 = do not auto-start
-	    Log.i(APP_TAG, "activity_log: bindService(pigeon)="+bound);
+	    pigeon_bound = bindService(pigeon_intent, this, 0); // 0 = do not auto-start
+	    Log.i(APP_TAG, "activity_log: bindService(pigeon)="+pigeon_bound);
     }
     
     @Override
@@ -56,6 +57,9 @@ public class ActivityLog extends ListActivity implements Constants,
     	super.onPause();
     	logs.close();
     	rssdb.close();
+    	if(pigeon_bound) {
+    		unbindService(this);
+    	}
     }
     
 	public boolean onCreateOptionsMenu(Menu menu) {
