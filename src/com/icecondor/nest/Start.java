@@ -34,7 +34,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.icecondor.nest.db.LocationStorageProviders;
-import com.icecondor.nest.db.LocationStorageProviders.OauthError;
 
 public class Start extends Activity implements ServiceConnection,
 												Constants {
@@ -49,7 +48,7 @@ public class Start extends Activity implements ServiceConnection,
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
-    	Log.i(appTag, "onCreate");
+    	Log.i(appTag, "start: onCreate");
         super.onCreate(savedInstanceState);
 		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -58,7 +57,7 @@ public class Start extends Activity implements ServiceConnection,
     
     @Override
     public void onResume() {
-    	Log.i(appTag, "onResume");
+    	Log.i(appTag, "start: onResume");
     	super.onResume();
     		
 		if(!settings.contains(SETTING_LICENSE_AGREE)) {
@@ -70,7 +69,7 @@ public class Start extends Activity implements ServiceConnection,
     }
     
 	public void onPause() {
-    	Log.i(appTag, "onPause");
+    	Log.i(appTag, "start: onPause");
 		super.onPause();
 		if(pigeon_bound) {
 			// its possible to pause before binding to pigeon
@@ -206,7 +205,7 @@ public class Start extends Activity implements ServiceConnection,
 		// Start the pigeon service
         startService(pigeon_intent);
         pigeon_bound = bindService(pigeon_intent, this, 0); // 0 = do not auto-start
-        Log.i(appTag, "startPigeon bind result="+pigeon_bound);
+        Log.i(appTag, "start: bindService(pigeon)="+pigeon_bound);
 	}
 	
 	private void stopPigeon() {
@@ -218,7 +217,7 @@ public class Start extends Activity implements ServiceConnection,
 	}
 	
 	public void onServiceConnected(ComponentName className, IBinder service) {
-		Log.i(appTag, "onServiceConnected "+service);
+		Log.i(appTag, "start: onServiceConnected "+service);
 		pigeon = PigeonService.Stub.asInterface(service);
     	try {
 			processOauthToken();
@@ -238,7 +237,7 @@ public class Start extends Activity implements ServiceConnection,
 	}
 
 	public void onServiceDisconnected(ComponentName className) {
-		Log.i(appTag, "onServiceDisconnected "+className);
+		Log.i(appTag, "pigeon: onServiceDisconnected "+className);
 		
 	}
 

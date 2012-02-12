@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -87,6 +88,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	long reconnectLastTry;
     private String ongoing_notification_msg;
 	private long websocket_last_msg;
+	private Date binding_last;
 	
 	public void onCreate() {
 		Log.i(APP_TAG, "*** Pigeon service created. "+
@@ -327,23 +329,25 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		Log.i(APP_TAG,"onBind for "+intent.getExtras());
+		Log.i(APP_TAG,"pigeon: onBind for "+intent.getExtras());
+		binding_last = new Date(System.currentTimeMillis());
 		return pigeonBinder;
 	}
 	
 	@Override
 	public void onRebind(Intent intent) {
-		Log.i(APP_TAG, "onReBind for "+intent.toString());
+		Log.i(APP_TAG, "pigeon: onReBind for "+intent.toString());
 	}
 	
 	@Override
 	public void onLowMemory() {
-		rssdb.log("Pigeon: onLowMemory");
+		rssdb.log("pigeon: onLowMemory");
 	}
 	
 	@Override
 	public boolean onUnbind(Intent intent) {
-		Log.i(APP_TAG, "Pigeon: onUnbind for "+intent.toString());
+		Log.i(APP_TAG, "pigeon: onUnbind for "+intent.toString());
+		binding_last = null;
 		return false;
 	}
 	
@@ -635,15 +639,15 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		        notificationStatusUpdate(msg); 
 		    }
 		    if(!apiSocket.isConnected()) {
-		        Log.i(APP_TAG, "heartbeat: apiSocket disconnected");
 		        apiReconnect();
 		    } else {
 		    	if(System.currentTimeMillis() - websocket_last_msg > 90*1000) {
 			        Log.i(APP_TAG, "heartbeat: missed ping");
 		    		apiDisconnect();
 		    	}
-		        Log.i(APP_TAG, "heartbeat: apiSocket connected");
 		    }
+		    Log.i(APP_TAG, "heartbeat: apiSocket "+apiSocket.isConnected()+" "+
+		    		"last bind:"+binding_last);
 		}
 	};
 

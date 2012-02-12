@@ -79,7 +79,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 
 	
     public void onCreate(Bundle savedInstanceState) {
-    	Log.i(appTag, "onCreate");
+    	Log.i(appTag, "radar: onCreate");
         super.onCreate(savedInstanceState);
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
         settingsIntent = new Intent(this, Settings.class);
@@ -131,7 +131,7 @@ public class Radar extends MapActivity implements ServiceConnection,
     @Override
     public void onResume() {
     	super.onResume();
-    	Log.i(appTag, "onResume");
+    	Log.i(appTag, "radar: onResume");
         //startNeighborReadTimer();
         startHeartbeatTimer();
         gps_fix_receiver = this.new GpsFixReceiver();
@@ -140,13 +140,15 @@ public class Radar extends MapActivity implements ServiceConnection,
         registerReceiver(bird_fix_receiver, new IntentFilter(BIRD_FIX_ACTION));
         auth_ok_receiver = this.new AuthOkReceiver();
         registerReceiver(auth_ok_receiver, new IntentFilter(AUTH_OK_ACTION));
-        bindService(pigeonIntent, this, 0); // 0 = do not auto-start
+        boolean bound = bindService(pigeonIntent, this, 0); // 0 = do not auto-start
+        Log.i(appTag, "radar: bindService(pigeon)="+bound);
         updateBirds();
     }
     
     @Override
     public void onPause() {
     	super.onPause();
+    	Log.i(appTag, "radar: onPause");
     	if(pigeon_connected) {
     	    try {
                 pigeon.unfollowFriends();
@@ -160,7 +162,6 @@ public class Radar extends MapActivity implements ServiceConnection,
     	unregisterReceiver(gps_fix_receiver);
     	unregisterReceiver(bird_fix_receiver);
     	unregisterReceiver(auth_ok_receiver);
-    	Log.i(appTag, "onPause yeah");
     }
     
     public void scrollToLastFix() {
@@ -341,7 +342,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	
 	public void onServiceConnected(ComponentName className, IBinder service) {
 		pigeon_connected = true;
-		Log.i(appTag, "onServiceConnected "+service);
+		Log.i(appTag, "radar: onServiceConnected "+service);
 		pigeon = PigeonService.Stub.asInterface(service);
 		try {
 			Location fix = pigeon.getLastFix();
@@ -356,7 +357,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	
 	public void onServiceDisconnected(ComponentName className) {
 		pigeon_connected = false;
-		Log.i(appTag, "onServiceDisconnected "+className);
+		Log.i(appTag, "radar: onServiceDisconnected "+className);
 	}
 
 	public void getNearbys() {
