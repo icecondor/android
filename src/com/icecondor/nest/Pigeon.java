@@ -337,6 +337,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	@Override
 	public void onRebind(Intent intent) {
 		Log.i(APP_TAG, "pigeon: onReBind for "+intent.toString());
+		binding_last = new Date(System.currentTimeMillis());
 	}
 	
 	@Override
@@ -348,7 +349,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	public boolean onUnbind(Intent intent) {
 		Log.i(APP_TAG, "pigeon: onUnbind for "+intent.toString());
 		binding_last = null;
-		return false;
+		return true;
 	}
 	
 	public void pushQueue() {

@@ -340,6 +340,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 		}
 	}
 	
+	@Override
 	public void onServiceConnected(ComponentName className, IBinder service) {
 		pigeon_connected = true;
 		Log.i(appTag, "radar: onServiceConnected "+service);
@@ -355,6 +356,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 		}
 	}
 	
+	@Override
 	public void onServiceDisconnected(ComponentName className) {
 		pigeon_connected = false;
 		Log.i(appTag, "radar: onServiceDisconnected "+className);

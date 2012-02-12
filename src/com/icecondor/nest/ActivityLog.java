@@ -1,24 +1,29 @@
 package com.icecondor.nest;
 
 import android.app.ListActivity;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListAdapter;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import com.icecondor.nest.db.GeoRss;
 
 public class ActivityLog extends ListActivity implements Constants, 
-                                                         SimpleCursorAdapter.ViewBinder {
+                                                         SimpleCursorAdapter.ViewBinder,
+                                                         ServiceConnection {
 	GeoRss rssdb;
 	LogObserver logob;
 	Cursor logs;
+	Intent pigeon_intent;
 
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,8 +40,17 @@ public class ActivityLog extends ListActivity implements Constants,
         logob = new LogObserver();
         adapter.setViewBinder(this);
         setListAdapter(adapter);
+        pigeon_intent = new Intent(this, Pigeon.class);
 	}
 	
+    @Override
+    public void onResume() {
+    	super.onResume();
+    	Log.i(APP_TAG, "activity_log: onResume");
+	    boolean bound = bindService(pigeon_intent, this, 0); // 0 = do not auto-start
+	    Log.i(APP_TAG, "activity_log: bindService(pigeon)="+bound);
+    }
+    
     @Override
     public void onPause() {
     	super.onPause();
@@ -78,6 +92,14 @@ public class ActivityLog extends ListActivity implements Constants,
         tv.setText(str);
         return true;
     }
+
+	@Override
+	public void onServiceConnected(ComponentName name, IBinder service) {
+	}
+
+	@Override
+	public void onServiceDisconnected(ComponentName name) {
+	}
 }
 
 
