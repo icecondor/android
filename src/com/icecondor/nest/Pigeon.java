@@ -626,6 +626,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
 	protected void startBackground() {
+		Log.i(APP_TAG, "pigeon: startBackground()");
 		on_switch = true;
 		settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING, on_switch).commit();
 		apiReconnect();
@@ -638,6 +639,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
 	protected void stopBackground() {
+		Log.i(APP_TAG, "pigeon: stopBackground()");
 		on_switch = false;
 		//stopRssTimer();
 		stopLocationUpdates();
@@ -664,7 +666,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		    		unfollowFriends();
 		    	}
 		    	if(System.currentTimeMillis() - websocket_last_msg > 90*1000) {
-			        Log.i(APP_TAG, "heartbeat: missed ping");
+			        Log.i(APP_TAG, "heartbeat: missed ping. disconnecting");
 		    		apiDisconnect();
 		    	}
 		    }
