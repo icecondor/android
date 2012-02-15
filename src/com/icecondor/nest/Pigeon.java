@@ -90,6 +90,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	private boolean activity_bound;
 	private boolean friends_followed;
 	
+	@Override
 	public void onCreate() {
 		Log.i(APP_TAG, "*** Pigeon service created. "+
 				"\""+Thread.currentThread().getName()+"\""+" tid:"+Thread.currentThread().getId()+
@@ -186,6 +187,23 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		telephonyManager.listen(new PhoneStateListener(), PhoneStateListener.LISTEN_DATA_CONNECTION_STATE); */
 	}
 
+	@Override
+	public void onStart(Intent start, int key) {
+		super.onStart(start,key);
+		rssdb.log("Pigon starting v"+ICECONDOR_VERSION);
+		startBackground();
+		broadcastGpsFix(last_local_fix);
+	}
+	
+	@Override
+	public void onDestroy() {
+		unregisterReceiver(battery_receiver);
+		unregisterReceiver(widget_receiver);
+        stopBackground();
+		rssdb.log("Pigeon onDestroy()");
+		rssdb.close();
+	}
+	
     protected Notification buildNotification() {
         int icon;
         if(apiSocket.isConnected()) {
@@ -255,21 +273,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
         }
     }
 
-	public void onStart(Intent start, int key) {
-		super.onStart(start,key);
-		rssdb.log("Pigon starting v"+ICECONDOR_VERSION);
-		startBackground();
-		broadcastGpsFix(last_local_fix);
-	}
-	
-	public void onDestroy() {
-		unregisterReceiver(battery_receiver);
-		unregisterReceiver(widget_receiver);
-        stopBackground();
-		rssdb.log("Pigon destroyed");
-		rssdb.close();
-	}
-	
 	private void notificationStatusUpdate(String msg) {
 	    if(ongoing_notification == null) {
             ongoing_notification = buildNotification();
@@ -578,6 +581,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	private void stopHeartbeatTimer() {
 		heartbeat_timer.cancel();
 	}
+	
 	private void startRssTimer() {
 		rss_timer = new Timer("RSS Reader Timer");
 		long rss_read_frequency = Long.decode(settings.getString(SETTING_RSS_READ_FREQUENCY, "60000"));
@@ -644,7 +648,9 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		//stopRssTimer();
 		stopLocationUpdates();
 		stopPushQueueTimer();
+		Log.i(APP_TAG, "pigeon: stopHeartbeatTimer()");
 		stopHeartbeatTimer();
+		Log.i(APP_TAG, "pigeon: apiDisconnect()");
 		apiDisconnect();
 		settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING,on_switch).commit();
 		notificationCancel();
