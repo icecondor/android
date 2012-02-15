@@ -670,7 +670,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		    		apiDisconnect();
 		    	}
 		    }
-		    Log.i(APP_TAG, "heartbeat: apiSocket "+apiSocket.isConnected()+" "+
+		    Log.i(APP_TAG, "heartbeat: apiSocket "+(apiSocket.isConnected()?"connected":"disconnected")+" "+
 		    		"activity_bound:"+activity_bound);
 		}
 	};

@@ -69,7 +69,7 @@ public class ApiSocket extends WebSocketClient implements Constants {
 	@Override
 	public void onError(Exception ex) {
 		Log.i(APP_TAG,"ApiSocket error: "+ex);
-		ex.printStackTrace();
+		//ex.printStackTrace(); too verbose
 	}
 
 	public boolean isConnected() { return connected; }
