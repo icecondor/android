@@ -940,7 +940,13 @@ public class Pigeon extends Service implements Constants, LocationListener,
         } else {
         	fix_part = "Location reporting is off.";
         }
-        String queue_part = ""+rssdb.countPositionQueueRemaining()+" queued.";
+        String queue_part = "";
+        try {
+        	queue_part += rssdb.countPositionQueueRemaining()+" queued.";
+        } catch (IllegalStateException e) {
+        	// a heartbeat can fire after the pigeon has died (closing rssdb)
+        	Log.i(APP_TAG, "heartbeat rssdb closed: "+e);
+        }
         String beat_part = "";
         if (last_local_fix != null) {
         	String ago = Util.timeAgoInWords(last_local_fix.getTime());
