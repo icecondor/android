@@ -140,10 +140,12 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		settings.registerOnSharedPreferenceChangeListener(this);
 		on_switch = settings.getBoolean(SETTING_PIGEON_TRANSMITTING, false);
 		if (on_switch) {
+			Log.i(APP_TAG, "switch ON: registering for location updates");
 		    //startForeground(1, ongoing_notification);
 		    startLocationUpdates();
-		    notificationStatusUpdate("Starting...");               
 		    sendBroadcast(new Intent("com.icecondor.nest.WIDGET_ON"));
+		} else {
+			Log.i(APP_TAG, "switch OFF: not registering for location updates");			
 		}
 
 		/* Sound */
@@ -219,21 +221,24 @@ public class Pigeon extends Service implements Constants, LocationListener,
     }
 
 	protected void apiReconnect() {
-		if (reconnectLastTry < (System.currentTimeMillis()-(SERVER_CONNECT_TIMEOUT*1000))) {
-			Log.i(APP_TAG, "apiReconnect "+
-					"\""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId() );
-			apiDisconnect();
-            reconnectLastTry = System.currentTimeMillis();
-            rssdb.log("apiReconnect: connecting to "+ICECONDOR_API_URL);
-            try {
-                apiSocket.connect();
-            } catch ( IllegalStateException e) {
-                Log.i(APP_TAG, "apiReconnect: IllegalStateException ignored");
-            }
+		Log.i(APP_TAG, "apiReconnect "+
+				"\""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId() );
+		if(apiSocket.isConnected()) {
+			rssdb.log("apiReconnect ignored, already connected.");
 		} else {
-			rssdb.log("apiReconnect ignored. last try is "+ 
-					(System.currentTimeMillis()-reconnectLastTry)/1000+" sec ago "+
-					"\""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId() );
+			if (reconnectLastTry < (System.currentTimeMillis()-(SERVER_CONNECT_TIMEOUT*1000))) {
+	            reconnectLastTry = System.currentTimeMillis();
+	            rssdb.log("apiReconnect: connecting to "+ICECONDOR_API_URL);
+	            try {
+	                apiSocket.connect();
+	            } catch ( IllegalStateException e) {
+	                Log.i(APP_TAG, "apiReconnect: ignored on connect: "+e);
+	            }
+			} else {
+				rssdb.log("apiReconnect ignored. last try is "+ 
+						(System.currentTimeMillis()-reconnectLastTry)/1000+" sec ago "+
+						"\""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId() );
+			}
 		}
 	}
 
@@ -369,16 +374,20 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
     class PushQueueTask extends TimerTask {
 		public void run() {
-			Cursor oldest;
-			rssdb.log("** queue push size "+rssdb.countPositionQueueRemaining()+
-			          " \""+Thread.currentThread().getName()+"\""+" tid:"+
-			          Thread.currentThread().getId() );
-			if ((oldest = rssdb.oldestUnpushedLocationQueue()).getCount() > 0) {
-				Gps fix =  Gps.fromJson(oldest.getString(
-				                    oldest.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)));
-				boolean status = pushLocationApi(fix);
-			} 
-			oldest.close();
+			try {
+				Cursor oldest;
+				rssdb.log("** queue push size "+rssdb.countPositionQueueRemaining()+
+				          " \""+Thread.currentThread().getName()+"\""+" tid:"+
+				          Thread.currentThread().getId() );
+				if ((oldest = rssdb.oldestUnpushedLocationQueue()).getCount() > 0) {
+					Gps fix =  Gps.fromJson(oldest.getString(
+					                    oldest.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)));
+					boolean status = pushLocationApi(fix);
+				} 
+				oldest.close();
+			} catch (IllegalStateException e) {
+				Log.i(APP_TAG, ""+e);
+			}
 		}
 	}
 	
@@ -553,6 +562,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			//startRssTimer();
 			notificationFlash("RSS Read frequency now "+Util.millisecondsToWords(
 						Long.parseLong(prefs.getString(pref_name, "N/A"))));
+		}
+		if (pref_name.equals(SETTING_OPENID)) {
+			// have an oauth token now
+			doAuth();
 		}
 	}
 	
@@ -784,9 +797,14 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
     private void onApiOpened() {
         notificationRebuild();
-        String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
-        apiSocket.auth(token_and_secret[0]);
+        doAuth();
     }
+
+	protected void doAuth() {
+		String[] token_and_secret = LocationStorageProviders.getDefaultAccessToken(this);
+        if(token_and_secret[0] != null)
+        	apiSocket.auth(token_and_secret[0]);
+	}
 
     private void onApiClosed() {
         notificationRebuild();
