@@ -7,11 +7,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
@@ -67,9 +65,6 @@ public class Settings extends PreferenceActivity implements ServiceConnection,
         Preference xmit_pref = getPreferenceScreen().findPreference("transmission frequency");
         String minutes = Util.millisecondsToWords(Long.parseLong(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "")));
         xmit_pref.setSummary("every "+minutes);    
-    	Preference rss_pref = getPreferenceScreen().findPreference("rss read frequency");
-    	minutes = Util.millisecondsToWords(Long.parseLong(settings.getString(SETTING_RSS_READ_FREQUENCY, "")));
-    	rss_pref.setSummary("every "+minutes);
     }
     
     @Override
