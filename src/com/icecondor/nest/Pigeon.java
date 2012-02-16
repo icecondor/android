@@ -672,7 +672,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		    		unfollowFriends();
 		    	}
 		    	if(System.currentTimeMillis() - websocket_last_msg > 90*1000) {
-			        Log.i(APP_TAG, "heartbeat: missed ping. disconnecting");
+			        rssdb.log("heartbeat: missed ping. disconnecting");
 		    		apiDisconnect();
 		    	}
 		    }
