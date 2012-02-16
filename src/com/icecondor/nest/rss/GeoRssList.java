@@ -81,8 +81,8 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
                 this, // Context
                 R.layout.georssrow,
                 feeds,  // Pass in the cursor to bind to.
-                new String[] {GeoRss.FEEDS_EXTRA, GeoRss.FEEDS_EXTRA}, // Array of cursor columns to bind to.
-                new int[] {R.id.row_gravatar, R.id.row_username});      // Parallel array of which template objects to bind to those columns.
+                new String[] {GeoRss.FEEDS_EXTRA, GeoRss.FEEDS_EXTRA, GeoRss.FEEDS_UPDATED_AT}, // Array of cursor columns to bind to.
+                new int[] {R.id.row_gravatar, R.id.row_username, R.id.row_date});      // Parallel array of which template objects to bind to those columns.
         adapter.setViewBinder(new MyBinder());
         setListAdapter(adapter);
         
@@ -233,14 +233,26 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 		@Override
 		public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
 			String username = cursor.getString(columnIndex);
-			if(view.getClass().getName().equals("android.widget.ImageView")) {
+			if(view.getClass().getName().equals("android.widget.ImageView") &&
+					columnIndex == cursor.getColumnIndex(GeoRss.FEEDS_EXTRA)) {
 				if(Util.profilePictureExists(username, GeoRssList.this)) {
 					((ImageView)view).setImageDrawable(
 							Util.drawableGravatarFromUsername(username, GeoRssList.this));
 				}
 			}
-			if(view.getClass().getName().equals("android.widget.TextView")) {
+			if(view.getClass().getName().equals("android.widget.TextView") &&
+					columnIndex == cursor.getColumnIndex(GeoRss.FEEDS_EXTRA)) {
 				((TextView)view).setText(username);
+			}
+			if(columnIndex == cursor.getColumnIndex(GeoRss.FEEDS_UPDATED_AT) ) {
+				int feed_id = cursor.getInt(cursor.getColumnIndex(GeoRss.FEEDS_ID));
+				Cursor c = rssdb.findLastShout(feed_id);
+		        if(c.getCount() > 0) {
+		        	c.moveToFirst();
+		        	String date = c.getString(c.getColumnIndex(GeoRss.SHOUTS_DATE));
+					((TextView)view).setText(date);
+		        }
+				c.close();
 			}
 			return true;
 		}
