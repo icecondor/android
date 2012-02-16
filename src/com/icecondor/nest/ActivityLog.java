@@ -1,5 +1,8 @@
 package com.icecondor.nest;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.app.ListActivity;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -21,10 +24,12 @@ public class ActivityLog extends ListActivity implements Constants,
                                                          SimpleCursorAdapter.ViewBinder,
                                                          ServiceConnection {
 	GeoRss rssdb;
-	LogObserver logob;
 	Cursor logs;
 	Intent pigeon_intent;
 	private boolean pigeon_bound;
+	TimerTask refresh_task;
+	Timer refresh_timer;
+	SimpleCursorAdapter adapter;
 
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,11 +39,10 @@ public class ActivityLog extends ListActivity implements Constants,
 		rssdb.open();		
 
 		logs = rssdb.findActivityLogs();
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this,
+        adapter = new SimpleCursorAdapter(this,
                 R.layout.activitylog_row, logs,
                 new String[] {"date", "description"},
                 new int[] {R.id.date, R.id.description});
-        logob = new LogObserver();
         adapter.setViewBinder(this);
         setListAdapter(adapter);
         pigeon_intent = new Intent(this, Pigeon.class);
@@ -50,11 +54,23 @@ public class ActivityLog extends ListActivity implements Constants,
     	Log.i(APP_TAG, "activity_log: onResume");
 	    pigeon_bound = bindService(pigeon_intent, this, 0); // 0 = do not auto-start
 	    Log.i(APP_TAG, "activity_log: bindService(pigeon)="+pigeon_bound);
+	    refresh_task = new TimerTask() {public void run() { 
+	    	runOnUiThread(new Runnable() {public void run() {
+	    		Log.i(APP_TAG, "ActivityLog view refresh");
+	    		logs.close();
+	    		logs = rssdb.findActivityLogs();
+		    	adapter.changeCursor(logs);
+	    	}});
+	    }};
+	    refresh_timer = new Timer("ActivityLog refresh");
+	    refresh_timer.scheduleAtFixedRate(refresh_task, 1000, 500);
+	    
     }
     
     @Override
     public void onPause() {
     	super.onPause();
+    	refresh_timer.cancel();
     	logs.close();
     	rssdb.close();
     	if(pigeon_bound) {
