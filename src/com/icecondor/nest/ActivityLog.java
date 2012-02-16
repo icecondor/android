@@ -56,14 +56,13 @@ public class ActivityLog extends ListActivity implements Constants,
 	    Log.i(APP_TAG, "activity_log: bindService(pigeon)="+pigeon_bound);
 	    refresh_task = new TimerTask() {public void run() { 
 	    	runOnUiThread(new Runnable() {public void run() {
-	    		Log.i(APP_TAG, "ActivityLog view refresh");
 	    		logs.close();
 	    		logs = rssdb.findActivityLogs();
 		    	adapter.changeCursor(logs);
 	    	}});
 	    }};
 	    refresh_timer = new Timer("ActivityLog refresh");
-	    refresh_timer.scheduleAtFixedRate(refresh_task, 1000, 500);
+	    refresh_timer.scheduleAtFixedRate(refresh_task, 1500, 500);
 	    
     }
     
