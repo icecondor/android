@@ -33,6 +33,7 @@ public class ActivityLog extends ListActivity implements Constants,
 
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    	Log.i(APP_TAG, "activity_log: onCreate");
         setContentView(R.layout.activitylog);
 
         rssdb = new GeoRss(this);
@@ -68,13 +69,20 @@ public class ActivityLog extends ListActivity implements Constants,
     
     @Override
     public void onPause() {
+    	Log.i(APP_TAG, "activity_log: onPause");
     	super.onPause();
     	refresh_timer.cancel();
     	logs.close();
-    	rssdb.close();
     	if(pigeon_bound) {
     		unbindService(this);
     	}
+    }
+    
+    @Override
+    public void onDestroy() {
+    	super.onDestroy();
+    	Log.i(APP_TAG, "activity_log: onDestroy");
+    	rssdb.close();
     }
     
 	public boolean onCreateOptionsMenu(Menu menu) {
