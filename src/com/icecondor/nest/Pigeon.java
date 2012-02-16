@@ -902,9 +902,9 @@ public class Pigeon extends Service implements Constants, LocationListener,
                 Gps gps = Gps.fromJson(json);
                 rssdb.insertShout(service_id, gps);
                 broadcastBirdUpdate(username);
-                rssdb.log("location updated for "+username);
+                rssdb.log("pigeon: location updated for "+username);
             } else {
-                rssdb.log("ignoring location for unknown user "+username);
+                rssdb.log("pigeon: ignoring location for unknown user "+username);
             }
         }
     }

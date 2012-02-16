@@ -3,10 +3,13 @@ package com.icecondor.nest.rss;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -49,6 +52,7 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 	Cursor feeds;
 	View add_url_dialog;
 	PigeonService pigeon;
+	BirdFixReceiver bird_fix_receiver;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -81,12 +85,17 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
                 new int[] {R.id.row_gravatar, R.id.row_username});      // Parallel array of which template objects to bind to those columns.
         adapter.setViewBinder(new MyBinder());
         setListAdapter(adapter);
+        
+        bird_fix_receiver = this.new BirdFixReceiver();
+        registerReceiver(bird_fix_receiver, new IntentFilter(BIRD_FIX_ACTION));
+
     }
     
     @Override
     public void onPause() {
         feeds.close();
     	super.onPause();
+    	unregisterReceiver(bird_fix_receiver);
 		unbindService(this);
     }
 
@@ -225,8 +234,10 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 		public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
 			String username = cursor.getString(columnIndex);
 			if(view.getClass().getName().equals("android.widget.ImageView")) {
-				((ImageView)view).setImageDrawable(
-						Util.drawableGravatarFromUsername(username, GeoRssList.this));
+				if(Util.profilePictureExists(username, GeoRssList.this)) {
+					((ImageView)view).setImageDrawable(
+							Util.drawableGravatarFromUsername(username, GeoRssList.this));
+				}
 			}
 			if(view.getClass().getName().equals("android.widget.TextView")) {
 				((TextView)view).setText(username);
@@ -234,5 +245,30 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 			return true;
 		}
 		
+	}
+
+	public class BirdFixReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String username = (String)intent.getExtras().get("username");
+			if(username != null) {
+				RefreshRow rrow = new RefreshRow();
+				rrow.setUsername(username);
+				runOnUiThread(rrow);
+			}
+		}		
+	}
+
+	public class RefreshRow implements Runnable {
+	    String username;
+	    
+	    public void setUsername(String username) {
+	    	this.username = username;
+	    }
+	    
+		@Override
+		public void run() {
+			Log.i(APP_TAG, "GeoRssList: refreshing "+username);
+		}
 	}
 }
