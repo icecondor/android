@@ -37,7 +37,6 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -433,12 +432,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 	private Drawable loadUserAvatar(String username) {
         if(!avatarCache.containsKey(username)) {
             if(Util.profilePictureExists(username, this)) {
-                TypedValue typedValue = new TypedValue();
-                //density none divides by the density, density default keeps the original size
-                typedValue.density = TypedValue.DENSITY_DEFAULT;
-                Drawable avatar = Drawable.createFromResourceStream(null, typedValue, 
-                                         Util.profilePictureLoad(username, this), 
-                                         username);
+                Drawable avatar = Util.drawableGravatarFromUsername(username, this);
                 avatarCache.put(username, avatar);
             }
         }

@@ -14,8 +14,10 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.Log;
+import android.util.TypedValue;
 
 import com.icecondor.nest.util.Streams;
 
@@ -221,4 +223,15 @@ public class Util implements Constants {
     public static void profilePictureDelete(String service_extra, Context ctx) {
         profileFile(service_extra, ctx).delete();        
     }
+    
+	public static Drawable drawableGravatarFromUsername(String username, Context ctx) {
+		TypedValue typedValue = new TypedValue();
+		//density none divides by the density, density default keeps the original size
+		typedValue.density = TypedValue.DENSITY_DEFAULT;
+		Drawable avatar = Drawable.createFromResourceStream(null, typedValue, 
+		                         Util.profilePictureLoad(username, ctx), 
+		                         username);
+		return avatar;
+	}
+
 }
