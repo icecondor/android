@@ -232,7 +232,7 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 	class MyBinder implements SimpleCursorAdapter.ViewBinder {
 		@Override
 		public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-			String username = cursor.getString(columnIndex);
+			String username = cursor.getString(cursor.getColumnIndex(GeoRss.FEEDS_EXTRA));
 			if(view.getClass().getName().equals("android.widget.ImageView") &&
 					columnIndex == cursor.getColumnIndex(GeoRss.FEEDS_EXTRA)) {
 				if(Util.profilePictureExists(username, GeoRssList.this)) {
