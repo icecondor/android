@@ -56,6 +56,7 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 	PigeonService pigeon;
 	BirdFixReceiver bird_fix_receiver;
 	SimpleCursorAdapter adapter;
+	private BirdFixReceiver profile_update_receiver;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -91,6 +92,8 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
         
         bird_fix_receiver = this.new BirdFixReceiver();
         registerReceiver(bird_fix_receiver, new IntentFilter(BIRD_FIX_ACTION));
+        profile_update_receiver = this.new BirdFixReceiver();
+        registerReceiver(profile_update_receiver, new IntentFilter(USER_PROFILE_UPDATE_ACTION));
 
     }
     
@@ -99,6 +102,7 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
         feeds.close();
     	super.onPause();
     	unregisterReceiver(bird_fix_receiver);
+    	unregisterReceiver(profile_update_receiver);
 		unbindService(this);
     }
 
