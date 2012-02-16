@@ -173,6 +173,7 @@ public class Util implements Constants {
 		String[] months = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
 		String month_name = months[date.getMonth()];
 		String ampm;
+		String minutes_s;
 		int hours = date.getHours();
 		if(date.getHours() > 12) {
 			ampm="pm";
@@ -180,7 +181,13 @@ public class Util implements Constants {
 		} else {
 			ampm="am";
 		}
-		date_string = ""+hours+":"+date.getMinutes()+ampm+" "+month_name+" "+date.getDate();
+		int minutes = date.getMinutes();
+		if(minutes < 10) {
+			minutes_s = "0"+minutes;
+		} else {
+			minutes_s = ""+minutes;
+		}
+		date_string = ""+month_name+"-"+date.getDate()+" "+hours+":"+minutes_s+ampm;
 		return date_string;
 	}
 	

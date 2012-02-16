@@ -1,5 +1,7 @@
 package com.icecondor.nest.rss;
 
+import java.util.Date;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
@@ -53,6 +55,7 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 	View add_url_dialog;
 	PigeonService pigeon;
 	BirdFixReceiver bird_fix_receiver;
+	SimpleCursorAdapter adapter;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -77,7 +80,7 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
         bindService(pigeon_service, this, 0); // 0 = do not auto-start
         
 		feeds = rssdb.findFeeds();
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(
+        adapter = new SimpleCursorAdapter(
                 this, // Context
                 R.layout.georssrow,
                 feeds,  // Pass in the cursor to bind to.
@@ -250,7 +253,8 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 		        if(c.getCount() > 0) {
 		        	c.moveToFirst();
 		        	String date = c.getString(c.getColumnIndex(GeoRss.SHOUTS_DATE));
-					((TextView)view).setText(date);
+		        	Date mark = Util.DateRfc822(date);
+					((TextView)view).setText(Util.DateToShortDisplay(mark));
 		        }
 				c.close();
 			}
@@ -281,6 +285,8 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 		@Override
 		public void run() {
 			Log.i(APP_TAG, "GeoRssList: refreshing "+username);
+			feeds = rssdb.findFeeds();
+			adapter.changeCursor(feeds);
 		}
 	}
 }
