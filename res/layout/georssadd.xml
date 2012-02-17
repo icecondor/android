@@ -7,7 +7,6 @@
      <TextView android:id="@+id/text1"
          android:layout_width="fill_parent"
          android:layout_height="wrap_content"/>
- 
          
      <Spinner android:id="@+id/serviceselect"
               android:layout_width="fill_parent"
@@ -26,5 +25,5 @@
             android:layout_marginRight="3dip"
 			android:layout_gravity="center_vertical"
             android:text=""
-            android:maxLines="2"/>
+            android:singleLine="true"/>
  </LinearLayout>
