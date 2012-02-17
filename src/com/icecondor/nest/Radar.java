@@ -340,7 +340,7 @@ public class Radar extends MapActivity implements ServiceConnection,
 		Log.i(appTag, "radar: onServiceConnected "+service);
 		pigeon = PigeonService.Stub.asInterface(service);
 		try {
-			Location fix = pigeon.getLastFix();
+			Location fix = pigeon.getLastFix(true);
 			if (fix == null) {
 				Toast.makeText(this, "Waiting for first location fix", Toast.LENGTH_SHORT).show();
 			}

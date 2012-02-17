@@ -4,7 +4,7 @@ interface PigeonService {
   boolean isTransmitting();
   void startTransmitting();
   void stopTransmitting();
-  Location getLastFix();
+  Location getLastFix(boolean broadcast);
   Location getLastPushedFix();
   void refreshRSS();
   void pushFix();

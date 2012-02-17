@@ -15,6 +15,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -54,9 +55,9 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 	Cursor feeds;
 	View add_url_dialog;
 	PigeonService pigeon;
-	BirdFixReceiver bird_fix_receiver;
+	BirdFixReceiver bird_fix_receiver, profile_update_receiver;
+	GpsFixReceiver gps_fix_receiver;
 	SimpleCursorAdapter adapter;
-	private BirdFixReceiver profile_update_receiver;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -94,7 +95,8 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
         registerReceiver(bird_fix_receiver, new IntentFilter(BIRD_FIX_ACTION));
         profile_update_receiver = this.new BirdFixReceiver();
         registerReceiver(profile_update_receiver, new IntentFilter(USER_PROFILE_UPDATE_ACTION));
-
+        gps_fix_receiver = this.new GpsFixReceiver();
+        registerReceiver(gps_fix_receiver, new IntentFilter(GPS_FIX_ACTION));
     }
     
     @Override
@@ -103,6 +105,7 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
     	super.onPause();
     	unregisterReceiver(bird_fix_receiver);
     	unregisterReceiver(profile_update_receiver);
+    	unregisterReceiver(gps_fix_receiver);
 		unbindService(this);
     }
 
@@ -258,7 +261,25 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 		        	c.moveToFirst();
 		        	String date = c.getString(c.getColumnIndex(GeoRss.SHOUTS_DATE));
 		        	Date mark = Util.DateRfc822(date);
-					((TextView)view).setText(Util.DateToShortDisplay(mark));
+		        	String msg = Util.DateToShortDisplay(mark);
+		        	
+		        	float lat = c.getFloat(c.getColumnIndex(GeoRss.SHOUTS_LAT));
+		        	float lng = c.getFloat(c.getColumnIndex(GeoRss.SHOUTS_LNG));
+		        	Location l = new Location("db");
+		        	l.setLatitude(lat);
+		        	l.setLongitude(lng);
+					try {
+						Location last = pigeon.getLastFix(false);
+						Log.i(APP_TAG, "georsslist: last fix lat "+last.getLatitude()+" lng "+last.getLongitude());
+			        	if(last != null) {
+			        		float distance = l.distanceTo(last);
+			        		msg += " "+Util.short_distance(distance, false);
+			        	}
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
+					((TextView)view).setText(msg);
+
 		        }
 				c.close();
 			}
@@ -276,6 +297,15 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 				rrow.setUsername(username);
 				runOnUiThread(rrow);
 			}
+		}		
+	}
+
+	public class GpsFixReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Log.i(APP_TAG, "GPS_FIX received");
+			RefreshRow rrow = new RefreshRow();
+			runOnUiThread(rrow);
 		}		
 	}
 

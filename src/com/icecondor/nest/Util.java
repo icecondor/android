@@ -241,4 +241,24 @@ public class Util implements Constants {
 		return avatar;
 	}
 
+	public static String short_distance(float distance, boolean metric) {
+		String unit;
+		if (metric) {
+			unit = "meters";
+		} else {
+			unit = "feet";
+			distance = distance * 3.28f;
+		}
+		if(distance > 1000) {
+			if(metric) {
+				distance = ((int)distance / 100)/10.0f;
+				unit = "km";
+			} else {
+				distance = ((int)distance / 528)/10.0f;
+				unit = "miles";
+			}
+		}
+		return ""+distance+" "+unit;
+	}
+
 }

@@ -734,8 +734,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			rssdb.log("Pigeon: stopTransmitting");
 			stopBackground();
 		}
-		public Location getLastFix() throws RemoteException {
-			if (last_local_fix != null) {
+		public Location getLastFix(boolean broadcast) throws RemoteException {
+			if (last_local_fix != null && broadcast) {
 				broadcastGpsFix(last_local_fix);
 			}
 			return last_local_fix;
@@ -894,6 +894,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
                 last_pushed_time = System.currentTimeMillis();
                 broadcastBirdFix(last_pushed_fix);
             }
+            o.close();
         }
         if(json.has("username")) {
             String username = json.getString("username");

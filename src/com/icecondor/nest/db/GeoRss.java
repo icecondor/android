@@ -46,6 +46,8 @@ public class GeoRss {
 	public static final String SHOUTS_TABLE = "shouts";
 	public static final String SHOUTS_TITLE = "title";
 	public static final String SHOUTS_DATE = "date";
+	public static final String SHOUTS_LAT = "lat";
+	public static final String SHOUTS_LNG = "long";
 	public static final String SHOUTS_FEED_ID = "feed_id";
 	
 	public static final String ACTIVITY_TABLE = "activities";
