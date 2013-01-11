@@ -1,9 +1,9 @@
 package com.icecondor.nest;
 
 public interface Constants {
-	public static final int ICECONDOR_VERSION = 20120214;
-	public static final String ICECONDOR_URL = "http://icecondor.com/"; 
-	public static final String ICECONDOR_API_URL = "ws://donpark.org:2040/"; 
+	public static final int ICECONDOR_VERSION = 20120215;
+	public static final String ICECONDOR_URL = "http://icecondor.com/";
+	public static final String ICECONDOR_API_URL = "wss://api.icecondor.com/";
 	public static final String ICECONDOR_URL_SHORTNAME = "icecondor.com"; // use preference
 	public static final String ICECONDOR_VERSION_CHECK_URL = "http://icecondor.com/version"; // use preference
 	public static final String ICECONDOR_WRITE_URL = "http://icecondor.com/locations.json"; // use preference
@@ -24,15 +24,15 @@ public interface Constants {
 	public static final String SETTING_OPENID = "openid";
 	public static final String SETTING_LICENSE_AGREE = "licence agree";
 	public static final String SETTING_BEEP_ON_FIX = "beep on fix";
-	
+
 	public static final long DAY_IN_MILLISECONDS = 1000*60*60*24;
-	
+
 	public static final String GPS_FIX_ACTION = "com.icecondor.nest.GPS_FIX_ACTION";
     public static final String BIRD_FIX_ACTION = "com.icecondor.nest.BIRD_FIX_ACTION";
     public static final String BIRD_UPDATE_ACTION = "com.icecondor.nest.BIRD_UPDATE_ACTION";
     public static final String AUTH_OK_ACTION = "com.icecondor.nest.AUTH_OK_ACTION";
     public static final String USER_PROFILE_UPDATE_ACTION = "com.icecondor.nest.USER_PROFILE_UPDATE_ACTION";
-	
+
 	public static final String APP_TAG = "icecondor";
 
 	public static final int SERVER_CONNECT_TIMEOUT = 15;
