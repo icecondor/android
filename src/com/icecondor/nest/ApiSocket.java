@@ -36,7 +36,7 @@ public class ApiSocket extends WebSocketClient implements Constants {
         emit("{\"type\":\"hello\", \"version\":\""+ICECONDOR_VERSION+"\"}");
         Bundle bundle = new Bundle();
         bundle.putString("type","open");
-        
+
         Message msg = new Message();
         msg.setData(bundle);
         pigeon.dispatchMessage(msg);
@@ -48,7 +48,7 @@ public class ApiSocket extends WebSocketClient implements Constants {
         Bundle bundle = new Bundle();
         bundle.putString("type","message");
         bundle.putString("json", message);
-        
+
         Message msg = new Message();
         msg.setData(bundle);
         pigeon.dispatchMessage(msg);
@@ -60,7 +60,7 @@ public class ApiSocket extends WebSocketClient implements Constants {
 		connected = false;
         Bundle bundle = new Bundle();
         bundle.putString("type","close");
-        
+
         Message msg = new Message();
         msg.setData(bundle);
         pigeon.dispatchMessage(msg);
@@ -75,14 +75,14 @@ public class ApiSocket extends WebSocketClient implements Constants {
 	}
 
 	public boolean isConnected() { return connected; }
-	
+
 	@Override
 	public void onPing(WebSocket conn, Framedata f ) {
 		super.onPing(conn, f);
 		Log.i(APP_TAG,"ApiSocket onPing \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
         Bundle bundle = new Bundle();
         bundle.putString("type","ping");
-        
+
         Message msg = new Message();
         msg.setData(bundle);
         pigeon.dispatchMessage(msg);
@@ -102,9 +102,9 @@ public class ApiSocket extends WebSocketClient implements Constants {
 		} else {
 			Log.i(APP_TAG, "emit: blocked! notConnected");
 		}
-		return false;		
+		return false;
 	}
-	
+
     protected void followFriend(String username) {
         try {
             rssdb.log("following "+username);
