@@ -4,18 +4,18 @@
 	android:layout_height="fill_parent">
 
 	<!--  top status bar -->
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	<LinearLayout
 		android:id="@+id/topstatus" android:layout_width="fill_parent"
 		android:layout_height="wrap_content">
 
 		<!--  gps block -->
-		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		<LinearLayout 
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:layout_weight="0.9" android:id="@+id/gpsblock"
 			android:clickable="true">
 			<ImageView android:id="@+id/saticon" 
 				android:layout_width="60px" android:layout_height="wrap_content" />
-			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			<LinearLayout 
 				android:layout_width="wrap_content" android:layout_height="wrap_content"
 				android:orientation="vertical">
 				<TextView android:id="@+id/satl1a" android:layout_width="wrap_content"
@@ -27,13 +27,13 @@
 		</LinearLayout>
 
 		<!-- bird block -->
-		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		<LinearLayout 
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:layout_weight="0.1" android:id="@+id/birdblock"
 			android:clickable="true">
 			<ImageView android:id="@+id/birdicon" android:src="@drawable/condor"
 				android:layout_width="30px" android:layout_height="wrap_content" />
-			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+			<LinearLayout 
 				android:layout_width="wrap_content" android:layout_height="wrap_content"
 				android:orientation="vertical" android:layout_marginLeft="5px">
 				<TextView android:id="@+id/topbird2" android:layout_width="wrap_content"
@@ -47,7 +47,7 @@
 
 
 	<!-- Fences -->
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	<LinearLayout 
 		android:id="@+id/botfence" android:layout_width="fill_parent"
 		android:layout_height="wrap_content" android:layout_alignParentBottom="true">
 		<TextView android:id="@+id/fencelabel" android:layout_width="wrap_content"
@@ -62,14 +62,14 @@
 	</LinearLayout>
 
 	<!--  google map -->
-	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	<RelativeLayout 
 		android:id="@+id/radar" android:layout_width="fill_parent"
 		android:layout_height="fill_parent" android:layout_below="@id/topstatus"
 		android:layout_above="@id/botfence">
 		<com.google.android.maps.MapView
 			android:layout_width="fill_parent" android:layout_height="fill_parent"
 			android:enabled="true" android:clickable="true"
-			android:apiKey="0KVP3r7JZvW_x54-XBAVL9cBtUhRgVyvaCcQAPA" android:id="@+id/radar_mapview" />
+			android:apiKey="0KVP3r7JZvW8jEWt7qTjpJ8O4ghnBYuQCHiEcwA" android:id="@+id/radar_mapview" />
 		<!--"0KVP3r7JZvW_x54-XBAVL9cBtUhRgVyvaCcQAPA" production map key-->
 		<!--"0KVP3r7JZvW8jEWt7qTjpJ8O4ghnBYuQCHiEcwA" emulator map key-->
 	</RelativeLayout>
