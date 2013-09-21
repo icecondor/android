@@ -92,6 +92,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	private boolean friends_followed;
 	AlarmManager alarmManager;
 	AlarmReceiver alarm_receiver;
+	private PendingIntent wake_alarm_intent;
+	
 	
 	@Override
 	public void onCreate() {
@@ -183,7 +185,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		alarm_receiver = new AlarmReceiver();
 		registerReceiver(alarm_receiver,
 				new IntentFilter("com.icecondor.nest.WAKE_ALARM"));
-		
+        wake_alarm_intent = PendingIntent.getBroadcast(getApplicationContext(), 
+                0,
+                new Intent("com.icecondor.nest.WAKE_ALARM"),
+                0);
 		
 		/* Emulator ipv6 issue */
 		if ("google_sdk".equals( Build.PRODUCT )) {
@@ -614,16 +619,14 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, 
 	    		                  System.currentTimeMillis(), 
 	    		                  180000, 
-	    		                  PendingIntent.getBroadcast(getApplicationContext(), 
-	    		                		                     0,
-	    		                		                     new Intent("com.icecondor.nest.WAKE_ALARM"),
-	    		                		                     0));
+	    						  wake_alarm_intent);
 	    //push_queue_timer = new Timer("Push Queue Timer");
 	    //push_queue_timer.scheduleAtFixedRate(new PushQueueTask(), 0, 30000);
 	}
 
 	private void stopPushQueueTimer() {
-		push_queue_timer.cancel();
+		alarmManager.cancel(wake_alarm_intent);
+		//push_queue_timer.cancel();
 	}
 	
 	protected void updateRSS() {
