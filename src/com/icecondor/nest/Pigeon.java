@@ -688,9 +688,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		    if(ongoing_notification != null) {
 		        notificationStatusUpdate(msg); 
 		    }
-		    if(!apiSocket.isConnected()) {
-		        apiReconnect();
-		    } else {
+		    if(apiSocket.isConnected()) {
 		    	if(!activity_bound && friends_followed) {
 			        Log.i(APP_TAG, "heartbeat: activity unbound, unfollowing friends");
 		    		unfollowFriends();
@@ -746,8 +744,11 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		  public void onReceive(Context context, Intent intent) {
 			  String action = intent.getAction();
 			  if (action.equals("com.icecondor.nest.WAKE_ALARM")) {
-				 Log.i(APP_TAG, "service, alarm received!!");
-				 pushOldestFix();
+				  Log.i(APP_TAG, "service, alarm received!!");
+				  if(!apiSocket.isConnected()) {
+					  apiReconnect();
+				  }
+				  pushOldestFix();
 			  }
 		  }
 	  };
