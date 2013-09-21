@@ -21,6 +21,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -89,6 +90,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	private long websocket_last_msg;
 	private boolean activity_bound;
 	private boolean friends_followed;
+	AlarmManager alarmManager;
+	AlarmReceiver alarm_receiver;
 	
 	@Override
 	public void onCreate() {
@@ -102,6 +105,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		rssdb.open();
 		rssdb.log("Pigon created v"+ICECONDOR_VERSION);
 
+		alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+		
 		/* refresh last_local_fix from LocationManager */
 		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         last_local_fix = getBestLastLocation();
@@ -174,6 +179,11 @@ public class Pigeon extends Service implements Constants, LocationListener,
 				new IntentFilter("com.icecondor.nest.PIGEON_ON"));
 		registerReceiver(widget_receiver,
 				new IntentFilter("com.icecondor.nest.PIGEON_INQUIRE"));
+		
+		alarm_receiver = new AlarmReceiver();
+		registerReceiver(alarm_receiver,
+				new IntentFilter("com.icecondor.nest.WAKE_ALARM"));
+		
 		
 		/* Emulator ipv6 issue */
 		if ("google_sdk".equals( Build.PRODUCT )) {
@@ -600,9 +610,16 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
 	private void startPushQueueTimer() {
-	    rssdb.log("PushQueueTimer started at 30 seconds");
-	    push_queue_timer = new Timer("Push Queue Timer");
-	    push_queue_timer.scheduleAtFixedRate(new PushQueueTask(), 0, 30000);
+	    rssdb.log("PushQueue Alarm started at 15 minutes");
+	    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, 
+	    		                  System.currentTimeMillis(), 
+	    		                  10000, 
+	    		                  PendingIntent.getBroadcast(getApplicationContext(), 
+	    		                		                     0,
+	    		                		                     new Intent("com.icecondor.nest.WAKE_ALARM"),
+	    		                		                     0));
+	    //push_queue_timer = new Timer("Push Queue Timer");
+	    //push_queue_timer.scheduleAtFixedRate(new PushQueueTask(), 0, 30000);
 	}
 
 	private void stopPushQueueTimer() {
@@ -715,6 +732,16 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	    		}
 	    	}
 	    }
+	  };
+
+	  private class AlarmReceiver extends BroadcastReceiver {
+		  @Override
+		  public void onReceive(Context context, Intent intent) {
+			  String action = intent.getAction();
+			  if (action.equals("com.icecondor.nest.WAKE_ALARM")) {
+				 Log.i(APP_TAG, "service, alarm received!!");
+			  }
+		  }
 	  };
 
     private final PigeonService.Stub pigeonBinder = new PigeonService.Stub() {
