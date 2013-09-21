@@ -610,10 +610,10 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
 	private void startPushQueueTimer() {
-	    rssdb.log("PushQueue Alarm started at 15 minutes");
+	    rssdb.log("PushQueue Alarm started at 3 minutes");
 	    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, 
 	    		                  System.currentTimeMillis(), 
-	    		                  10000, 
+	    		                  180000, 
 	    		                  PendingIntent.getBroadcast(getApplicationContext(), 
 	    		                		                     0,
 	    		                		                     new Intent("com.icecondor.nest.WAKE_ALARM"),
