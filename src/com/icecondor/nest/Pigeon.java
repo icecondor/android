@@ -744,7 +744,11 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		  public void onReceive(Context context, Intent intent) {
 			  String action = intent.getAction();
 			  if (action.equals("com.icecondor.nest.WAKE_ALARM")) {
-				  Log.i(APP_TAG, "service, alarm received!!");
+				  Log.i(APP_TAG, "service, alarm received!");
+				  String msg = notificationStatusLine();
+				  if(ongoing_notification != null) {
+				      notificationStatusUpdate(msg); 
+				  }
 				  if(!apiSocket.isConnected()) {
 					  apiReconnect();
 				  }
