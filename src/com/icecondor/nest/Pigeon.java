@@ -740,6 +740,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			  String action = intent.getAction();
 			  if (action.equals("com.icecondor.nest.WAKE_ALARM")) {
 				 Log.i(APP_TAG, "service, alarm received!!");
+				 new PushQueueTask().run();
 			  }
 		  }
 	  };
@@ -910,18 +911,20 @@ public class Pigeon extends Service implements Constants, LocationListener,
         if(json.has("status")) {
             String status = json.getString("status");
             String id = json.getString("id");
-            rssdb.log("location "+id+" "+status);
-            rssdb.mark_as_pushed(id);
-            Cursor o = rssdb.readLocationQueue(id);
-            Gps gps =  Gps.fromJson(o.getString(
-                                   o.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)));
-            Location pushed_fix = gps.getLocation();
-            if(pushed_fix.getTime() > last_pushed_fix.getTime()) {
-                last_pushed_fix = pushed_fix;
-                last_pushed_time = System.currentTimeMillis();
-                broadcastBirdFix(last_pushed_fix);
+            if(status.equals("OK")) {            	
+	            rssdb.log("location "+id+" "+status);
+	            Cursor o = rssdb.readLocationQueue(id);
+	            Gps gps =  Gps.fromJson(o.getString(
+	                                   o.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)));
+	            Location pushed_fix = gps.getLocation();
+	            if(pushed_fix.getTime() > last_pushed_fix.getTime()) {
+	                last_pushed_fix = pushed_fix;
+	                last_pushed_time = System.currentTimeMillis();
+	                broadcastBirdFix(last_pushed_fix);
+	            }
+	            o.close();
             }
-            o.close();
+            rssdb.mark_as_pushed(id);
         }
         if(json.has("username")) {
             String username = json.getString("username");
