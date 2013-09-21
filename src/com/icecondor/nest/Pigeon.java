@@ -392,23 +392,27 @@ public class Pigeon extends Service implements Constants, LocationListener,
 
     class PushQueueTask extends TimerTask {
 		public void run() {
-			try {
-				Cursor oldest;
-				rssdb.log("** queue push size "+rssdb.countPositionQueueRemaining()+
-				          " \""+Thread.currentThread().getName()+"\""+" tid:"+
-				          Thread.currentThread().getId() );
-				if ((oldest = rssdb.oldestUnpushedLocationQueue()).getCount() > 0) {
-					Gps fix =  Gps.fromJson(oldest.getString(
-					                    oldest.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)));
-					boolean status = pushLocationApi(fix);
-				} 
-				oldest.close();
-			} catch (IllegalStateException e) {
-				Log.i(APP_TAG, ""+e);
-			}
+			pushOldestFix();
 		}
 	}
 	
+	public void pushOldestFix() {
+		try {
+			Cursor oldest;
+			rssdb.log("** queue push size "+rssdb.countPositionQueueRemaining()+
+			          " \""+Thread.currentThread().getName()+"\""+" tid:"+
+			          Thread.currentThread().getId() );
+			if ((oldest = rssdb.oldestUnpushedLocationQueue()).getCount() > 0) {
+				Gps fix =  Gps.fromJson(oldest.getString(
+				                    oldest.getColumnIndex(GeoRss.POSITION_QUEUE_JSON)));
+				boolean status = pushLocationApi(fix);
+			} 
+			oldest.close();
+		} catch (IllegalStateException e) {
+			Log.i(APP_TAG, ""+e);
+		}
+	}
+
 	public boolean pushLocationApi(Gps fix) {
 		JSONObject json = fix.toJson();
 		try {
@@ -743,7 +747,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			  String action = intent.getAction();
 			  if (action.equals("com.icecondor.nest.WAKE_ALARM")) {
 				 Log.i(APP_TAG, "service, alarm received!!");
-				 new PushQueueTask().run();
+				 pushOldestFix();
 			  }
 		  }
 	  };
