@@ -619,16 +619,18 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
 	private void startPushQueueTimer() {
-	    rssdb.log("PushQueue Alarm started at 3 minutes");
+		long record_frequency = Long.decode(settings.getString(SETTING_TRANSMISSION_FREQUENCY, "300000"));
+	    rssdb.log("PushQueue Alarm started at "+record_frequency/1000/60+" minutes");
 	    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, 
 	    		                  System.currentTimeMillis(), 
-	    		                  180000, 
+	    		                  record_frequency, 
 	    						  wake_alarm_intent);
 	    //push_queue_timer = new Timer("Push Queue Timer");
 	    //push_queue_timer.scheduleAtFixedRate(new PushQueueTask(), 0, 30000);
 	}
 
 	private void stopPushQueueTimer() {
+		rssdb.log("PushQueue Alarm stopped");
 		alarmManager.cancel(wake_alarm_intent);
 		//push_queue_timer.cancel();
 	}
@@ -745,8 +747,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			  String action = intent.getAction();
 			  if (action.equals("com.icecondor.nest.WAKE_ALARM")) {
 				  Log.i(APP_TAG, "service, alarm received!");
-				  String msg = notificationStatusLine();
 				  if(ongoing_notification != null) {
+					  String msg = notificationStatusLine();
 				      notificationStatusUpdate(msg); 
 				  }
 				  if(!apiSocket.isConnected()) {
