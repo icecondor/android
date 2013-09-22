@@ -582,8 +582,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		if (pref_name.equals(SETTING_RSS_READ_FREQUENCY)) {
 			//stopRssTimer();
 			//startRssTimer();
-			notificationFlash("RSS Read frequency now "+Util.millisecondsToWords(
-						Long.parseLong(prefs.getString(pref_name, "N/A"))));
+			//notificationFlash("RSS Read frequency now "+Util.millisecondsToWords(
+						//Long.parseLong(prefs.getString(pref_name, "N/A"))));
 		}
 		if (pref_name.equals(SETTING_OPENID)) {
 			// have an oauth token now
