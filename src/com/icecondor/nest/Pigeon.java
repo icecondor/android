@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -37,6 +38,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.media.MediaPlayer;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -93,7 +96,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	AlarmManager alarmManager;
 	AlarmReceiver alarm_receiver;
 	private PendingIntent wake_alarm_intent;
-	
+	WifiReceiver wifi_receiver;
 	
 	@Override
 	public void onCreate() {
@@ -137,6 +140,9 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		
 		/* WIFI */
 		wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+		wifi_receiver = new WifiReceiver();
+		registerReceiver(wifi_receiver,
+				new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 		
 		/* Notifications */
 		notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -741,6 +747,17 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	    }
 	  };
 
+	  private class WifiReceiver extends BroadcastReceiver {
+		  @Override
+		  public void onReceive(Context context, Intent intent) {
+			  //List<WifiConfiguration> wclist = wifiManager.getConfiguredNetworks();
+			  List<ScanResult> wifilist = wifiManager.getScanResults();
+			  for(int i=0; i < wifilist.size(); i++){
+				  Log.i(APP_TAG, "Wifi: "+wifilist.get(i));
+			  }
+		  }
+	  }
+	  
 	  private class AlarmReceiver extends BroadcastReceiver {
 		  @Override
 		  public void onReceive(Context context, Intent intent) {
@@ -755,6 +772,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 					  apiReconnect();
 				  }
 				  pushOldestFix();
+				  // wifi
+				  wifiManager.startScan();
 			  }
 		  }
 	  };
