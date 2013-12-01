@@ -211,7 +211,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	@Override
 	public void onStart(Intent start, int key) {
 		super.onStart(start,key);
-		rssdb.log("Pigon starting v"+ICECONDOR_VERSION);
+		rssdb.log("Pigon starting");
 		startBackground();
 		broadcastGpsFix(last_local_fix);
 	}
@@ -598,12 +598,14 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	}
 	
 	private void startHeartbeatTimer() {
+		Log.i(APP_TAG, "startHeartbeatTimer() \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
 		heartbeat_timer = new Timer("Heartbeat Timer");
 		heartbeatTask = new HeartBeatTask();
 		heartbeat_timer.scheduleAtFixedRate(heartbeatTask, 0, 20000);
 	}
 
 	private void stopHeartbeatTimer() {
+		Log.i(APP_TAG, "stopHeartbeatTimer() "+heartbeat_timer+" \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
 		heartbeat_timer.cancel();
 	}
 	
@@ -730,6 +732,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	private class WidgetReceiver extends BroadcastReceiver {
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
+			Log.i(APP_TAG, "WidgetReceiver "+intent.getAction()+" \""+Thread.currentThread().getName()+"\""+" #"+Thread.currentThread().getId());
 	    	String action = intent.getAction();
 	    	if (action.equals("com.icecondor.nest.PIGEON_OFF")) {
 	    		stopSelf();
@@ -753,7 +756,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
 			  //List<WifiConfiguration> wclist = wifiManager.getConfiguredNetworks();
 			  List<ScanResult> wifilist = wifiManager.getScanResults();
 			  for(int i=0; i < wifilist.size(); i++){
-				  Log.i(APP_TAG, "Wifi: "+wifilist.get(i));
+				  ScanResult ap = wifilist.get(i);
+				  Log.i(APP_TAG, "Wifi: "+ap.SSID+" "+ap.level);
 			  }
 		  }
 	  }
@@ -763,7 +767,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		  public void onReceive(Context context, Intent intent) {
 			  String action = intent.getAction();
 			  if (action.equals("com.icecondor.nest.WAKE_ALARM")) {
-				  Log.i(APP_TAG, "service, alarm received!");
+				  Log.i(APP_TAG, "PushQueue alarm received!");
 				  if(ongoing_notification != null) {
 					  String msg = notificationStatusLine();
 				      notificationStatusUpdate(msg); 
