@@ -634,8 +634,6 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	    		                  System.currentTimeMillis(), 
 	    		                  record_frequency, 
 	    						  wake_alarm_intent);
-	    //push_queue_timer = new Timer("Push Queue Timer");
-	    //push_queue_timer.scheduleAtFixedRate(new PushQueueTask(), 0, 30000);
 	}
 
 	private void stopPushQueueTimer() {
@@ -669,7 +667,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		on_switch = true;
 		settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING, on_switch).commit();
 		apiReconnect();
-        startHeartbeatTimer();
+        //startHeartbeatTimer();
         startPushQueueTimer();
 		startLocationUpdates();
 		notificationStatusUpdate(notificationStatusLine());				
@@ -683,8 +681,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 		//stopRssTimer();
 		stopLocationUpdates();
 		stopPushQueueTimer();
-		Log.i(APP_TAG, "pigeon: stopHeartbeatTimer()");
-		stopHeartbeatTimer();
+		//stopHeartbeatTimer();
 		Log.i(APP_TAG, "pigeon: apiDisconnect()");
 		apiDisconnect();
 		settings.edit().putBoolean(SETTING_PIGEON_TRANSMITTING,on_switch).commit();
@@ -959,6 +956,7 @@ public class Pigeon extends Service implements Constants, LocationListener,
 	                last_pushed_fix = pushed_fix;
 	                last_pushed_time = System.currentTimeMillis();
 	                broadcastBirdFix(last_pushed_fix);
+	                notificationStatusUpdate(notificationStatusLine());             
 	            }
 	            o.close();
             }
@@ -1001,7 +999,8 @@ public class Pigeon extends Service implements Constants, LocationListener,
         		if (last_fix_http_status != 200) {
         			ago = "err.";
         		}
-        		fix_part = "push "+ ago+"/"+fago+".";
+                //fix_part = "push "+ ago+"/"+fago+".";
+                fix_part = "Location updated with "+(int)last_pushed_fix.getAccuracy()+" m. accuracy.";
             }
         	if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
         		fix_part = "Warning: GPS set to disabled";
@@ -1011,17 +1010,12 @@ public class Pigeon extends Service implements Constants, LocationListener,
         }
         String queue_part = "";
         try {
-        	queue_part += rssdb.countPositionQueueRemaining()+" queued.";
+        	//queue_part += rssdb.countPositionQueueRemaining()+" queued.";
         } catch (IllegalStateException e) {
         	// a heartbeat can fire after the pigeon has died (closing rssdb)
         	Log.i(APP_TAG, "heartbeat rssdb closed: "+e);
         }
-        String beat_part = "";
-        if (last_local_fix != null) {
-        	String ago = Util.timeAgoInWords(last_local_fix.getTime());
-        	beat_part = "fix "+ago+".";
-        }
-        String msg = fix_part+" "+beat_part+" "+queue_part;
+        String msg = fix_part+" "+queue_part;
         return msg;
     }
 
