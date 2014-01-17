@@ -81,16 +81,6 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
         Intent pigeon_service = new Intent(this, Pigeon.class);
         bindService(pigeon_service, this, 0); // 0 = do not auto-start
         
-		feeds = rssdb.findFeeds();
-        adapter = new SimpleCursorAdapter(
-                this, // Context
-                R.layout.georssrow,
-                feeds,  // Pass in the cursor to bind to.
-                new String[] {GeoRss.FEEDS_EXTRA, GeoRss.FEEDS_EXTRA, GeoRss.FEEDS_UPDATED_AT}, // Array of cursor columns to bind to.
-                new int[] {R.id.row_gravatar, R.id.row_username, R.id.row_date});      // Parallel array of which template objects to bind to those columns.
-        adapter.setViewBinder(new MyBinder());
-        setListAdapter(adapter);
-        
         bird_fix_receiver = this.new BirdFixReceiver();
         registerReceiver(bird_fix_receiver, new IntentFilter(BIRD_FIX_ACTION));
         profile_update_receiver = this.new BirdFixReceiver();
@@ -227,6 +217,15 @@ public class GeoRssList extends ListActivity implements ServiceConnection,
 	@Override
 	public void onServiceConnected(ComponentName name, IBinder service) {
 		pigeon = PigeonService.Stub.asInterface(service);
+        feeds = rssdb.findFeeds();
+        adapter = new SimpleCursorAdapter(
+                this, // Context
+                R.layout.georssrow,
+                feeds,  // Pass in the cursor to bind to.
+                new String[] {GeoRss.FEEDS_EXTRA, GeoRss.FEEDS_EXTRA, GeoRss.FEEDS_UPDATED_AT}, // Array of cursor columns to bind to.
+                new int[] {R.id.row_gravatar, R.id.row_username, R.id.row_date});      // Parallel array of which template objects to bind to those columns.
+        adapter.setViewBinder(new MyBinder());
+        setListAdapter(adapter);
 	}
 
 	@Override
