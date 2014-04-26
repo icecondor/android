@@ -1,6 +1,5 @@
 package com.icecondor.nest;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 
 import android.app.Service;
@@ -18,7 +17,7 @@ public class Pigeon extends Service {
     public void onCreate() {
         Log.d(Constants.APP_TAG, "Bird service created");
         try {
-            api = new Client(new URI("wss://api.icecondor.com"));
+            api = new Client("wss://api.icecondor.com");
             api.connect();
         } catch (URISyntaxException e) {
             e.printStackTrace();

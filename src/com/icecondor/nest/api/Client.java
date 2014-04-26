@@ -1,27 +1,34 @@
 package com.icecondor.nest.api;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import android.util.Log;
 
 import com.icecondor.nest.Constants;
+import com.koushikdutta.async.http.AsyncHttpClient;
+import com.koushikdutta.async.http.AsyncHttpGet;
+import com.koushikdutta.async.http.AsyncHttpRequest;
 
 public class Client {
 
-    private final TooTallSocket socket;
+    private final URI apiUrl;
+    private final AsyncHttpClient socket;
 
-    public Client(URI serverURI) {
+    public Client(String serverURL) throws URISyntaxException {
         Log.d(Constants.APP_TAG, "Api constructor");
-        socket = new TooTallSocket(serverURI);
-        //asyncSocket = AsyncHttpClient.getDefaultInstance();
+        apiUrl = new URI(serverURL);
+        //socket = new TooTallSocket(apiUrl, new Dispatch());
+        socket = AsyncHttpClient.getDefaultInstance();
     }
 
     public void connect() {
         Log.d(Constants.APP_TAG, "Api connecting");
-
-        //asyncSocket.websocket("wss://server", "my-protocol", new KoushiSocket());
-        socket.connect();
-
+        // AndroidSync quirk, uses http urls
+        String fauxApiUrl = apiUrl.toString().replace("ws://", "http://").replace("wss://", "https://");
+        AsyncHttpRequest get = new AsyncHttpGet(fauxApiUrl);
+        get.setTimeout(2500);
+        socket.websocket(get, "my-protocol", new KoushiSocket(new Dispatch()));
     }
 
 

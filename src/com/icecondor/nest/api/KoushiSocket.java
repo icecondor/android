@@ -9,6 +9,12 @@ import com.koushikdutta.async.http.WebSocket.StringCallback;
 
 public class KoushiSocket implements AsyncHttpClient.WebSocketConnectCallback {
 
+    private final Dispatch dispatch;
+
+    public KoushiSocket(Dispatch callback) {
+        dispatch = callback;
+    }
+
     @Override
     public void onCompleted(Exception ex, WebSocket webSocket) {
         if (ex != null) {
@@ -20,6 +26,7 @@ public class KoushiSocket implements AsyncHttpClient.WebSocketConnectCallback {
             @Override
             public void onStringAvailable(String s) {
                 System.out.println("I got a string: " + s);
+                dispatch.process(s);
             }
         });
 
