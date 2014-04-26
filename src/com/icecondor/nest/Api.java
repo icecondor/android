@@ -5,9 +5,12 @@ import java.net.URI;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
+import android.util.Log;
+
 public class Api extends WebSocketClient {
     public Api(URI serverURI) {
         super(serverURI);
+        Log.d(Constants.APP_TAG, "Api constructor");
     }
 
     @Override

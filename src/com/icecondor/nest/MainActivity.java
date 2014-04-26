@@ -1,17 +1,21 @@
 package com.icecondor.nest;
 
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.os.Build;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements ServiceConnection {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +26,14 @@ public class MainActivity extends ActionBarActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment()).commit();
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(Constants.APP_TAG, "MainActivity starting Bird");
+        Intent bird = new Intent(this, Pigeon.class);
+        bindService(bird, this, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -59,6 +71,18 @@ public class MainActivity extends ActionBarActivity {
                     false);
             return rootView;
         }
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+        // TODO Auto-generated method stub
+
     }
 
 }
