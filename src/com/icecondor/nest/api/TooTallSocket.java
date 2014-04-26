@@ -1,4 +1,4 @@
-package com.icecondor.nest;
+package com.icecondor.nest.api;
 
 import java.net.URI;
 
@@ -7,34 +7,36 @@ import org.java_websocket.handshake.ServerHandshake;
 
 import android.util.Log;
 
-public class Api extends WebSocketClient {
-    public Api(URI serverURI) {
+import com.icecondor.nest.Constants;
+
+
+public class TooTallSocket extends WebSocketClient {
+    public TooTallSocket(URI serverURI) {
         super(serverURI);
-        Log.d(Constants.APP_TAG, "Api constructor");
-    }
-
-    @Override
-    public void connect() {
-
+        Log.d(Constants.APP_TAG, "Socket constructor");
     }
 
     @Override
     public void onClose(int arg0, String arg1, boolean arg2) {
+        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void onError(Exception arg0) {
-
+        Log.d(Constants.APP_TAG, "Socket onError "+arg0);
     }
 
     @Override
     public void onMessage(String arg0) {
+        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void onOpen(ServerHandshake arg0) {
+        Log.d(Constants.APP_TAG, "Socket onOpen ");
 
     }
+
 }
