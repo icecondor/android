@@ -15,7 +15,7 @@ public class Condor extends Service {
 
     @Override
     public void onCreate() {
-        Log.d(Constants.APP_TAG, "Bird service created");
+        Log.d(Constants.APP_TAG, "Condor service created");
         try {
             api = new Client("wss://api.icecondor.com");
             api.connect();
@@ -26,7 +26,7 @@ public class Condor extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d(Constants.APP_TAG, "Bird service started");
+        Log.d(Constants.APP_TAG, "Condor service started");
         return null;
     }
 
