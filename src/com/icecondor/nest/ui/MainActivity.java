@@ -15,12 +15,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.icecondor.eaglet.R;
 import com.icecondor.nest.Constants;
 import com.icecondor.nest.Pigeon;
-import com.icecondor.nest.R;
-import com.icecondor.nest.R.id;
-import com.icecondor.nest.R.layout;
-import com.icecondor.nest.R.menu;
 
 public class MainActivity extends ActionBarActivity implements ServiceConnection {
 

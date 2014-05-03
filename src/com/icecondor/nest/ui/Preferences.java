@@ -3,7 +3,7 @@ package com.icecondor.nest.ui;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 
-import com.icecondor.nest.R;
+import com.icecondor.eaglet.R;
 
 public class Preferences extends PreferenceActivity {
 
