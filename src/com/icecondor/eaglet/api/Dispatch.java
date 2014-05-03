@@ -1,8 +1,8 @@
-package com.icecondor.nest.api;
+package com.icecondor.eaglet.api;
 
 import android.util.Log;
 
-import com.icecondor.nest.Constants;
+import com.icecondor.eaglet.Constants;
 
 public class Dispatch {
 

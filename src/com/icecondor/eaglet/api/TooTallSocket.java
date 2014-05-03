@@ -1,4 +1,4 @@
-package com.icecondor.nest.api;
+package com.icecondor.eaglet.api;
 
 import java.net.URI;
 
@@ -8,7 +8,7 @@ import org.java_websocket.handshake.ServerHandshake;
 
 import android.util.Log;
 
-import com.icecondor.nest.Constants;
+import com.icecondor.eaglet.Constants;
 
 
 public class TooTallSocket extends WebSocketClient {

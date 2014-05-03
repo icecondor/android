@@ -1,4 +1,4 @@
-package com.icecondor.nest.ui;
+package com.icecondor.eaglet.ui;
 
 import android.content.ComponentName;
 import android.content.Intent;
@@ -14,9 +14,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.icecondor.eaglet.Condor;
+import com.icecondor.eaglet.Constants;
 import com.icecondor.eaglet.R;
-import com.icecondor.nest.Condor;
-import com.icecondor.nest.Constants;
 
 public class MainActivity extends ActionBarActivity implements ServiceConnection {
 

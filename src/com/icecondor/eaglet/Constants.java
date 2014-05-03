@@ -1,4 +1,4 @@
-package com.icecondor.nest;
+package com.icecondor.eaglet;
 
 public class Constants {
 

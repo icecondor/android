@@ -1,4 +1,4 @@
-package com.icecondor.nest.ui;
+package com.icecondor.eaglet.ui;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;

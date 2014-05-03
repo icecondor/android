@@ -1,16 +1,17 @@
-package com.icecondor.nest;
+package com.icecondor.eaglet;
 
 import java.net.URISyntaxException;
 
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Binder;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.icecondor.nest.api.Client;
-import com.icecondor.nest.db.Database;
+import com.icecondor.eaglet.api.Client;
+import com.icecondor.eaglet.db.Database;
 
 public class Condor extends Service {
 
@@ -59,10 +60,18 @@ public class Condor extends Service {
         }
     }
 
+    /* Localbinder approach */
+    public class LocalBinder extends Binder {
+        Condor getService() {
+            return Condor.this;
+        }
+    }
+    private final IBinder binder = new LocalBinder();
+
     @Override
     public IBinder onBind(Intent intent) {
         Log.d(Constants.APP_TAG, "Condor onBind");
-        return null;
+        return binder;
     }
 
 }

@@ -1,4 +1,4 @@
-package com.icecondor.nest.db;
+package com.icecondor.eaglet.db;
 
 import android.content.Context;
 import android.database.SQLException;
@@ -49,14 +49,14 @@ public class Database {
             db.execSQL("CREATE TABLE "+USERS_TABLE+" ("+
                     "_id integer primary key, "+
                     USERS_USERNAME + " text," +
-                    USERS_SESSION_KEY + " text," +
+                    USERS_SESSION_KEY + " text" +
                     ")");
 
             db.execSQL("CREATE TABLE "+ACTIVITIES_TABLE+" ("+
                     "_id integer primary key, "+
                     ACTIVITIES_UUID + " text," +
                     ACTIVITIES_JSON + " text," +
-                    ACTIVITIES_SYNCED_AT + " text," +
+                    ACTIVITIES_SYNCED_AT + " text" +
                     ")");
 
         }

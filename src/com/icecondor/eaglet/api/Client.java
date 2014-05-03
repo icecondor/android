@@ -1,11 +1,11 @@
-package com.icecondor.nest.api;
+package com.icecondor.eaglet.api;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import android.util.Log;
 
-import com.icecondor.nest.Constants;
+import com.icecondor.eaglet.Constants;
 import com.koushikdutta.async.http.AsyncHttpClient;
 import com.koushikdutta.async.http.AsyncHttpGet;
 import com.koushikdutta.async.http.AsyncHttpRequest;

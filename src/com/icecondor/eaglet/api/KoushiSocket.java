@@ -1,4 +1,4 @@
-package com.icecondor.nest.api;
+package com.icecondor.eaglet.api;
 
 import com.koushikdutta.async.ByteBufferList;
 import com.koushikdutta.async.DataEmitter;
