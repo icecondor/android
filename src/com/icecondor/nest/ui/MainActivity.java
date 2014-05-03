@@ -1,7 +1,6 @@
 package com.icecondor.nest.ui;
 
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -16,14 +15,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.icecondor.eaglet.R;
-import com.icecondor.nest.Constants;
 import com.icecondor.nest.Condor;
+import com.icecondor.nest.Constants;
 
 public class MainActivity extends ActionBarActivity implements ServiceConnection {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(Constants.APP_TAG, "MainActivity onCreate");
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
@@ -34,9 +34,16 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d(Constants.APP_TAG, "MainActivity starting Bird");
+        Log.d(Constants.APP_TAG, "MainActivity onStart");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(Constants.APP_TAG, "MainActivity onResume");
+
         Intent bird = new Intent(this, Condor.class);
-        bindService(bird, this, Context.BIND_AUTO_CREATE);
+        startService(bird);
     }
 
     @Override
@@ -84,13 +91,12 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-        // TODO Auto-generated method stub
-
+        Log.d(Constants.APP_TAG, "MainActivity onServiceConnected");
     }
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
-        // TODO Auto-generated method stub
+        Log.d(Constants.APP_TAG, "MainActivity onServiceDisconnected");
 
     }
 
