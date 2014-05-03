@@ -1,0 +1,13 @@
+<PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+            android:title="Settings">
+
+        <CheckBoxPreference
+                android:key="checkbox_preference"
+                android:title="OnOff"
+                android:summary="summary" />
+
+    </PreferenceCategory>
+</PreferenceScreen>

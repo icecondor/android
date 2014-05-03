@@ -1,4 +1,4 @@
-package com.icecondor.nest;
+package com.icecondor.nest.ui;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -15,6 +15,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.icecondor.nest.Constants;
+import com.icecondor.nest.Pigeon;
+import com.icecondor.nest.R;
+import com.icecondor.nest.R.id;
+import com.icecondor.nest.R.layout;
+import com.icecondor.nest.R.menu;
+
 public class MainActivity extends ActionBarActivity implements ServiceConnection {
 
     @Override
@@ -23,8 +30,7 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment()).commit();
+            switchFragment(new PlaceholderFragment());
         }
     }
 
@@ -51,9 +57,15 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            return true;
+            Intent preference = new Intent(this, Preferences.class);
+            startActivity(preference);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void switchFragment(Fragment fragment) {
+        getSupportFragmentManager().beginTransaction()
+            .replace(R.id.container, fragment).commit();
     }
 
     /**
