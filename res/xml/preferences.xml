@@ -7,7 +7,17 @@
         <CheckBoxPreference
                 android:key="checkbox_preference"
                 android:title="OnOff"
-                android:summary="summary" />
+                android:summary="Start automatically" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+            android:title="Advanced">
+
+        <EditTextPreference
+                android:key="api_url"
+                android:title="API url"
+        />
 
     </PreferenceCategory>
 </PreferenceScreen>
