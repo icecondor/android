@@ -3,9 +3,6 @@ package com.icecondor.eaglet.api;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import android.util.Log;
-
-import com.icecondor.eaglet.Constants;
 import com.koushikdutta.async.http.AsyncHttpClient;
 import com.koushikdutta.async.http.AsyncHttpGet;
 import com.koushikdutta.async.http.AsyncHttpRequest;
@@ -16,14 +13,12 @@ public class Client {
     private final AsyncHttpClient socket;
 
     public Client(String serverURL) throws URISyntaxException {
-        Log.d(Constants.APP_TAG, "Api constructor");
         apiUrl = new URI(serverURL);
         //socket = new TooTallSocket(apiUrl, new Dispatch());
         socket = AsyncHttpClient.getDefaultInstance();
     }
 
     public void connect() {
-        Log.d(Constants.APP_TAG, "Api connecting");
         // AndroidSync quirk, uses http urls
         String fauxApiUrl = apiUrl.toString().replace("ws://", "http://").replace("wss://", "https://");
         AsyncHttpRequest get = new AsyncHttpGet(fauxApiUrl);

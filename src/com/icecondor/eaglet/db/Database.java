@@ -1,10 +1,14 @@
 package com.icecondor.eaglet.db;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import com.icecondor.eaglet.Constants;
 
 public class Database {
     private final String DATABASE_NAME = "icecondor";
@@ -12,15 +16,15 @@ public class Database {
     public static final int DATABASE_VERSION = 1;
 
     /* Users table */
-    private static final String USERS_TABLE = "users";
-    private static final String USERS_USERNAME = "username";
-    private static final String USERS_SESSION_KEY = "session_key";
+    public static final String USERS_TABLE = "users";
+    public static final String USERS_USERNAME = "username";
+    public static final String USERS_SESSION_KEY = "session_key";
 
     /* Activities table */
-    private static final String ACTIVITIES_TABLE = "activities";
-    private static final String ACTIVITIES_UUID = "uuid";
-    private static final String ACTIVITIES_JSON = "json";
-    private static final String ACTIVITIES_SYNCED_AT = "synced_at";
+    public static final String ACTIVITIES_TABLE = "activities";
+    public static final String ACTIVITIES_UUID = "uuid";
+    public static final String ACTIVITIES_JSON = "json";
+    public static final String ACTIVITIES_SYNCED_AT = "synced_at";
 
     private SQLiteDatabase db;
 
@@ -64,6 +68,12 @@ public class Database {
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         }
+    }
+
+    public void append(Sqlitable obj) {
+        ContentValues cv = obj.getAttributes();
+        Log.d(Constants.APP_TAG, "Database append() "+obj.getClass().getSimpleName()+" "+cv);
+        db.insert(obj.getTableName(), null, cv);
     }
 
 }
