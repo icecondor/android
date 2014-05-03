@@ -1,4 +1,4 @@
-package com.icecondor.nest;
+package com.icecondor.nest.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

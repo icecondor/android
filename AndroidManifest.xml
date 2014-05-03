@@ -32,7 +32,7 @@
             android:name="com.icecondor.nest.ui.Preferences"
             android:label="Preferences" >
         </activity>
-        <service android:name=".Pigeon">
+        <service android:name=".Condor">
         </service>
     </application>
 </manifest>

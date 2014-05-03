@@ -17,7 +17,7 @@ import android.view.ViewGroup;
 
 import com.icecondor.eaglet.R;
 import com.icecondor.nest.Constants;
-import com.icecondor.nest.Pigeon;
+import com.icecondor.nest.Condor;
 
 public class MainActivity extends ActionBarActivity implements ServiceConnection {
 
@@ -35,7 +35,7 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     protected void onStart() {
         super.onStart();
         Log.d(Constants.APP_TAG, "MainActivity starting Bird");
-        Intent bird = new Intent(this, Pigeon.class);
+        Intent bird = new Intent(this, Condor.class);
         bindService(bird, this, Context.BIND_AUTO_CREATE);
     }
 

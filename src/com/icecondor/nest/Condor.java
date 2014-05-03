@@ -9,7 +9,7 @@ import android.util.Log;
 
 import com.icecondor.nest.api.Client;
 
-public class Pigeon extends Service {
+public class Condor extends Service {
 
     private Client api;
 
