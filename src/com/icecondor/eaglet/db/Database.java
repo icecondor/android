@@ -14,6 +14,7 @@ public class Database {
     private final String DATABASE_NAME = "icecondor";
     private final OpenHelper dbHelper;
     public static final int DATABASE_VERSION = 1;
+    public static final String ROW_CREATED_AT = "created_at";
 
     /* Users table */
     public static final String USERS_TABLE = "users";
@@ -37,6 +38,10 @@ public class Database {
         return this;
     }
 
+    public SQLiteDatabase getReadonly() {
+        return dbHelper.getReadableDatabase();
+    }
+
     public void close() {
         db.close();
     }
@@ -53,14 +58,16 @@ public class Database {
             db.execSQL("CREATE TABLE "+USERS_TABLE+" ("+
                     "_id integer primary key, "+
                     USERS_USERNAME + " text," +
-                    USERS_SESSION_KEY + " text" +
+                    USERS_SESSION_KEY + " text," +
+                    ROW_CREATED_AT + " DATETIME DEFAULT CURRENT_TIMESTAMP" +
                     ")");
 
             db.execSQL("CREATE TABLE "+ACTIVITIES_TABLE+" ("+
                     "_id integer primary key, "+
                     ACTIVITIES_UUID + " text," +
                     ACTIVITIES_JSON + " text," +
-                    ACTIVITIES_SYNCED_AT + " text" +
+                    ACTIVITIES_SYNCED_AT + " text," +
+                    ROW_CREATED_AT + " DATETIME DEFAULT CURRENT_TIMESTAMP" +
                     ")");
 
         }

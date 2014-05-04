@@ -8,11 +8,8 @@ import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.icecondor.eaglet.Condor;
 import com.icecondor.eaglet.Constants;
@@ -27,7 +24,7 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState == null) {
-            switchFragment(new PlaceholderFragment());
+            switchFragment(new ActivityListFragment());
         }
     }
 
@@ -70,23 +67,6 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     private void switchFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
             .replace(R.id.container, fragment).commit();
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container,
-                    false);
-            return rootView;
-        }
     }
 
     @Override
