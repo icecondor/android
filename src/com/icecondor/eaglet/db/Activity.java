@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.json.JSONObject;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 
 public class Activity implements Sqlitable {
     protected final JSONObject json;
@@ -18,6 +19,10 @@ public class Activity implements Sqlitable {
         return Database.ACTIVITIES_TABLE;
     }
 
+    static public Cursor getAll(Database db) {
+        return db.getReadonly().query(Database.ACTIVITIES_TABLE, null,
+                                        null, null, null, null, "created_at desc", "50");
+    }
 
     @Override
     public ContentValues getAttributes() {
