@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.icecondor.eaglet.Constants;
-import com.icecondor.eaglet.db.AlarmTrigger;
+import com.icecondor.eaglet.db.HeartBeat;
 import com.icecondor.eaglet.db.Database;
 
 public class AlarmReceiver  extends BroadcastReceiver {
@@ -18,7 +18,7 @@ public class AlarmReceiver  extends BroadcastReceiver {
         String action = intent.getAction();
         if (action.equals("com.icecondor.nest.WAKE_ALARM")) {
             Log.i(Constants.APP_TAG, "AlarmReceiver onReceive");
-            db.append(new AlarmTrigger());
+            db.append(new HeartBeat());
         }
 
         db.close();

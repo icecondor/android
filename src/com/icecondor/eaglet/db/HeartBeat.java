@@ -2,7 +2,7 @@ package com.icecondor.eaglet.db;
 
 import android.content.ContentValues;
 
-public class AlarmTrigger extends Activity  {
+public class HeartBeat extends Activity  {
 
     @Override
     public ContentValues getAttributes() {
