@@ -62,7 +62,8 @@ public class ActivityListFragment extends Fragment {
             if(dbColumnIndex == createdAtIndex) {
                 String dateStr = cursor.getString(createdAtIndex);
                 DateTime time = ISODateTimeFormat.dateTime().parseDateTime(dateStr);
-                ((TextView)view).setText(time.toString());
+                String displayTime = time.toString("MMM d h:mma");
+                ((TextView)view).setText(displayTime);
                 return true;
             }
 
