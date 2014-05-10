@@ -69,7 +69,7 @@ public class Database {
                     ACTIVITIES_VERB + " text," +
                     ACTIVITIES_JSON + " text," +
                     ACTIVITIES_SYNCED_AT + " text," +
-                    ROW_CREATED_AT + " DATETIME DEFAULT CURRENT_TIMESTAMP" +
+                    ROW_CREATED_AT + " DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))" +
                     ")");
 
         }

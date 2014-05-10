@@ -1,5 +1,8 @@
 package com.icecondor.eaglet.ui;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
+
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,8 +16,8 @@ import android.widget.TextView;
 
 import com.icecondor.eaglet.Constants;
 import com.icecondor.eaglet.R;
-import com.icecondor.eaglet.db.DbActivity;
 import com.icecondor.eaglet.db.Database;
+import com.icecondor.eaglet.db.DbActivity;
 
 public class ActivityListFragment extends Fragment {
 
@@ -57,7 +60,9 @@ public class ActivityListFragment extends Fragment {
             Log.d(Constants.APP_TAG, "setViewValue dbidx "+dbColumnIndex);
             int createdAtIndex = cursor.getColumnIndex(Database.ROW_CREATED_AT);
             if(dbColumnIndex == createdAtIndex) {
-                ((TextView)view).setText(cursor.getString(createdAtIndex)+"Z");
+                String dateStr = cursor.getString(createdAtIndex);
+                DateTime time = ISODateTimeFormat.dateTime().parseDateTime(dateStr);
+                ((TextView)view).setText(time.toString());
                 return true;
             }
 
