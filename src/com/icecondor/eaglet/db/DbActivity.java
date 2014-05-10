@@ -7,10 +7,10 @@ import org.json.JSONObject;
 import android.content.ContentValues;
 import android.database.Cursor;
 
-public class Activity implements Sqlitable {
+public class DbActivity implements Sqlitable {
     protected final JSONObject json;
 
-    public Activity() {
+    public DbActivity() {
         json = new JSONObject();
     }
 

@@ -24,7 +24,7 @@ public class Database {
     /* Activities table */
     public static final String ACTIVITIES_TABLE = "activities";
     public static final String ACTIVITIES_UUID = "uuid";
-    public static final String ACTIVITIES_CATEGORY = "category";
+    public static final String ACTIVITIES_VERB = "verb";
     public static final String ACTIVITIES_JSON = "json";
     public static final String ACTIVITIES_SYNCED_AT = "synced_at";
 
@@ -66,7 +66,7 @@ public class Database {
             db.execSQL("CREATE TABLE "+ACTIVITIES_TABLE+" ("+
                     "_id integer primary key, "+
                     ACTIVITIES_UUID + " text," +
-                    ACTIVITIES_CATEGORY + " text," +
+                    ACTIVITIES_VERB + " text," +
                     ACTIVITIES_JSON + " text," +
                     ACTIVITIES_SYNCED_AT + " text," +
                     ROW_CREATED_AT + " DATETIME DEFAULT CURRENT_TIMESTAMP" +
