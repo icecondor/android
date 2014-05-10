@@ -25,6 +25,7 @@ public class Database {
     public static final String ACTIVITIES_TABLE = "activities";
     public static final String ACTIVITIES_UUID = "uuid";
     public static final String ACTIVITIES_VERB = "verb";
+    public static final String ACTIVITIES_DESCRIPTION = "description";
     public static final String ACTIVITIES_JSON = "json";
     public static final String ACTIVITIES_SYNCED_AT = "synced_at";
 
@@ -67,6 +68,7 @@ public class Database {
                     "_id integer primary key, "+
                     ACTIVITIES_UUID + " text," +
                     ACTIVITIES_VERB + " text," +
+                    ACTIVITIES_DESCRIPTION + " text," +
                     ACTIVITIES_JSON + " text," +
                     ACTIVITIES_SYNCED_AT + " text," +
                     ROW_CREATED_AT + " DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))" +

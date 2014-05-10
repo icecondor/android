@@ -37,10 +37,12 @@ public class ActivityListFragment extends Fragment {
                                container, false);
         ListView listView = (ListView)rootView.findViewById(R.id.activity_list_view);
         String[] fromColumns =  {Database.ROW_CREATED_AT,
-                                 Database.ACTIVITIES_VERB,
+                Database.ACTIVITIES_VERB,
+                Database.ACTIVITIES_DESCRIPTION,
                                  Database.ACTIVITIES_UUID};
         int[] toViews = {R.id.activity_row_date,
                          R.id.activity_row_action,
+                         R.id.activity_row_description,
                          R.id.activity_row_uuid};
         db = new Database(getActivity());
         SimpleCursorAdapter sCursorAdapter = new SimpleCursorAdapter(getActivity(),
@@ -57,7 +59,6 @@ public class ActivityListFragment extends Fragment {
 
         @Override
         public boolean setViewValue(View view, Cursor cursor, int dbColumnIndex) {
-            Log.d(Constants.APP_TAG, "setViewValue dbidx "+dbColumnIndex);
             int createdAtIndex = cursor.getColumnIndex(Database.ROW_CREATED_AT);
             if(dbColumnIndex == createdAtIndex) {
                 String dateStr = cursor.getString(createdAtIndex);
@@ -76,6 +77,12 @@ public class ActivityListFragment extends Fragment {
             int uuidIndex = cursor.getColumnIndex(Database.ACTIVITIES_UUID);
             if(dbColumnIndex == uuidIndex) {
                 ((TextView)view).setText(cursor.getString(uuidIndex).substring(32));
+                return true;
+            }
+
+            int descriptionIndex = cursor.getColumnIndex(Database.ACTIVITIES_DESCRIPTION);
+            if(dbColumnIndex == descriptionIndex) {
+                ((TextView)view).setText(cursor.getString(descriptionIndex));
                 return true;
             }
 
