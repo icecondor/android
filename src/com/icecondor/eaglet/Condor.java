@@ -15,6 +15,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.icecondor.eaglet.api.Client;
+import com.icecondor.eaglet.db.Connecting;
 import com.icecondor.eaglet.db.Database;
 import com.icecondor.eaglet.service.AlarmReceiver;
 
@@ -49,7 +50,7 @@ public class Condor extends Service {
     public void handleCommand(Intent intent) {
         Log.d(Constants.APP_TAG, "Condor handleCommand");
         /* Preferences */
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         /* Database */
         Log.d(Constants.APP_TAG, "Condor opening database");
@@ -70,6 +71,7 @@ public class Condor extends Service {
         try {
             String apiUrl = prefs.getString("api_url", "");
             Log.d(Constants.APP_TAG, "Condor connecting to "+apiUrl);
+            db.append(new Connecting(apiUrl));
             api = new Client(apiUrl);
             api.connect();
         } catch (URISyntaxException e) {

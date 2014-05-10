@@ -20,8 +20,8 @@ public class Client {
 
     public void connect() {
         // AndroidSync quirk, uses http urls
-        String fauxApiUrl = apiUrl.toString().replace("ws://", "http://").replace("wss://", "https://");
-        AsyncHttpRequest get = new AsyncHttpGet(fauxApiUrl);
+        String httpQuirkUrl = apiUrl.toString().replace("ws://", "http://").replace("wss://", "https://");
+        AsyncHttpRequest get = new AsyncHttpGet(httpQuirkUrl);
         get.setTimeout(2500);
         socket.websocket(get, "my-protocol", new KoushiSocket(new Dispatch()));
     }
