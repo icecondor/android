@@ -49,12 +49,14 @@ public class Condor extends Service {
 
     public void handleCommand(Intent intent) {
         Log.d(Constants.APP_TAG, "Condor handleCommand");
+        Context ctx = getApplicationContext();
+
         /* Preferences */
-        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
 
         /* Database */
         Log.d(Constants.APP_TAG, "Condor opening database");
-        db = new Database(this);
+        db = new Database(ctx);
         db.open();
 
         /* Alarm */
