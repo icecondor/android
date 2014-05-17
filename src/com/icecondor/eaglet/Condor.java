@@ -100,7 +100,7 @@ public class Condor extends Service {
 
     /* Localbinder approach */
     public class LocalBinder extends Binder {
-        Condor getService() {
+        public Condor getService() {
             return Condor.this;
         }
     }
