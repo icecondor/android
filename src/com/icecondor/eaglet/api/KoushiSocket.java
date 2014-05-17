@@ -22,9 +22,11 @@ import com.koushikdutta.async.http.WebSocket.StringCallback;
 public class KoushiSocket implements AsyncHttpClient.WebSocketConnectCallback {
 
     private final Dispatch dispatch;
+    private final ConnectCallbacks connectCallbacks;
 
-    public KoushiSocket(Dispatch callback) {
+    public KoushiSocket(Dispatch callback, ConnectCallbacks connBack) {
         dispatch = callback;
+        connectCallbacks = connBack;
     }
 
     @Override
@@ -32,6 +34,7 @@ public class KoushiSocket implements AsyncHttpClient.WebSocketConnectCallback {
         if (ex != null) {
             if(ex.getClass().isAssignableFrom(java.util.concurrent.TimeoutException.class)) {
                 Log.d(Constants.APP_TAG, "ws: timeout!");
+                connectCallbacks.onTimeout();
             } else {
                 Log.d(Constants.APP_TAG, "ws: stacktrace!!");
                 ex.printStackTrace();

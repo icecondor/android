@@ -1,5 +1,6 @@
 package com.icecondor.eaglet;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 
 import android.app.AlarmManager;
@@ -15,6 +16,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.icecondor.eaglet.api.Client;
+import com.icecondor.eaglet.api.ClientActions;
 import com.icecondor.eaglet.db.Connecting;
 import com.icecondor.eaglet.db.Database;
 import com.icecondor.eaglet.service.AlarmReceiver;
@@ -72,10 +74,8 @@ public class Condor extends Service {
         /* API */
         try {
             String apiUrl = prefs.getString("api_url", "");
-            Log.d(Constants.APP_TAG, "Condor connecting to "+apiUrl);
-            db.append(new Connecting(apiUrl));
             api = new Client(apiUrl, new ApiActions());
-            api.connect();
+            api.startPersistentConnect();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -90,8 +90,12 @@ public class Condor extends Service {
                         wake_alarm_intent);
     }
 
-    public class ApiActions {
-
+    public class ApiActions implements ClientActions {
+        @Override
+        public void onConnecting(URI url) {
+            Log.d(Constants.APP_TAG, "Condor connecting to "+url);
+            db.append(new Connecting(url.toString()));
+        }
     }
 
     /* Localbinder approach */
