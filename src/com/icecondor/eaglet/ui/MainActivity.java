@@ -17,11 +17,15 @@ import com.icecondor.eaglet.R;
 
 public class MainActivity extends ActionBarActivity implements ServiceConnection {
 
+    private Intent condor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(Constants.APP_TAG, "MainActivity onCreate");
         setContentView(R.layout.activity_main);
+
+        condor = new Intent(this, Condor.class);
 
         if (savedInstanceState == null) {
             switchFragment(new ActivityListFragment());
@@ -39,8 +43,8 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
         super.onResume();
         Log.d(Constants.APP_TAG, "MainActivity onResume");
 
-        Intent bird = new Intent(this, Condor.class);
-        startService(bird);
+        startService(condor); // keep this for STICKY result
+        bindService(condor, this, BIND_AUTO_CREATE);
     }
 
     @Override
@@ -71,12 +75,12 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-        Log.d(Constants.APP_TAG, "MainActivity onServiceConnected");
+        Log.d(Constants.APP_TAG, "MainActivity: onServiceConnected "+name.flattenToShortString());
     }
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
-        Log.d(Constants.APP_TAG, "MainActivity onServiceDisconnected");
+        Log.d(Constants.APP_TAG, "MainActivity: onServiceDisconnected "+name.flattenToShortString());
 
     }
 
