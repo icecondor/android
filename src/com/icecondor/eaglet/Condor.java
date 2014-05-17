@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -95,16 +96,37 @@ public class Condor extends Service {
         public void onConnecting(URI url) {
             Log.d(Constants.APP_TAG, "Condor connecting to "+url);
             db.append(new Connecting(url.toString()));
+            binder.signal();
         }
     }
 
     /* Localbinder approach */
     public class LocalBinder extends Binder {
+        public Handler handler;
         public Condor getService() {
             return Condor.this;
         }
+        public void setHandler(Handler handler) {
+            Log.d(Constants.APP_TAG, "condor: localBinder: setHandler "+handler);
+            this.handler = handler;
+        }
+        public void signal() {
+            if(handler != null) {
+                Log.d(Constants.APP_TAG, "condor: localBinder: signal");
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(Constants.APP_TAG, "condor: localBinder: signal inside post runnable");
+
+                    }
+                });
+            } else {
+                Log.d(Constants.APP_TAG, "condor: localBinder: signal: warning, handler is null");
+            }
+        }
     }
-    private final IBinder binder = new LocalBinder();
+
+    private final LocalBinder binder = new LocalBinder();
 
     @Override
     public IBinder onBind(Intent intent) {

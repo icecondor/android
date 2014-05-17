@@ -4,7 +4,9 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -15,10 +17,11 @@ import com.icecondor.eaglet.Condor;
 import com.icecondor.eaglet.Constants;
 import com.icecondor.eaglet.R;
 
-public class MainActivity extends ActionBarActivity implements ServiceConnection {
+public class MainActivity extends ActionBarActivity implements ServiceConnection, Handler.Callback {
 
     private Intent conderIntent;
     private Condor condor;
+    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +30,7 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
         setContentView(R.layout.activity_main);
 
         conderIntent = new Intent(this, Condor.class);
+        handler = new Handler(this);
 
         if (savedInstanceState == null) {
             switchFragment(new ActivityListFragment());
@@ -87,6 +91,7 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     public void onServiceConnected(ComponentName name, IBinder service) {
         Log.d(Constants.APP_TAG, "MainActivity: onServiceConnected "+name.flattenToShortString());
         Condor.LocalBinder localBinder = (Condor.LocalBinder)service;
+        localBinder.setHandler(handler);
         condor = localBinder.getService();
     }
 
@@ -94,6 +99,12 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     public void onServiceDisconnected(ComponentName name) {
         Log.d(Constants.APP_TAG, "MainActivity: onServiceDisconnected "+name.flattenToShortString());
 
+    }
+
+    @Override
+    public boolean handleMessage(Message msg) {
+        Log.d(Constants.APP_TAG, "MainActivity: handleMessage");
+        return false;
     }
 
 }
