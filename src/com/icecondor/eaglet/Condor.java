@@ -74,7 +74,7 @@ public class Condor extends Service {
             String apiUrl = prefs.getString("api_url", "");
             Log.d(Constants.APP_TAG, "Condor connecting to "+apiUrl);
             db.append(new Connecting(apiUrl));
-            api = new Client(apiUrl);
+            api = new Client(apiUrl, new ApiActions());
             api.connect();
         } catch (URISyntaxException e) {
             e.printStackTrace();
@@ -88,6 +88,10 @@ public class Condor extends Service {
                         System.currentTimeMillis(),
                         record_frequency,
                         wake_alarm_intent);
+    }
+
+    public class ApiActions {
+
     }
 
     /* Localbinder approach */

@@ -3,6 +3,7 @@ package com.icecondor.eaglet.api;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import com.icecondor.eaglet.Condor.ApiActions;
 import com.koushikdutta.async.http.AsyncHttpClient;
 import com.koushikdutta.async.http.AsyncHttpGet;
 import com.koushikdutta.async.http.AsyncHttpRequest;
@@ -12,7 +13,7 @@ public class Client {
     private final URI apiUrl;
     private final AsyncHttpClient client;
 
-    public Client(String serverURL) throws URISyntaxException {
+    public Client(String serverURL, ApiActions apiActions) throws URISyntaxException {
         apiUrl = new URI(serverURL);
         //socket = new TooTallSocket(apiUrl, new Dispatch());
         client = AsyncHttpClient.getDefaultInstance();
