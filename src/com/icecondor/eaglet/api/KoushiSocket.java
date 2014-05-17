@@ -2,12 +2,9 @@ package com.icecondor.eaglet.api;
 
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.conn.ssl.SSLSocketFactory;
 
@@ -16,6 +13,7 @@ import android.util.Log;
 import com.icecondor.eaglet.Constants;
 import com.koushikdutta.async.ByteBufferList;
 import com.koushikdutta.async.DataEmitter;
+import com.koushikdutta.async.callback.CompletedCallback;
 import com.koushikdutta.async.callback.DataCallback;
 import com.koushikdutta.async.http.AsyncHttpClient;
 import com.koushikdutta.async.http.WebSocket;
@@ -32,11 +30,33 @@ public class KoushiSocket implements AsyncHttpClient.WebSocketConnectCallback {
     @Override
     public void onCompleted(Exception ex, WebSocket webSocket) {
         if (ex != null) {
-            ex.printStackTrace();
-            return;
+            if(ex.getClass().isAssignableFrom(java.util.concurrent.TimeoutException.class)) {
+                Log.d(Constants.APP_TAG, "ws: timeout!");
+            } else {
+                Log.d(Constants.APP_TAG, "ws: stacktrace!!");
+                ex.printStackTrace();
+            }
+            return; // no webSocket
         }
 
-        Log.d(Constants.APP_TAG, "ws: onCompleted");
+        webSocket.setClosedCallback(new CompletedCallback() {
+
+            @Override
+            public void onCompleted(Exception arg0) {
+                Log.d(Constants.APP_TAG, "ws: closedCallback onCompleted: "+arg0);
+
+            }
+        });
+
+        webSocket.setEndCallback(new CompletedCallback() {
+
+            @Override
+            public void onCompleted(Exception arg0) {
+                Log.d(Constants.APP_TAG, "ws: endCallback onCompleted: "+arg0);
+
+            }
+        });
+
         webSocket.setStringCallback(new StringCallback() {
             @Override
             public void onStringAvailable(String s) {
@@ -71,20 +91,4 @@ public class KoushiSocket implements AsyncHttpClient.WebSocketConnectCallback {
         }
     }
 
-
-}
-
-final class NoTrustManager implements X509TrustManager {
-    @Override
-    public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-    }
-
-    @Override
-    public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-    }
-
-    @Override
-    public X509Certificate[] getAcceptedIssuers() {
-        return null;
-    }
 }
