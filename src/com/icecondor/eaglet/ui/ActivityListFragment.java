@@ -22,6 +22,9 @@ import com.icecondor.eaglet.db.DbActivity;
 public class ActivityListFragment extends Fragment {
 
     private Database db;
+    private ActivityListViewBinder activityListViewBinder;
+    private ListView listView;
+    private SimpleCursorAdapter sCursorAdapter;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -35,7 +38,7 @@ public class ActivityListFragment extends Fragment {
         Log.d(Constants.APP_TAG, "ActivityListFragment onCreateView");
         View rootView = inflater.inflate(R.layout.activity_list_fragment_main,
                                container, false);
-        ListView listView = (ListView)rootView.findViewById(R.id.activity_list_view);
+        listView = (ListView)rootView.findViewById(R.id.activity_list_view);
         String[] fromColumns =  {Database.ROW_CREATED_AT,
                                  Database.ACTIVITIES_VERB,
                                  Database.ACTIVITIES_DESCRIPTION,
@@ -45,18 +48,23 @@ public class ActivityListFragment extends Fragment {
                          R.id.activity_row_description,
                          R.id.activity_row_uuid};
         db = new Database(getActivity());
-        SimpleCursorAdapter sCursorAdapter = new SimpleCursorAdapter(getActivity(),
+        sCursorAdapter = new SimpleCursorAdapter(getActivity(),
                                                       R.layout.activity_row,
                                                       DbActivity.getAll(db),
                                                       fromColumns,
                                                       toViews);
-        sCursorAdapter.setViewBinder(new ActivityListViewBinder());
+        activityListViewBinder = new ActivityListViewBinder();
+        sCursorAdapter.setViewBinder(activityListViewBinder);
         listView.setAdapter(sCursorAdapter);
         return rootView;
     }
 
-    private class ActivityListViewBinder implements SimpleCursorAdapter.ViewBinder {
+    public void invalidateView() {
+        Cursor rows = DbActivity.getAll(db);
+        sCursorAdapter.changeCursor(rows);
+    }
 
+    private class ActivityListViewBinder implements SimpleCursorAdapter.ViewBinder {
         @Override
         public boolean setViewValue(View view, Cursor cursor, int dbColumnIndex) {
             int createdAtIndex = cursor.getColumnIndex(Database.ROW_CREATED_AT);
@@ -88,6 +96,5 @@ public class ActivityListFragment extends Fragment {
 
             return false;
         }
-
     }
 }

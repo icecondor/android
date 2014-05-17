@@ -22,6 +22,7 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     private Intent conderIntent;
     private Condor condor;
     private Handler handler;
+    private ActivityListFragment aList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,9 +32,10 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
 
         conderIntent = new Intent(this, Condor.class);
         handler = new Handler(this);
+        aList = new ActivityListFragment();
 
         if (savedInstanceState == null) {
-            switchFragment(new ActivityListFragment());
+            switchFragment(aList);
         }
     }
 
@@ -104,6 +106,9 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     @Override
     public boolean handleMessage(Message msg) {
         Log.d(Constants.APP_TAG, "MainActivity: handleMessage");
+        if((int)msg.obj == Constants.NEW_ACTIVITY) {
+            aList.invalidateView();
+        }
         return false;
     }
 

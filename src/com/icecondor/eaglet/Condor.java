@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -113,13 +114,9 @@ public class Condor extends Service {
         public void signal() {
             if(handler != null) {
                 Log.d(Constants.APP_TAG, "condor: localBinder: signal");
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.d(Constants.APP_TAG, "condor: localBinder: signal inside post runnable");
-
-                    }
-                });
+                Message m = handler.obtainMessage();
+                m.obj = Constants.NEW_ACTIVITY;
+                handler.sendMessage(m);
             } else {
                 Log.d(Constants.APP_TAG, "condor: localBinder: signal: warning, handler is null");
             }
