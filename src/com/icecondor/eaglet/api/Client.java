@@ -6,7 +6,6 @@ import java.net.URISyntaxException;
 import org.json.JSONObject;
 
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 
 import com.icecondor.eaglet.Constants;
@@ -14,7 +13,7 @@ import com.koushikdutta.async.http.AsyncHttpClient;
 import com.koushikdutta.async.http.AsyncHttpGet;
 import com.koushikdutta.async.http.AsyncHttpRequest;
 
-public class Client implements ConnectCallbacks, Handler.Callback {
+public class Client implements ConnectCallbacks {
 
     private final URI apiUrl;
     private final AsyncHttpClient client;
@@ -28,7 +27,7 @@ public class Client implements ConnectCallbacks, Handler.Callback {
     public Client(String serverURL, ClientActions actions) throws URISyntaxException {
         this.apiUrl = new URI(serverURL);
         this.actions = actions;
-        handler = new Handler(this);
+        handler = new Handler();
         //socket = new TooTallSocket(apiUrl, new Dispatch());
         this.client = AsyncHttpClient.getDefaultInstance();
         KoushiSocket.disableSSLCheck(client);
@@ -75,11 +74,6 @@ public class Client implements ConnectCallbacks, Handler.Callback {
 
     private void doConnect() {
         connect();
-    }
-
-    @Override
-    public boolean handleMessage(Message msg) {
-        return false;
     }
 
     public void checkEmail(String email) {
