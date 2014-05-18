@@ -36,7 +36,7 @@ public class ActivityListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         Log.d(Constants.APP_TAG, "ActivityListFragment onCreateView");
-        View rootView = inflater.inflate(R.layout.activity_list_fragment_main,
+        View rootView = inflater.inflate(R.layout.fragment_activity_list,
                                container, false);
         listView = (ListView)rootView.findViewById(R.id.activity_list_view);
         String[] fromColumns =  {Database.ROW_CREATED_AT,
