@@ -1,9 +1,10 @@
 package com.icecondor.eaglet.ui.alist;
 
+import java.net.URI;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
@@ -13,9 +14,10 @@ import com.icecondor.eaglet.Constants;
 import com.icecondor.eaglet.R;
 import com.icecondor.eaglet.ui.BaseActivity;
 import com.icecondor.eaglet.ui.Preferences;
+import com.icecondor.eaglet.ui.UiActions;
 import com.icecondor.eaglet.ui.login.Main;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements UiActions {
 
     private ActivityListFragment aList;
     private SharedPreferences prefs;
@@ -81,12 +83,24 @@ public class MainActivity extends BaseActivity {
 
 
     @Override
-    public boolean handleMessage(Message msg) {
-        Log.d(Constants.APP_TAG, "alist.MainActivity: handleMessage "+msg.obj);
-        if((int)msg.obj == Constants.NEW_ACTIVITY) {
-            aList.invalidateView();
-        }
-        return false;
+    public void onConnecting(URI uri) {
+        Log.d(Constants.APP_TAG, "alist.MainActivity onConnecting");
+    }
+
+    @Override
+    public void onConnected() {
+        Log.d(Constants.APP_TAG, "alist.MainActivity onConnected");
+    }
+
+    @Override
+    public void onTimeout() {
+        Log.d(Constants.APP_TAG, "alist.MainActivity onTimeout");
+    }
+
+    @Override
+    public void onNewActivity() {
+        Log.d(Constants.APP_TAG, "alist.MainActivity: onNewActivity");
+        aList.invalidateView();
     }
 
 }

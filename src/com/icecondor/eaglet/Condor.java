@@ -11,9 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Binder;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -22,6 +20,7 @@ import com.icecondor.eaglet.api.ClientActions;
 import com.icecondor.eaglet.db.Connecting;
 import com.icecondor.eaglet.db.Database;
 import com.icecondor.eaglet.service.AlarmReceiver;
+import com.icecondor.eaglet.ui.UiActions;
 
 public class Condor extends Service {
 
@@ -97,28 +96,50 @@ public class Condor extends Service {
         public void onConnecting(URI url) {
             Log.d(Constants.APP_TAG, "Condor connecting to "+url);
             db.append(new Connecting(url.toString()));
-            binder.signal();
+            binder.onConnecting(url);
+        }
+        @Override
+        public void onConnected() {
+            binder.onConnected();
+        }
+        @Override
+        public void onTimeout() {
+            binder.onTimeout();
         }
     }
 
     /* Localbinder approach */
-    public class LocalBinder extends Binder {
-        public Handler handler;
+    public class LocalBinder extends Binder implements UiActions {
+        public UiActions handler;
         public Condor getService() {
             return Condor.this;
         }
-        public void setHandler(Handler handler) {
+        public void setHandler(UiActions handler) {
             Log.d(Constants.APP_TAG, "condor: localBinder: setHandler "+handler);
             this.handler = handler;
         }
-        public void signal() {
+        @Override
+        public void onConnecting(URI uri) {
             if(handler != null) {
-                Log.d(Constants.APP_TAG, "condor: localBinder: signal");
-                Message m = handler.obtainMessage();
-                m.obj = Constants.NEW_ACTIVITY;
-                handler.sendMessage(m);
-            } else {
-                Log.d(Constants.APP_TAG, "condor: localBinder: signal: warning, handler is null");
+                handler.onConnecting(uri);
+            }
+        }
+        @Override
+        public void onConnected() {
+            if(handler != null) {
+                handler.onConnected();
+            }
+        }
+        @Override
+        public void onTimeout() {
+            if(handler != null) {
+                handler.onConnected();
+            }
+        }
+        @Override
+        public void onNewActivity() {
+            if(handler != null) {
+                handler.onNewActivity();
             }
         }
     }

@@ -35,6 +35,7 @@ public class Client implements ConnectCallbacks {
 
     public void connect() {
         if(connecting == false) {
+            actions.onConnecting(apiUrl);
             connecting = true;
             actions.onConnecting(apiUrl);
             // AndroidSync quirk, uses http urls
@@ -55,6 +56,7 @@ public class Client implements ConnectCallbacks {
     @Override
     public void onTimeout() {
         connecting = false;
+        actions.onTimeout();
         if(reconnect) {
             reconnects += 1;
             long waitMillis = exponentialBackoffTime(reconnects);
@@ -76,10 +78,6 @@ public class Client implements ConnectCallbacks {
         connect();
     }
 
-    public void checkEmail(String email) {
-
-    }
-
     @Override
     public void onMessage(JSONObject msg) {
         Log.d(Constants.APP_TAG, "Client onMessage: "+msg);
@@ -90,6 +88,7 @@ public class Client implements ConnectCallbacks {
         Log.d(Constants.APP_TAG, "Client onConnected.");
         connecting = false;
         reconnects = 0;
+        actions.onConnected();
     }
 
 }

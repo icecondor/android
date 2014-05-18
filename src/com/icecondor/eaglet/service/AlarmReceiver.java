@@ -20,7 +20,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         if (action.equals("com.icecondor.nest.WAKE_ALARM")) {
             Log.i(Constants.APP_TAG, "AlarmReceiver onReceive context "+context);
             db.append(new HeartBeat());
-            ((Condor)context).binder.signal();
+            ((Condor)context).binder.onNewActivity();
         }
 
         db.close();

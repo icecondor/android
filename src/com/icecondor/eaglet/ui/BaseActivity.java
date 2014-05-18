@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -18,10 +17,9 @@ import com.icecondor.eaglet.Constants;
 import com.icecondor.eaglet.R;
 
 abstract public class BaseActivity extends ActionBarActivity implements ServiceConnection,
-                                                               Handler.Callback {
+                                                                        UiActions {
     protected SharedPreferences prefs;
     private LocalBinder localBinder;
-    private Handler handler;
     protected Condor condor;
     protected Intent condorIntent;
 
@@ -31,7 +29,6 @@ abstract public class BaseActivity extends ActionBarActivity implements ServiceC
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         condorIntent = new Intent(this, Condor.class);
         Log.d(Constants.APP_TAG, "BaseActivity: onCreate new Handler "+this);
-        handler = new Handler(this);
     }
 
     protected void switchFragment(Fragment fragment) {
@@ -58,7 +55,7 @@ abstract public class BaseActivity extends ActionBarActivity implements ServiceC
     public void onServiceConnected(ComponentName name, IBinder service) {
         Log.d(Constants.APP_TAG, "BaseActivity: onServiceConnected "+name.flattenToShortString());
         localBinder = (Condor.LocalBinder)service;
-        localBinder.setHandler(handler);
+        localBinder.setHandler(this);
         condor = localBinder.getService();
     }
 

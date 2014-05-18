@@ -1,9 +1,10 @@
-package com.icecondor.eaglet.api;
+package com.icecondor.eaglet.ui;
 
 import java.net.URI;
 
-public interface ClientActions {
+public interface UiActions {
     public void onConnecting(URI uri);
     public void onConnected();
     public void onTimeout();
+    public void onNewActivity();
 }
