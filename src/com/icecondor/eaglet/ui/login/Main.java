@@ -1,6 +1,5 @@
 package com.icecondor.eaglet.ui.login;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -13,7 +12,6 @@ import com.icecondor.eaglet.ui.BaseActivity;
 public class Main extends BaseActivity {
     public static String PREF_KEY_AUTHENTICATED_USER_ID = "icecondor_authenticated_user_id";
     Fragment loginFragment;
-    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
