@@ -123,7 +123,7 @@ public class Condor extends Service {
         }
     }
 
-    private final LocalBinder binder = new LocalBinder();
+    public final LocalBinder binder = new LocalBinder();
 
     @Override
     public IBinder onBind(Intent intent) {
