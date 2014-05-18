@@ -28,12 +28,13 @@
         </ImageView>
 
         <EditText
+            android:id="@+id/login_email_field"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:hint="email"
-            android:inputType="textEmailAddress"
-            >
+            android:imeOptions="actionSend"
+            android:inputType="textEmailAddress" >
         </EditText>
     </LinearLayout>
 
@@ -44,4 +45,5 @@
         android:gravity="center_horizontal"
         android:orientation="vertical" >
     </LinearLayout>
+
 </LinearLayout>
