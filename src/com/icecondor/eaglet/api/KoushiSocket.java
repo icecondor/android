@@ -7,6 +7,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.util.Log;
 
@@ -21,11 +23,9 @@ import com.koushikdutta.async.http.WebSocket.StringCallback;
 
 public class KoushiSocket implements AsyncHttpClient.WebSocketConnectCallback {
 
-    private final Dispatch dispatch;
     private final ConnectCallbacks connectCallbacks;
 
-    public KoushiSocket(Dispatch callback, ConnectCallbacks connBack) {
-        dispatch = callback;
+    public KoushiSocket(ConnectCallbacks connBack) {
         connectCallbacks = connBack;
     }
 
@@ -65,7 +65,13 @@ public class KoushiSocket implements AsyncHttpClient.WebSocketConnectCallback {
             public void onStringAvailable(String s) {
                 Log.d(Constants.APP_TAG, "ws: onStringAvailable: "+s);
                 System.out.println("I got a string: " + s);
-                dispatch.process(s);
+                JSONObject msg;
+                try {
+                    msg = new JSONObject(s);
+                    connectCallbacks.onMessage(msg);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -76,6 +82,8 @@ public class KoushiSocket implements AsyncHttpClient.WebSocketConnectCallback {
                 byteBufferList.recycle();
             }
         });
+
+        connectCallbacks.onConnected();
     }
 
     public static void disableSSLCheck(AsyncHttpClient client) {

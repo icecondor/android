@@ -3,6 +3,8 @@ package com.icecondor.eaglet.api;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.json.JSONObject;
+
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -21,6 +23,7 @@ public class Client implements ConnectCallbacks, Handler.Callback {
     private static final int RECONNECT_WAIT_MS = 5000;
     private int reconnects = 0;
     private final Handler handler;
+    private boolean connecting;
 
     public Client(String serverURL, ClientActions actions) throws URISyntaxException {
         this.apiUrl = new URI(serverURL);
@@ -32,12 +35,17 @@ public class Client implements ConnectCallbacks, Handler.Callback {
     }
 
     public void connect() {
-        actions.onConnecting(apiUrl);
-        // AndroidSync quirk, uses http urls
-        String httpQuirkUrl = apiUrl.toString().replace("ws://", "http://").replace("wss://", "https://");
-        AsyncHttpRequest get = new AsyncHttpGet(httpQuirkUrl);
-        get.setTimeout(2500);
-        client.websocket(get, null, new KoushiSocket(new Dispatch(), this));
+        if(connecting == false) {
+            connecting = true;
+            actions.onConnecting(apiUrl);
+            // AndroidSync quirk, uses http urls
+            String httpQuirkUrl = apiUrl.toString().replace("ws://", "http://").replace("wss://", "https://");
+            AsyncHttpRequest get = new AsyncHttpGet(httpQuirkUrl);
+            get.setTimeout(2500);
+            client.websocket(get, null, new KoushiSocket(this));
+        } else {
+            Log.d(Constants.APP_TAG, "client: ignoring connect(). connecting in progress.");
+        }
     }
 
     public void startPersistentConnect() {
@@ -47,10 +55,11 @@ public class Client implements ConnectCallbacks, Handler.Callback {
 
     @Override
     public void onTimeout() {
+        connecting = false;
         if(reconnect) {
             reconnects += 1;
             long waitMillis = exponentialBackoffTime(reconnects);
-            Log.d(Constants.APP_TAG, "api: onTimeout. reconnects = "+reconnects+". next try "+(waitMillis/1000)+"s.");
+            Log.d(Constants.APP_TAG, "connect: onTimeout. reconnects = "+reconnects+". next try "+(waitMillis/1000)+"s.");
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -71,6 +80,22 @@ public class Client implements ConnectCallbacks, Handler.Callback {
     @Override
     public boolean handleMessage(Message msg) {
         return false;
+    }
+
+    public void checkEmail(String email) {
+
+    }
+
+    @Override
+    public void onMessage(JSONObject msg) {
+        Log.d(Constants.APP_TAG, "Client onMessage: "+msg);
+    }
+
+    @Override
+    public void onConnected() {
+        Log.d(Constants.APP_TAG, "Client onConnected.");
+        connecting = false;
+        reconnects = 0;
     }
 
 }

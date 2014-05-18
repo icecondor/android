@@ -56,12 +56,13 @@ public class MainActivity extends BaseActivity implements ServiceConnection, Han
         super.onResume();
         Log.d(Constants.APP_TAG, "MainActivity onResume");
 
+        startService(conderIntent); // keep this for STICKY result
+
         if(prefs.getString(Main.PREF_KEY_AUTHENTICATED_USER_ID, null) == null) {
             startActivity(new Intent(this, Main.class));
             return;
         }
 
-        startService(conderIntent); // keep this for STICKY result
         bindService(conderIntent, this, BIND_AUTO_CREATE);
     }
 
