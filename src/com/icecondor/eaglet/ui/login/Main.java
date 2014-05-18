@@ -1,6 +1,7 @@
 package com.icecondor.eaglet.ui.login;
 
 import android.os.Bundle;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -26,6 +27,14 @@ public class Main extends BaseActivity {
         if (savedInstanceState == null) {
             switchFragment(loginFragment);
         }
+    }
+
+    @Override
+    public boolean handleMessage(Message msg) {
+        Log.d(Constants.APP_TAG, "login.Main: handleMessage "+msg.obj);
+        if((int)msg.obj == Constants.NEW_ACTIVITY) {
+        }
+        return false;
     }
 
 }

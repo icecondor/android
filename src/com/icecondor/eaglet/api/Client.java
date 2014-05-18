@@ -58,7 +58,7 @@ public class Client implements ConnectCallbacks {
         if(reconnect) {
             reconnects += 1;
             long waitMillis = exponentialBackoffTime(reconnects);
-            Log.d(Constants.APP_TAG, "connect: onTimeout. reconnects = "+reconnects+". next try "+(waitMillis/1000)+"s.");
+            Log.d(Constants.APP_TAG, "api.Client connect: onTimeout. reconnects = "+reconnects+". next try "+(waitMillis/1000)+"s.");
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {

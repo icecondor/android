@@ -1,30 +1,22 @@
 package com.icecondor.eaglet.ui.alist;
 
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.icecondor.eaglet.Condor;
 import com.icecondor.eaglet.Constants;
 import com.icecondor.eaglet.R;
 import com.icecondor.eaglet.ui.BaseActivity;
 import com.icecondor.eaglet.ui.Preferences;
 import com.icecondor.eaglet.ui.login.Main;
 
-public class MainActivity extends BaseActivity implements ServiceConnection, Handler.Callback {
+public class MainActivity extends BaseActivity {
 
-    private Intent conderIntent;
-    private Condor condor;
-    private Handler handler;
     private ActivityListFragment aList;
     private SharedPreferences prefs;
 
@@ -36,8 +28,6 @@ public class MainActivity extends BaseActivity implements ServiceConnection, Han
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        conderIntent = new Intent(this, Condor.class);
-        handler = new Handler(this);
         aList = new ActivityListFragment();
 
         if (savedInstanceState == null) {
@@ -49,6 +39,7 @@ public class MainActivity extends BaseActivity implements ServiceConnection, Han
     protected void onStart() {
         super.onStart();
         Log.d(Constants.APP_TAG, "MainActivity onStart");
+        startService(condorIntent); // keep this for STICKY result
     }
 
     @Override
@@ -56,23 +47,15 @@ public class MainActivity extends BaseActivity implements ServiceConnection, Han
         super.onResume();
         Log.d(Constants.APP_TAG, "MainActivity onResume");
 
-        startService(conderIntent); // keep this for STICKY result
-
         if(prefs.getString(Main.PREF_KEY_AUTHENTICATED_USER_ID, null) == null) {
             startActivity(new Intent(this, Main.class));
             return;
         }
-
-        bindService(conderIntent, this, BIND_AUTO_CREATE);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if(condor != null) {
-            condor = null;
-            unbindService(this);
-        }
     }
 
     @Override
@@ -96,23 +79,10 @@ public class MainActivity extends BaseActivity implements ServiceConnection, Han
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onServiceConnected(ComponentName name, IBinder service) {
-        Log.d(Constants.APP_TAG, "MainActivity: onServiceConnected "+name.flattenToShortString());
-        Condor.LocalBinder localBinder = (Condor.LocalBinder)service;
-        localBinder.setHandler(handler);
-        condor = localBinder.getService();
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName name) {
-        Log.d(Constants.APP_TAG, "MainActivity: onServiceDisconnected "+name.flattenToShortString());
-
-    }
 
     @Override
     public boolean handleMessage(Message msg) {
-        Log.d(Constants.APP_TAG, "MainActivity: handleMessage");
+        Log.d(Constants.APP_TAG, "alist.MainActivity: handleMessage "+msg.obj);
         if((int)msg.obj == Constants.NEW_ACTIVITY) {
             aList.invalidateView();
         }
