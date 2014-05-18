@@ -1,4 +1,4 @@
-package com.icecondor.eaglet.ui;
+package com.icecondor.eaglet.ui.alist;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;

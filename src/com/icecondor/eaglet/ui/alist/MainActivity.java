@@ -1,14 +1,14 @@
-package com.icecondor.eaglet.ui;
+package com.icecondor.eaglet.ui.alist;
 
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,19 +16,25 @@ import android.view.MenuItem;
 import com.icecondor.eaglet.Condor;
 import com.icecondor.eaglet.Constants;
 import com.icecondor.eaglet.R;
+import com.icecondor.eaglet.ui.BaseActivity;
+import com.icecondor.eaglet.ui.Preferences;
+import com.icecondor.eaglet.ui.login.Main;
 
-public class MainActivity extends ActionBarActivity implements ServiceConnection, Handler.Callback {
+public class MainActivity extends BaseActivity implements ServiceConnection, Handler.Callback {
 
     private Intent conderIntent;
     private Condor condor;
     private Handler handler;
     private ActivityListFragment aList;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(Constants.APP_TAG, "MainActivity onCreate");
         setContentView(R.layout.activity_main);
+
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         conderIntent = new Intent(this, Condor.class);
         handler = new Handler(this);
@@ -49,6 +55,11 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
     protected void onResume() {
         super.onResume();
         Log.d(Constants.APP_TAG, "MainActivity onResume");
+
+        if(prefs.getString(Main.PREF_KEY_AUTHENTICATED_USER_ID, null) == null) {
+            startActivity(new Intent(this, Main.class));
+            return;
+        }
 
         startService(conderIntent); // keep this for STICKY result
         bindService(conderIntent, this, BIND_AUTO_CREATE);
@@ -82,11 +93,6 @@ public class MainActivity extends ActionBarActivity implements ServiceConnection
             startActivity(preference);
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void switchFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
-            .replace(R.id.container, fragment).commit();
     }
 
     @Override
