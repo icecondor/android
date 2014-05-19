@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -110,36 +111,58 @@ public class Condor extends Service {
 
     /* Localbinder approach */
     public class LocalBinder extends Binder implements UiActions {
-        public UiActions handler;
+        public Handler handler;
+        public UiActions callback;
         public Condor getService() {
             return Condor.this;
         }
-        public void setHandler(UiActions handler) {
+        public void setHandler(Handler handler, UiActions callback) {
             Log.d(Constants.APP_TAG, "condor: localBinder: setHandler "+handler);
             this.handler = handler;
+            this.callback = callback;
         }
         @Override
-        public void onConnecting(URI uri) {
+        public void onConnecting(final URI uri) {
             if(handler != null) {
-                handler.onConnecting(uri);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onConnecting(uri);
+                    }
+                });
             }
         }
         @Override
         public void onConnected() {
             if(handler != null) {
-                handler.onConnected();
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onConnected();
+                    }
+                });
             }
         }
         @Override
         public void onTimeout() {
             if(handler != null) {
-                handler.onConnected();
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onTimeout();
+                    }
+                });
             }
         }
         @Override
         public void onNewActivity() {
             if(handler != null) {
-                handler.onNewActivity();
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onNewActivity();
+                    }
+                });
             }
         }
     }

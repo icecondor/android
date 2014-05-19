@@ -17,6 +17,7 @@ import com.icecondor.eaglet.R;
 
 public class LoginFragment extends Fragment implements OnEditorActionListener {
     private EditText emailField;
+    private TextView statusView;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -30,6 +31,7 @@ public class LoginFragment extends Fragment implements OnEditorActionListener {
         Log.d(Constants.APP_TAG, "LoginFragment onCreateView");
         View rootView = inflater.inflate(R.layout.fragment_login,
                                container, false);
+        statusView = (TextView)rootView.findViewById(R.id.login_status_msg);
         emailField = (EditText)rootView.findViewById(R.id.login_email_field);
         emailField.setOnEditorActionListener(this);
         return rootView;
@@ -43,5 +45,9 @@ public class LoginFragment extends Fragment implements OnEditorActionListener {
             }
         }
         return false;
+    }
+
+    public void setStatusText(String text) {
+        statusView.setText(text);
     }
 }

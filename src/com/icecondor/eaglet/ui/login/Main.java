@@ -4,7 +4,6 @@ import java.net.URI;
 
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import com.icecondor.eaglet.Constants;
@@ -14,7 +13,7 @@ import com.icecondor.eaglet.ui.UiActions;
 
 public class Main extends BaseActivity implements UiActions {
     public static String PREF_KEY_AUTHENTICATED_USER_ID = "icecondor_authenticated_user_id";
-    Fragment loginFragment;
+    LoginFragment loginFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,11 +33,13 @@ public class Main extends BaseActivity implements UiActions {
     @Override
     public void onConnecting(URI uri) {
         Log.d(Constants.APP_TAG, "login.Main onConnecting");
+        loginFragment.setStatusText("connecting...");
     }
 
     @Override
     public void onConnected() {
         Log.d(Constants.APP_TAG, "login.Main onConnected");
+        loginFragment.setStatusText("connected.");
     }
 
     @Override
