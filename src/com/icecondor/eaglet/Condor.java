@@ -18,6 +18,7 @@ import android.util.Log;
 
 import com.icecondor.eaglet.api.Client;
 import com.icecondor.eaglet.api.ClientActions;
+import com.icecondor.eaglet.db.Connected;
 import com.icecondor.eaglet.db.Connecting;
 import com.icecondor.eaglet.db.Database;
 import com.icecondor.eaglet.service.AlarmReceiver;
@@ -101,6 +102,7 @@ public class Condor extends Service {
         }
         @Override
         public void onConnected() {
+            db.append(new Connected());
             binder.onConnected();
         }
         @Override
@@ -121,42 +123,53 @@ public class Condor extends Service {
             this.handler = handler;
             this.callback = callback;
         }
+        public boolean hasHandler() {
+            if(handler != null) {
+                return true;
+            } else {
+                Log.d(Constants.APP_TAG, "condor: localBinder: hasHandler warning, no handler");
+                return false;
+            }
+        }
         @Override
         public void onConnecting(final URI uri) {
-            if(handler != null) {
+            if(hasHandler()) {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
                         callback.onConnecting(uri);
+                        callback.onNewActivity();
                     }
                 });
             }
         }
         @Override
         public void onConnected() {
-            if(handler != null) {
+            if(hasHandler()) {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
                         callback.onConnected();
+                        callback.onNewActivity();
                     }
                 });
             }
         }
         @Override
         public void onTimeout() {
-            if(handler != null) {
+            if(hasHandler()) {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
                         callback.onTimeout();
+                        callback.onNewActivity();
                     }
                 });
             }
         }
         @Override
         public void onNewActivity() {
-            if(handler != null) {
+            if(hasHandler()) {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
