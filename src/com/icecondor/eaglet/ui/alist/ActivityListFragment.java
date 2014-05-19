@@ -39,12 +39,14 @@ public class ActivityListFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_activity_list,
                                container, false);
         listView = (ListView)rootView.findViewById(R.id.activity_list_view);
-        String[] fromColumns =  {Database.ROW_CREATED_AT,
+        String[] fromColumns =  {
                                  Database.ACTIVITIES_VERB,
+                                 Database.ROW_CREATED_AT,
                                  Database.ACTIVITIES_DESCRIPTION,
                                  Database.ACTIVITIES_UUID};
-        int[] toViews = {R.id.activity_row_date,
+        int[] toViews = {
                          R.id.activity_row_action,
+                         R.id.activity_row_date,
                          R.id.activity_row_description,
                          R.id.activity_row_uuid};
         db = new Database(getActivity());
@@ -71,7 +73,11 @@ public class ActivityListFragment extends Fragment {
             if(dbColumnIndex == createdAtIndex) {
                 String dateStr = cursor.getString(createdAtIndex);
                 DateTime time = ISODateTimeFormat.dateTime().parseDateTime(dateStr);
-                String displayTime = time.toString("MMM d h:mma");
+                String format = "MMM d h:mm:ssa";
+                if(time.isAfter(DateTime.now().minusDays(1))) {
+                    format = "h:mm:ssa";
+                }
+                String displayTime = time.toString(format);
                 ((TextView)view).setText(displayTime);
                 return true;
             }
@@ -84,7 +90,8 @@ public class ActivityListFragment extends Fragment {
 
             int uuidIndex = cursor.getColumnIndex(Database.ACTIVITIES_UUID);
             if(dbColumnIndex == uuidIndex) {
-                ((TextView)view).setText(cursor.getString(uuidIndex).substring(32));
+                String shortUuid = "#"+cursor.getString(uuidIndex).substring(32);
+                ((TextView)view).setText(shortUuid);
                 return true;
             }
 
