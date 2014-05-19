@@ -31,12 +31,19 @@
             android:id="@+id/login_email_field"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
             android:layout_gravity="center"
             android:hint="email"
             android:imeOptions="actionSend"
             android:inputType="textEmailAddress" >
         </EditText>
-    </LinearLayout>
+        <TextView
+            android:id="@+id/login_status_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            ></TextView>
+        </LinearLayout>
 
     <LinearLayout
         android:layout_width="0dp"
