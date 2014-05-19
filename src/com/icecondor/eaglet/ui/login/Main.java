@@ -43,6 +43,12 @@ public class Main extends BaseActivity implements UiActions {
     }
 
     @Override
+    public void onDisconnected() {
+        Log.d(Constants.APP_TAG, "login.Main onDisconnected");
+        loginFragment.setStatusText("disconnected!");
+    }
+
+    @Override
     public void onNewActivity() {
     }
 

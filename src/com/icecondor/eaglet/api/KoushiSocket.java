@@ -43,16 +43,14 @@ public class KoushiSocket implements AsyncHttpClient.WebSocketConnectCallback {
         }
 
         webSocket.setClosedCallback(new CompletedCallback() {
-
             @Override
             public void onCompleted(Exception arg0) {
                 Log.d(Constants.APP_TAG, "ws: closedCallback onCompleted: "+arg0);
-
+                connectCallbacks.onDisconnected();
             }
         });
 
         webSocket.setEndCallback(new CompletedCallback() {
-
             @Override
             public void onCompleted(Exception arg0) {
                 Log.d(Constants.APP_TAG, "ws: endCallback onCompleted: "+arg0);

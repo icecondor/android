@@ -93,6 +93,11 @@ public class MainActivity extends BaseActivity implements UiActions {
     }
 
     @Override
+    public void onDisconnected() {
+        Log.d(Constants.APP_TAG, "alist.MainActivity onDisconnected");
+    }
+
+    @Override
     public void onTimeout() {
         Log.d(Constants.APP_TAG, "alist.MainActivity onTimeout");
     }

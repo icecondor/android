@@ -21,6 +21,7 @@ import com.icecondor.eaglet.api.ClientActions;
 import com.icecondor.eaglet.db.Connected;
 import com.icecondor.eaglet.db.Connecting;
 import com.icecondor.eaglet.db.Database;
+import com.icecondor.eaglet.db.Disconnected;
 import com.icecondor.eaglet.service.AlarmReceiver;
 import com.icecondor.eaglet.ui.UiActions;
 
@@ -106,6 +107,11 @@ public class Condor extends Service {
             binder.onConnected();
         }
         @Override
+        public void onDisconnected() {
+            db.append(new Disconnected());
+            binder.onDisconnected();
+        }
+        @Override
         public void onTimeout() {
             binder.onTimeout();
         }
@@ -150,6 +156,18 @@ public class Condor extends Service {
                     @Override
                     public void run() {
                         callback.onConnected();
+                        callback.onNewActivity();
+                    }
+                });
+            }
+        }
+        @Override
+        public void onDisconnected() {
+            if(hasHandler()) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onDisconnected();
                         callback.onNewActivity();
                     }
                 });

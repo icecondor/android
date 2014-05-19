@@ -91,4 +91,13 @@ public class Client implements ConnectCallbacks {
         actions.onConnected();
     }
 
+    @Override
+    public void onDisconnected() {
+        Log.d(Constants.APP_TAG, "Client onDisconnected.");
+        connecting = false;
+        reconnects = 0;
+        actions.onDisconnected();
+        doConnect();
+    }
+
 }
