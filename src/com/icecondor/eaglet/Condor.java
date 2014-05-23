@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -74,7 +75,21 @@ public class Condor extends Service {
                                                             new Intent("com.icecondor.nest.WAKE_ALARM"),
                                                             0);
         startAlarm();
+        startApiThread();
+    }
 
+    public void startApiThread() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Looper.prepare();
+                startApi();
+                Looper.loop();
+            }
+        }).start();
+    }
+
+    public void startApi() {
         /* API */
         try {
             String apiUrl = prefs.getString("api_url", "");
