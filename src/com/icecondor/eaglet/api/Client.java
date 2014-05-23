@@ -2,6 +2,7 @@ package com.icecondor.eaglet.api;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.ExecutionException;
 
 import org.json.JSONObject;
 
@@ -9,9 +10,11 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.icecondor.eaglet.Constants;
+import com.koushikdutta.async.future.Future;
 import com.koushikdutta.async.http.AsyncHttpClient;
 import com.koushikdutta.async.http.AsyncHttpGet;
 import com.koushikdutta.async.http.AsyncHttpRequest;
+import com.koushikdutta.async.http.WebSocket;
 
 public class Client implements ConnectCallbacks {
 
@@ -23,6 +26,8 @@ public class Client implements ConnectCallbacks {
     private int reconnects = 0;
     private final Handler handler;
     private boolean connecting; // Connected / Connecting
+    private Future<WebSocket> websocketFuture;
+    private WebSocket websocket;
 
     public Client(String serverURL, ClientActions actions) throws URISyntaxException {
         this.apiUrl = new URI(serverURL);
@@ -40,7 +45,7 @@ public class Client implements ConnectCallbacks {
             String httpQuirkUrl = apiUrl.toString().replace("ws://", "http://").replace("wss://", "https://");
             AsyncHttpRequest get = new AsyncHttpGet(httpQuirkUrl);
             get.setTimeout(2500);
-            client.websocket(get, null, new KoushiSocket(this));
+            websocketFuture = client.websocket(get, null, new KoushiSocket(this));
         } else {
             Log.d(Constants.APP_TAG, "client: ignoring connect(). connecting in progress.");
         }
@@ -89,9 +94,14 @@ public class Client implements ConnectCallbacks {
     @Override
     public void onConnected() {
         Log.d(Constants.APP_TAG, "Client onConnected.");
-        connecting = false;
-        reconnects = 0;
-        actions.onConnected();
+        try {
+            websocket = websocketFuture.get();
+            connecting = false;
+            reconnects = 0;
+            actions.onConnected();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -105,7 +115,7 @@ public class Client implements ConnectCallbacks {
 
     /* API Calls */
     public void accountCheck(String email) {
-
+        websocket.send("{1:2}");
 
     }
 
