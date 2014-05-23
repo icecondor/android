@@ -109,6 +109,7 @@ public class Condor extends Service {
                         wake_alarm_intent);
     }
 
+    /* Callbacks from network client */
     public class ApiActions implements ClientActions {
         @Override
         public void onConnecting(URI url) {
@@ -132,7 +133,7 @@ public class Condor extends Service {
         }
     }
 
-    /* Localbinder approach */
+    /* Emit signals to the bound Activity/UI */
     public class LocalBinder extends Binder implements UiActions {
         public Handler handler;
         public UiActions callback;
