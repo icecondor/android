@@ -7,6 +7,10 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.inputmethod.EditorInfo;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
 import com.icecondor.eaglet.Condor;
 import com.icecondor.eaglet.Constants;
@@ -14,7 +18,7 @@ import com.icecondor.eaglet.R;
 import com.icecondor.eaglet.ui.BaseActivity;
 import com.icecondor.eaglet.ui.UiActions;
 
-public class Main extends BaseActivity implements UiActions {
+public class Main extends BaseActivity implements UiActions, OnEditorActionListener {
     public static String PREF_KEY_AUTHENTICATED_USER_ID = "icecondor_authenticated_user_id";
     LoginFragment loginFragment;
 
@@ -40,12 +44,17 @@ public class Main extends BaseActivity implements UiActions {
     }
 
     private void refreshStatusFromCondor(Condor condor) {
-        if(condor.getConnecting()) {
+        if(condor.isConnecting()) {
             loginFragment.setStatusText("connecting... *");
         } else {
-            loginFragment.setStatusText("connected. *");
+            loginIsOk();
         }
 
+    }
+
+    private void loginIsOk() {
+        loginFragment.setStatusText("connected.");
+        loginFragment.enableLoginField();
     }
 
     /* UiActions */
@@ -58,7 +67,7 @@ public class Main extends BaseActivity implements UiActions {
     @Override
     public void onConnected() {
         Log.d(Constants.APP_TAG, "login.Main onConnected");
-        loginFragment.setStatusText("connected.");
+        loginIsOk();
     }
 
     @Override
@@ -76,5 +85,18 @@ public class Main extends BaseActivity implements UiActions {
         Log.d(Constants.APP_TAG, "login.Main onTimeout");
     }
 
+    /* Login email field */
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        if(v.getId() == R.id.login_email_field) {
+            if(actionId == EditorInfo.IME_ACTION_SEND) {
+                Log.d(Constants.APP_TAG, "LoginFragment: action: "+actionId+" emailField "+v.getText());
+                if(!condor.isConnecting()) {
+                    condor.doAccountCheck(v.getText().toString());
+                }
+            }
+        }
+        return false;
+    }
 
 }

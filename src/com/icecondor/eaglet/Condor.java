@@ -110,7 +110,7 @@ public class Condor extends Service {
     }
 
     /* public methods */
-    public boolean getConnecting(){
+    public boolean isConnecting(){
         return api.getConnecting();
     }
 
@@ -138,6 +138,11 @@ public class Condor extends Service {
         }
     }
 
+    /* Network actions */
+    public void doAccountCheck(String email) {
+        api.accountCheck(email);
+    }
+
     /* Emit signals to the bound Activity/UI */
     public class LocalBinder extends Binder implements UiActions {
         public Handler handler;
@@ -145,6 +150,7 @@ public class Condor extends Service {
         public Condor getService() {
             return Condor.this;
         }
+        /* handler setup */
         public void setHandler(Handler handler, UiActions callback) {
             Log.d(Constants.APP_TAG, "condor: localBinder: setHandler "+handler);
             this.handler = handler;
@@ -158,6 +164,8 @@ public class Condor extends Service {
                 return false;
             }
         }
+
+        /* Network callbacks */
         @Override
         public void onConnecting(final URI uri) {
             if(hasHandler()) {

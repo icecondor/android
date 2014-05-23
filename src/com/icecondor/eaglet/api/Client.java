@@ -103,4 +103,10 @@ public class Client implements ConnectCallbacks {
         doConnect();
     }
 
+    /* API Calls */
+    public void accountCheck(String email) {
+
+
+    }
+
 }

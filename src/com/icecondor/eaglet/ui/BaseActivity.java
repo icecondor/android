@@ -42,12 +42,14 @@ abstract public class BaseActivity extends ActionBarActivity implements ServiceC
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(Constants.APP_TAG, "BaseActivity("+this.getClass().getSimpleName()+"): onResume");
         bindService(condorIntent, this, BIND_AUTO_CREATE);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        Log.d(Constants.APP_TAG, "BaseActivity("+this.getClass().getSimpleName()+"): onPause");
         if(condor != null) {
             condor = null;
             unbindService(this);
