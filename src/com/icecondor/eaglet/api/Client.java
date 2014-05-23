@@ -35,7 +35,6 @@ public class Client implements ConnectCallbacks {
 
     public void connect() {
         if(connecting == false) {
-            actions.onConnecting(apiUrl);
             connecting = true;
             actions.onConnecting(apiUrl);
             // AndroidSync quirk, uses http urls
