@@ -22,7 +22,7 @@ public class Client implements ConnectCallbacks {
     private static final int RECONNECT_WAIT_MS = 5000;
     private int reconnects = 0;
     private final Handler handler;
-    private boolean connecting;
+    private boolean connecting; // Connected / Connecting
 
     public Client(String serverURL, ClientActions actions) throws URISyntaxException {
         this.apiUrl = new URI(serverURL);
@@ -51,6 +51,10 @@ public class Client implements ConnectCallbacks {
         doConnect();
     }
 
+    public boolean getConnecting() {
+        return connecting;
+    }
+
     @Override
     public void onTimeout() {
         connecting = false;
@@ -76,6 +80,7 @@ public class Client implements ConnectCallbacks {
         connect();
     }
 
+    /* ConnectCallbacks */
     @Override
     public void onMessage(JSONObject msg) {
         Log.d(Constants.APP_TAG, "Client onMessage: "+msg);

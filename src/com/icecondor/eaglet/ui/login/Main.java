@@ -2,10 +2,13 @@ package com.icecondor.eaglet.ui.login;
 
 import java.net.URI;
 
+import android.content.ComponentName;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.icecondor.eaglet.Condor;
 import com.icecondor.eaglet.Constants;
 import com.icecondor.eaglet.R;
 import com.icecondor.eaglet.ui.BaseActivity;
@@ -30,6 +33,22 @@ public class Main extends BaseActivity implements UiActions {
         }
     }
 
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+        super.onServiceConnected(name, service);
+        refreshStatusFromCondor(condor);
+    }
+
+    private void refreshStatusFromCondor(Condor condor) {
+        if(condor.getConnecting()) {
+            loginFragment.setStatusText("connecting... *");
+        } else {
+            loginFragment.setStatusText("connected. *");
+        }
+
+    }
+
+    /* UiActions */
     @Override
     public void onConnecting(URI uri) {
         Log.d(Constants.APP_TAG, "login.Main onConnecting");

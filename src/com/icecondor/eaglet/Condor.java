@@ -78,7 +78,7 @@ public class Condor extends Service {
         startApiThread();
     }
 
-    public void startApiThread() {
+    protected void startApiThread() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -89,7 +89,7 @@ public class Condor extends Service {
         }).start();
     }
 
-    public void startApi() {
+    protected void startApi() {
         /* API */
         try {
             String apiUrl = prefs.getString("api_url", "");
@@ -100,13 +100,18 @@ public class Condor extends Service {
         }
     }
 
-    private void startAlarm() {
+    protected void startAlarm() {
         long record_frequency = 180000; //Long.decode(prefs.getString(SETTING_TRANSMISSION_FREQUENCY, "300000"));
         Log.d(Constants.APP_TAG, "startAlarm at "+record_frequency/1000/60+" minutes");
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
                         System.currentTimeMillis(),
                         record_frequency,
                         wake_alarm_intent);
+    }
+
+    /* public methods */
+    public boolean getConnecting(){
+        return api.getConnecting();
     }
 
     /* Callbacks from network client */
