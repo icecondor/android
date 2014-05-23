@@ -66,13 +66,13 @@ public class Condor extends Service {
         db = new Database(ctx);
         db.open();
 
-        /* Alarm */
+        /* Receive Alarms */
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         AlarmReceiver alarm_receiver = new AlarmReceiver();
-        registerReceiver(alarm_receiver, new IntentFilter("com.icecondor.nest.WAKE_ALARM"));
+        registerReceiver(alarm_receiver, new IntentFilter(Constants.ACTION_WAKE_ALARM));
         wake_alarm_intent = PendingIntent.getBroadcast(getApplicationContext(),
                                                             0,
-                                                            new Intent("com.icecondor.nest.WAKE_ALARM"),
+                                                            new Intent(Constants.ACTION_WAKE_ALARM),
                                                             0);
         startAlarm();
         startApiThread();
