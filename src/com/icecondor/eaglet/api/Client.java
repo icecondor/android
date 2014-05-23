@@ -28,7 +28,6 @@ public class Client implements ConnectCallbacks {
         this.apiUrl = new URI(serverURL);
         this.actions = actions;
         handler = new Handler();
-        //socket = new TooTallSocket(apiUrl, new Dispatch());
         this.client = AsyncHttpClient.getDefaultInstance();
         KoushiSocket.disableSSLCheck(client);
     }
