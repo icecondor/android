@@ -6,32 +6,33 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.EditText;
 
 import com.icecondor.eaglet.Constants;
 import com.icecondor.eaglet.R;
 
-public class LoginFragment extends Fragment {
-    private TextView statusView;
+public class LoginFragmentEmail extends Fragment {
+    private EditText emailField;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.d(Constants.APP_TAG, "LoginFragment onActivityCreated");
+        Log.d(Constants.APP_TAG, "LoginFragmentEmail onActivityCreated");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        Log.d(Constants.APP_TAG, "LoginFragment onCreateView");
-        View rootView = inflater.inflate(R.layout.fragment_login,
+        Log.d(Constants.APP_TAG, "LoginFragmentEmail onCreateView");
+        View rootView = inflater.inflate(R.layout.fragment_login_prompt,
                                container, false);
-        statusView = (TextView)rootView.findViewById(R.id.login_status_msg);
+        emailField = (EditText)rootView.findViewById(R.id.login_email_field);
+        emailField.setOnEditorActionListener((Main)getActivity());
+        emailField.setEnabled(false);
         return rootView;
     }
 
-    public void setStatusText(String text) {
-        statusView.setText(text);
+    public void enableLoginField() {
+        emailField.setEnabled(true);
     }
-
 }

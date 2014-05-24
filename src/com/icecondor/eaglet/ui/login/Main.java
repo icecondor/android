@@ -3,9 +3,11 @@ package com.icecondor.eaglet.ui.login;
 import java.net.URI;
 
 import android.content.ComponentName;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
@@ -17,10 +19,12 @@ import com.icecondor.eaglet.Constants;
 import com.icecondor.eaglet.R;
 import com.icecondor.eaglet.ui.BaseActivity;
 import com.icecondor.eaglet.ui.UiActions;
+import com.icecondor.eaglet.ui.alist.MainActivity;
 
 public class Main extends BaseActivity implements UiActions, OnEditorActionListener {
     public static String PREF_KEY_AUTHENTICATED_USER_ID = "icecondor_authenticated_user_id";
     LoginFragment loginFragment;
+    private LoginFragmentEmail loginEmailFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,12 +33,19 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
         setContentView(R.layout.login);
 
         loginFragment = new LoginFragment();
+        loginEmailFragment = new LoginFragmentEmail();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (savedInstanceState == null) {
             switchFragment(loginFragment);
+            switchLoginFragment(loginEmailFragment);
         }
+    }
+
+    protected void switchLoginFragment(Fragment fragment) {
+        getSupportFragmentManager().beginTransaction()
+            .replace(R.id.login_body_fragment, fragment).commit();
     }
 
     @Override
@@ -54,7 +65,7 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
 
     private void loginIsOk() {
         loginFragment.setStatusText("connected.");
-        loginFragment.enableLoginField();
+        loginEmailFragment.enableLoginField();
     }
 
     /* UiActions */
@@ -93,6 +104,7 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
                 Log.d(Constants.APP_TAG, "LoginFragment: action: "+actionId+" emailField "+v.getText());
                 if(!condor.isConnecting()) {
                     condor.doAccountCheck(v.getText().toString());
+                    startActivity(new Intent(this, MainActivity.class));
                 }
             }
         }
