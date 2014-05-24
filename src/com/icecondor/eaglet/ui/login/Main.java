@@ -121,6 +121,7 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
                 Log.d(Constants.APP_TAG, "LoginFragment: action: "+actionId+" passField "+v.getText());
                 if(condor.isConnected()) {
                     condor.doAccountCheck(v.getText().toString());
+                    prefs.edit().putString(Main.PREF_KEY_AUTHENTICATED_USER_ID, "abc123").commit();
                     startActivity(new Intent(this, MainActivity.class));
                 }
             }
