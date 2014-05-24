@@ -93,7 +93,7 @@ public class Condor extends Service {
     protected void startApi() {
         /* API */
         try {
-            String apiUrl = prefs.getString("api_url", "");
+            String apiUrl = prefs.getString("api_url", Constants.ICECONDOR_API_URL);
             api = new Client(apiUrl, new ApiActions());
             api.startPersistentConnect();
         } catch (URISyntaxException e) {
