@@ -23,8 +23,9 @@ import com.icecondor.eaglet.ui.alist.MainActivity;
 
 public class Main extends BaseActivity implements UiActions, OnEditorActionListener {
     public static String PREF_KEY_AUTHENTICATED_USER_ID = "icecondor_authenticated_user_id";
-    LoginFragment loginFragment;
-    private LoginFragmentEmail loginEmailFragment;
+    private LoginFragment loginFragment;
+    private LoginEmailFragment loginEmailFragment;
+    private LoginPassFragment loginPassFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +34,8 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
         setContentView(R.layout.login);
 
         loginFragment = new LoginFragment();
-        loginEmailFragment = new LoginFragmentEmail();
+        loginEmailFragment = new LoginEmailFragment();
+        loginPassFragment = new LoginPassFragment();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -70,7 +72,7 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     }
 
     private void loginIsOk() {
-        loginFragment.setStatusText("connected.");
+        loginFragment.setStatusText("ready.");
         loginEmailFragment.enableLoginField();
     }
 
@@ -108,6 +110,15 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
         if(v.getId() == R.id.login_email_field) {
             if(actionId == EditorInfo.IME_ACTION_SEND) {
                 Log.d(Constants.APP_TAG, "LoginFragment: action: "+actionId+" emailField "+v.getText());
+                if(condor.isConnected()) {
+                    condor.doAccountCheck(v.getText().toString());
+                    switchLoginFragment(loginPassFragment);
+                }
+            }
+        }
+        if(v.getId() == R.id.login_password_field) {
+            if(actionId == EditorInfo.IME_ACTION_SEND) {
+                Log.d(Constants.APP_TAG, "LoginFragment: action: "+actionId+" passField "+v.getText());
                 if(condor.isConnected()) {
                     condor.doAccountCheck(v.getText().toString());
                     startActivity(new Intent(this, MainActivity.class));

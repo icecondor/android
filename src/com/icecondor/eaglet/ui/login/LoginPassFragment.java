@@ -11,28 +11,25 @@ import android.widget.EditText;
 import com.icecondor.eaglet.Constants;
 import com.icecondor.eaglet.R;
 
-public class LoginFragmentEmail extends Fragment {
-    private EditText emailField;
+public class LoginPassFragment extends Fragment {
+    private EditText passwordField;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.d(Constants.APP_TAG, "LoginFragmentEmail onActivityCreated");
+        Log.d(Constants.APP_TAG, "LoginPassFragment onActivityCreated");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        Log.d(Constants.APP_TAG, "LoginFragmentEmail onCreateView");
-        View rootView = inflater.inflate(R.layout.fragment_login_prompt,
+        Log.d(Constants.APP_TAG, "LoginPassFragment onCreateView");
+        View rootView = inflater.inflate(R.layout.fragment_login_password,
                                container, false);
-        emailField = (EditText)rootView.findViewById(R.id.login_email_field);
-        emailField.setOnEditorActionListener((Main)getActivity());
-        emailField.setEnabled(false);
+        passwordField = (EditText)rootView.findViewById(R.id.login_password_field);
+        passwordField.setOnEditorActionListener((Main)getActivity());
+        passwordField.requestFocus();
         return rootView;
     }
 
-    public void enableLoginField() {
-        emailField.setEnabled(true);
-    }
 }
