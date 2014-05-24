@@ -18,6 +18,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.icecondor.eaglet.api.Client;
+import com.icecondor.eaglet.api.Client.States;
 import com.icecondor.eaglet.api.ClientActions;
 import com.icecondor.eaglet.db.Connected;
 import com.icecondor.eaglet.db.Connecting;
@@ -110,8 +111,12 @@ public class Condor extends Service {
     }
 
     /* public methods */
-    public boolean isConnecting(){
-        return api.getConnecting();
+    public States getNetworkState() {
+        return api.getState();
+    }
+
+    public boolean isConnected() {
+        return api.getState() == Client.States.CONNECTED;
     }
 
     /* Callbacks from network client */

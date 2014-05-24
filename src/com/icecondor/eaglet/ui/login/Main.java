@@ -55,10 +55,16 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     }
 
     private void refreshStatusFromCondor(Condor condor) {
-        if(condor.isConnecting()) {
-            loginFragment.setStatusText("connecting... *");
-        } else {
+        switch (condor.getNetworkState()) {
+        case CONNECTED:
             loginIsOk();
+            break;
+        case CONNECTING:
+            loginFragment.setStatusText("connecting... *");
+            break;
+        case WAITING:
+            loginFragment.setStatusText("waiting... *");
+            break;
         }
 
     }
@@ -102,7 +108,7 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
         if(v.getId() == R.id.login_email_field) {
             if(actionId == EditorInfo.IME_ACTION_SEND) {
                 Log.d(Constants.APP_TAG, "LoginFragment: action: "+actionId+" emailField "+v.getText());
-                if(!condor.isConnecting()) {
+                if(condor.isConnected()) {
                     condor.doAccountCheck(v.getText().toString());
                     startActivity(new Intent(this, MainActivity.class));
                 }

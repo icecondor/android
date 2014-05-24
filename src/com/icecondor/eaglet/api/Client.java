@@ -25,9 +25,11 @@ public class Client implements ConnectCallbacks {
     private static final int RECONNECT_WAIT_MS = 5000;
     private int reconnects = 0;
     private final Handler handler;
-    private boolean connecting; // Connected / Connecting
     private Future<WebSocket> websocketFuture;
     private WebSocket websocket;
+
+    public enum States { WAITING, CONNECTING, CONNECTED};
+    private States state;
 
     public Client(String serverURL, ClientActions actions) throws URISyntaxException {
         this.apiUrl = new URI(serverURL);
@@ -35,11 +37,12 @@ public class Client implements ConnectCallbacks {
         handler = new Handler();
         this.client = AsyncHttpClient.getDefaultInstance();
         KoushiSocket.disableSSLCheck(client);
+        state = States.WAITING;
     }
 
     public void connect() {
-        if(connecting == false) {
-            connecting = true;
+        if(state != States.CONNECTED) {
+            state = States.CONNECTING;
             actions.onConnecting(apiUrl);
             // AndroidSync quirk, uses http urls
             String httpQuirkUrl = apiUrl.toString().replace("ws://", "http://").replace("wss://", "https://");
@@ -56,13 +59,13 @@ public class Client implements ConnectCallbacks {
         doConnect();
     }
 
-    public boolean getConnecting() {
-        return connecting;
+    public States getState() {
+        return state;
     }
 
     @Override
     public void onTimeout() {
-        connecting = false;
+        state = States.WAITING;
         actions.onTimeout();
         if(reconnect) {
             reconnects += 1;
@@ -96,7 +99,7 @@ public class Client implements ConnectCallbacks {
         Log.d(Constants.APP_TAG, "Client onConnected.");
         try {
             websocket = websocketFuture.get();
-            connecting = false;
+            state = States.CONNECTED;
             reconnects = 0;
             actions.onConnected();
         } catch (InterruptedException | ExecutionException e) {
@@ -107,7 +110,7 @@ public class Client implements ConnectCallbacks {
     @Override
     public void onDisconnected() {
         Log.d(Constants.APP_TAG, "Client onDisconnected.");
-        connecting = false;
+        state = States.WAITING;
         reconnects = 0;
         actions.onDisconnected();
         doConnect();
