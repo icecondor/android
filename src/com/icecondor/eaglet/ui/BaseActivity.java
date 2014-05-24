@@ -4,13 +4,18 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.MenuItem;
 
 import com.icecondor.eaglet.Condor;
 import com.icecondor.eaglet.Condor.LocalBinder;
@@ -24,6 +29,8 @@ abstract public class BaseActivity extends ActionBarActivity implements ServiceC
     protected Condor condor;
     protected Intent condorIntent;
     private Handler handler;
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle drawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,11 +39,39 @@ abstract public class BaseActivity extends ActionBarActivity implements ServiceC
         condorIntent = new Intent(this, Condor.class);
         Log.d(Constants.APP_TAG, "BaseActivity: onCreate new Handler "+this);
         handler = new Handler();
+        setContentView(R.layout.activity_main);
+        drawerSetup();
+    }
+
+    public void drawerSetup() {
+        ActionBar bar = getSupportActionBar();
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerToggle = new ActionBarDrawerToggle(this,
+                                                 drawerLayout,
+                                                 R.drawable.ic_navigation_drawer,
+                                                 R.string.drawer_open,
+                                                 R.string.drawer_closed);
+        drawerLayout.setDrawerListener(drawerToggle);
+        bar.setDisplayHomeAsUpEnabled(true);
+        bar.setHomeButtonEnabled(true);
     }
 
     protected void switchFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
             .replace(R.id.container, fragment).commit();
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        drawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
@@ -54,6 +89,18 @@ abstract public class BaseActivity extends ActionBarActivity implements ServiceC
             condor = null;
             unbindService(this);
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        if (drawerToggle.onOptionsItemSelected(item)) {
+          return true;
+        }
+        // Handle your other action bar items...
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

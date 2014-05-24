@@ -26,7 +26,6 @@ public class MainActivity extends BaseActivity implements UiActions {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(Constants.APP_TAG, "MainActivity onCreate");
-        setContentView(R.layout.activity_main);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
