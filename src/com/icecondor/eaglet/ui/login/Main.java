@@ -62,10 +62,10 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
             loginIsOk();
             break;
         case CONNECTING:
-            loginFragment.setStatusText("connecting... *");
+            loginFragment.setStatusText("connecting...");
             break;
         case WAITING:
-            loginFragment.setStatusText("waiting... *");
+            loginFragment.setStatusText("waiting...");
             break;
         }
 
@@ -80,13 +80,13 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     @Override
     public void onConnecting(URI uri) {
         Log.d(Constants.APP_TAG, "login.Main onConnecting");
-        loginFragment.setStatusText("connecting...");
+        refreshStatusFromCondor(condor);
     }
 
     @Override
     public void onConnected() {
         Log.d(Constants.APP_TAG, "login.Main onConnected");
-        loginIsOk();
+        refreshStatusFromCondor(condor);
     }
 
     @Override
@@ -102,6 +102,7 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     @Override
     public void onTimeout() {
         Log.d(Constants.APP_TAG, "login.Main onTimeout");
+        refreshStatusFromCondor(condor);
     }
 
     /* Login email field */
