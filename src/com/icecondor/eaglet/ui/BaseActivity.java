@@ -30,6 +30,7 @@ import com.icecondor.eaglet.Condor;
 import com.icecondor.eaglet.Condor.LocalBinder;
 import com.icecondor.eaglet.Constants;
 import com.icecondor.eaglet.R;
+import com.icecondor.eaglet.ui.alist.SettingsFragment;
 import com.icecondor.eaglet.ui.login.Main;
 
 abstract public class BaseActivity extends ActionBarActivity implements ServiceConnection,
@@ -42,6 +43,8 @@ abstract public class BaseActivity extends ActionBarActivity implements ServiceC
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private ListView drawerList;
+    private SettingsFragment settingsFragment;
+    private ActionBar bar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,10 +55,11 @@ abstract public class BaseActivity extends ActionBarActivity implements ServiceC
         handler = new Handler();
         setContentView(R.layout.activity_main);
         drawerSetup();
+        settingsFragment = new SettingsFragment();
     }
 
     public void drawerSetup() {
-        ActionBar bar = getSupportActionBar();
+        bar = getSupportActionBar();
 
         drawerList = (ListView) findViewById(R.id.left_drawer);
         ArrayList<Map<String, ?>> list = new ArrayList<Map<String, ?>>();
@@ -113,8 +117,10 @@ abstract public class BaseActivity extends ActionBarActivity implements ServiceC
         }
         if(position == 1) {
             // Settings
-            Intent preference = new Intent(this, Preferences.class);
-            startActivity(preference);
+            //Intent preference = new Intent(this, Preferences.class);
+            //startActivity(preference);
+            switchFragment(settingsFragment);
+            drawerLayout.closeDrawers();
         }
     }
 
