@@ -30,6 +30,7 @@ import com.icecondor.eaglet.Condor;
 import com.icecondor.eaglet.Condor.LocalBinder;
 import com.icecondor.eaglet.Constants;
 import com.icecondor.eaglet.R;
+import com.icecondor.eaglet.ui.alist.ActivityListFragment;
 import com.icecondor.eaglet.ui.alist.SettingsFragment;
 import com.icecondor.eaglet.ui.login.Main;
 
@@ -45,6 +46,7 @@ abstract public class BaseActivity extends ActionBarActivity implements ServiceC
     private ListView drawerList;
     private SettingsFragment settingsFragment;
     private ActionBar bar;
+    private ActivityListFragment actListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,7 @@ abstract public class BaseActivity extends ActionBarActivity implements ServiceC
         setContentView(R.layout.activity_main);
         drawerSetup();
         settingsFragment = new SettingsFragment();
+        actListFragment = new ActivityListFragment();
     }
 
     public void drawerSetup() {
@@ -105,6 +108,10 @@ abstract public class BaseActivity extends ActionBarActivity implements ServiceC
         list.add(item);
         item = new HashMap<String, Object>();
         item.put("icon",R.drawable.ic_launcher);
+        item.put("name", "Activity");
+        list.add(item);
+        item = new HashMap<String, Object>();
+        item.put("icon",R.drawable.ic_launcher);
         item.put("name", "Settings");
         list.add(item);
     }
@@ -114,11 +121,18 @@ abstract public class BaseActivity extends ActionBarActivity implements ServiceC
         Log.d(Constants.APP_TAG, "BaseActivity: onItemClick position:"+position+" id:"+id);
         if(position == 0) {
             // User
+            prefs.edit().putString(Main.PREF_KEY_AUTHENTICATED_USER_ID, null).commit();
+            drawerLayout.closeDrawers();
+            Intent intent = new Intent(this, Main.class);
+            startActivity(intent);
         }
         if(position == 1) {
+            // Activity List
+            switchFragment(actListFragment);
+            drawerLayout.closeDrawers();
+        }
+        if(position == 2) {
             // Settings
-            //Intent preference = new Intent(this, Preferences.class);
-            //startActivity(preference);
             switchFragment(settingsFragment);
             drawerLayout.closeDrawers();
         }
