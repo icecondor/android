@@ -7,13 +7,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import com.icecondor.eaglet.Constants;
-import com.icecondor.eaglet.R;
 import com.icecondor.eaglet.ui.BaseActivity;
-import com.icecondor.eaglet.ui.Preferences;
 import com.icecondor.eaglet.ui.UiActions;
 import com.icecondor.eaglet.ui.login.Main;
 
@@ -58,28 +54,6 @@ public class MainActivity extends BaseActivity implements UiActions {
     protected void onPause() {
         super.onPause();
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            Intent preference = new Intent(this, Preferences.class);
-            startActivity(preference);
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
 
     @Override
     public void onConnecting(URI uri) {
