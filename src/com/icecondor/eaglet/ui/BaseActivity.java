@@ -21,6 +21,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
@@ -31,7 +33,7 @@ import com.icecondor.eaglet.R;
 import com.icecondor.eaglet.ui.login.Main;
 
 abstract public class BaseActivity extends ActionBarActivity implements ServiceConnection,
-                                                                        UiActions {
+                                                                        UiActions, OnItemClickListener {
     protected SharedPreferences prefs;
     private LocalBinder localBinder;
     protected Condor condor;
@@ -57,17 +59,14 @@ abstract public class BaseActivity extends ActionBarActivity implements ServiceC
 
         drawerList = (ListView) findViewById(R.id.left_drawer);
         ArrayList<Map<String, ?>> list = new ArrayList<Map<String, ?>>();
-        HashMap<String, Object> item = new HashMap<String, Object>();
-        item.put("icon",R.drawable.ic_launcher);
-        item.put("name", prefs.getString(Main.PREF_KEY_AUTHENTICATED_USER_ID, null));
-        list.add(item);
+        populateDrawer(list);
         drawerList.setAdapter(new SimpleAdapter(this, list,
                                        R.layout.drawer_list_item,
                                        new String[]{"icon", "name"},
                                        new int[]{R.id.drawer_row_icon, R.id.drawer_row_name}){
 
         });
-
+        drawerList.setOnItemClickListener(BaseActivity.this);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerToggle = new ActionBarDrawerToggle(this,
                                                  drawerLayout,
@@ -75,7 +74,6 @@ abstract public class BaseActivity extends ActionBarActivity implements ServiceC
                                                  R.string.drawer_open,
                                                  R.string.drawer_closed)
         {
-
             /** Called when a drawer has settled in a completely closed state. */
             @Override
             public void onDrawerClosed(View view) {
@@ -90,8 +88,34 @@ abstract public class BaseActivity extends ActionBarActivity implements ServiceC
         };
 
         drawerLayout.setDrawerListener(drawerToggle);
+
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setHomeButtonEnabled(true);
+    }
+
+    public void populateDrawer(ArrayList<Map<String, ?>> list) {
+        HashMap<String, Object> item;
+        item = new HashMap<String, Object>();
+        item.put("icon",R.drawable.ic_launcher);
+        item.put("name", prefs.getString(Main.PREF_KEY_AUTHENTICATED_USER_ID, null));
+        list.add(item);
+        item = new HashMap<String, Object>();
+        item.put("icon",R.drawable.ic_launcher);
+        item.put("name", "Settings");
+        list.add(item);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Log.d(Constants.APP_TAG, "BaseActivity: onItemClick position:"+position+" id:"+id);
+        if(position == 0) {
+            // User
+        }
+        if(position == 1) {
+            // Settings
+            Intent preference = new Intent(this, Preferences.class);
+            startActivity(preference);
+        }
     }
 
     protected void switchFragment(Fragment fragment) {
