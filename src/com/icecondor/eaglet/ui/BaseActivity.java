@@ -1,5 +1,9 @@
 package com.icecondor.eaglet.ui;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -16,11 +20,15 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 
 import com.icecondor.eaglet.Condor;
 import com.icecondor.eaglet.Condor.LocalBinder;
 import com.icecondor.eaglet.Constants;
 import com.icecondor.eaglet.R;
+import com.icecondor.eaglet.ui.login.Main;
 
 abstract public class BaseActivity extends ActionBarActivity implements ServiceConnection,
                                                                         UiActions {
@@ -31,6 +39,7 @@ abstract public class BaseActivity extends ActionBarActivity implements ServiceC
     private Handler handler;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
+    private ListView drawerList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,12 +54,41 @@ abstract public class BaseActivity extends ActionBarActivity implements ServiceC
 
     public void drawerSetup() {
         ActionBar bar = getSupportActionBar();
+
+        drawerList = (ListView) findViewById(R.id.left_drawer);
+        ArrayList<Map<String, ?>> list = new ArrayList<Map<String, ?>>();
+        HashMap<String, Object> item = new HashMap<String, Object>();
+        item.put("icon",R.drawable.ic_launcher);
+        item.put("name", prefs.getString(Main.PREF_KEY_AUTHENTICATED_USER_ID, null));
+        list.add(item);
+        drawerList.setAdapter(new SimpleAdapter(this, list,
+                                       R.layout.drawer_list_item,
+                                       new String[]{"icon", "name"},
+                                       new int[]{R.id.drawer_row_icon, R.id.drawer_row_name}){
+
+        });
+
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerToggle = new ActionBarDrawerToggle(this,
                                                  drawerLayout,
                                                  R.drawable.ic_navigation_drawer,
                                                  R.string.drawer_open,
-                                                 R.string.drawer_closed);
+                                                 R.string.drawer_closed)
+        {
+
+            /** Called when a drawer has settled in a completely closed state. */
+            @Override
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+            }
+
+            /** Called when a drawer has settled in a completely open state. */
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+            }
+        };
+
         drawerLayout.setDrawerListener(drawerToggle);
         bar.setDisplayHomeAsUpEnabled(true);
         bar.setHomeButtonEnabled(true);
