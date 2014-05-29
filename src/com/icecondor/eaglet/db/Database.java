@@ -4,6 +4,7 @@ import java.util.Date;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
@@ -87,7 +88,12 @@ public class Database {
         ContentValues cv = obj.getAttributes();
         Date now = new Date();
         Log.d(Constants.APP_TAG, ""+now+" Database append() "+obj.getClass().getSimpleName()+" "+cv);
-        db.insert(obj.getTableName(), null, cv);
+        long rowId = db.insert(obj.getTableName(), null, cv);
+        Cursor readback = db.query(obj.getTableName(), null, "_id == ?",
+                                   new String[] { Long.toString(rowId)},
+                                   null, null, null);
+        readback.moveToFirst();
+        Log.d(Constants.APP_TAG, ""+now+" Database append() followup date "+readback.getString(readback.getColumnIndex(ROW_CREATED_AT)));
     }
 
 }

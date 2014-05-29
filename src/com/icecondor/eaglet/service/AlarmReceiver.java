@@ -1,5 +1,7 @@
 package com.icecondor.eaglet.service;
 
+import java.util.Date;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,8 +19,8 @@ public class AlarmReceiver extends BroadcastReceiver {
         db.open();
 
         String action = intent.getAction();
-        if (action.equals("com.icecondor.nest.WAKE_ALARM")) {
-            Log.i(Constants.APP_TAG, "AlarmReceiver onReceive context "+context);
+        if (action.equals(Constants.ACTION_WAKE_ALARM)) {
+            Log.i(Constants.APP_TAG, "AlarmReceiver onReceive "+context.getClass().getSimpleName()+" now "+new Date());
             db.append(new HeartBeat());
             ((Condor)context).binder.onNewActivity();
         }
