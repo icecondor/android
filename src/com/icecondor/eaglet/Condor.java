@@ -143,7 +143,7 @@ public class Condor extends Service {
         }
     }
 
-    /* Network actions */
+    /* API actions */
     public void doAccountCheck(String email) {
         api.accountCheck(email);
     }
@@ -170,7 +170,7 @@ public class Condor extends Service {
             }
         }
 
-        /* Network callbacks */
+        /* Relay messages to UI */
         @Override
         public void onConnecting(final URI uri) {
             if(hasHandler()) {

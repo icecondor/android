@@ -1,5 +1,7 @@
 package com.icecondor.eaglet.db;
 
+import java.util.Date;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.SQLException;
@@ -83,7 +85,8 @@ public class Database {
 
     public void append(Sqlitable obj) {
         ContentValues cv = obj.getAttributes();
-        Log.d(Constants.APP_TAG, "Database append() "+obj.getClass().getSimpleName()+" "+cv);
+        Date now = new Date();
+        Log.d(Constants.APP_TAG, ""+now+" Database append() "+obj.getClass().getSimpleName()+" "+cv);
         db.insert(obj.getTableName(), null, cv);
     }
 
