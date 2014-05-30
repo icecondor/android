@@ -201,7 +201,7 @@ abstract public class BaseActivity extends ActionBarActivity implements ServiceC
 
     protected void disableServiceHandler() {
         if(localBinder != null) {
-            localBinder.setHandler(null, this);
+            localBinder.clearHandler();
         }
     }
 

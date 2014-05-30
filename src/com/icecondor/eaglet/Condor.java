@@ -163,11 +163,15 @@ public class Condor extends Service {
             this.handler = handler;
             this.callback = callback;
         }
+        public void clearHandler() {
+            Log.d(Constants.APP_TAG, "condor: localBinder: clearHandler ");
+            this.handler = null;
+            this.callback = null;
+        }
         public boolean hasHandler() {
             if(handler != null) {
                 return true;
             } else {
-                Log.d(Constants.APP_TAG, "condor: localBinder: hasHandler warning, no handler");
                 return false;
             }
         }
