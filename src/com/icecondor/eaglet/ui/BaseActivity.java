@@ -189,8 +189,20 @@ abstract public class BaseActivity extends ActionBarActivity implements ServiceC
     public void onServiceConnected(ComponentName name, IBinder service) {
         Log.d(Constants.APP_TAG, "BaseActivity: onServiceConnected "+name.flattenToShortString());
         localBinder = (Condor.LocalBinder)service;
-        localBinder.setHandler(handler, this);
+        enableServiceHandler();
         condor = localBinder.getService();
+    }
+
+    protected void enableServiceHandler() {
+        if(localBinder != null) {
+            localBinder.setHandler(handler, this);
+        }
+    }
+
+    protected void disableServiceHandler() {
+        if(localBinder != null) {
+            localBinder.setHandler(null, this);
+        }
     }
 
     @Override

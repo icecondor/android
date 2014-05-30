@@ -102,7 +102,9 @@ public class Condor extends Service {
     }
 
     protected void startAlarm() {
-        long record_frequency = 180000; //Long.decode(prefs.getString(SETTING_TRANSMISSION_FREQUENCY, "300000"));
+        // clear any existing alarms
+        alarmManager.cancel(wake_alarm_intent);
+        long record_frequency = 60000; //Long.decode(prefs.getString(SETTING_TRANSMISSION_FREQUENCY, "300000"));
         Log.d(Constants.APP_TAG, "startAlarm at "+record_frequency/1000/60+" minutes");
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
                         System.currentTimeMillis(),

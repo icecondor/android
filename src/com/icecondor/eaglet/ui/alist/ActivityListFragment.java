@@ -40,13 +40,13 @@ public class ActivityListFragment extends Fragment {
                                container, false);
         listView = (ListView)rootView.findViewById(R.id.activity_list_view);
         String[] fromColumns =  {
-                                 Database.ACTIVITIES_VERB,
                                  Database.ROW_CREATED_AT,
+                                 Database.ACTIVITIES_VERB,
                                  Database.ACTIVITIES_DESCRIPTION,
                                  Database.ACTIVITIES_UUID};
         int[] toViews = {
-                         R.id.activity_row_action,
                          R.id.activity_row_date,
+                         R.id.activity_row_action,
                          R.id.activity_row_description,
                          R.id.activity_row_uuid};
         db = new Database(getActivity());

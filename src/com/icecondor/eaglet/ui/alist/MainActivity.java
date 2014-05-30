@@ -43,7 +43,7 @@ public class MainActivity extends BaseActivity implements UiActions {
     protected void onResume() {
         super.onResume();
         Log.d(Constants.APP_TAG, "MainActivity onResume");
-
+        enableServiceHandler();
         if(prefs.getString(Main.PREF_KEY_AUTHENTICATED_USER_ID, null) == null) {
             startActivity(new Intent(this, Main.class));
             return;
@@ -53,6 +53,7 @@ public class MainActivity extends BaseActivity implements UiActions {
     @Override
     protected void onPause() {
         super.onPause();
+        disableServiceHandler();
     }
 
     @Override
