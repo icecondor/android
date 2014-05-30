@@ -21,7 +21,7 @@ public class MainActivity extends BaseActivity implements UiActions {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(Constants.APP_TAG, "MainActivity onCreate");
+        Log.d(Constants.APP_TAG, "alist.MainActivity onCreate");
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -35,14 +35,14 @@ public class MainActivity extends BaseActivity implements UiActions {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d(Constants.APP_TAG, "MainActivity onStart");
+        Log.d(Constants.APP_TAG, "alist.MainActivity onStart");
         startService(condorIntent); // keep this for STICKY result
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(Constants.APP_TAG, "MainActivity onResume");
+        Log.d(Constants.APP_TAG, "alist.MainActivity onResume");
         enableServiceHandler();
         if(prefs.getString(Main.PREF_KEY_AUTHENTICATED_USER_ID, null) == null) {
             startActivity(new Intent(this, Main.class));
@@ -58,27 +58,27 @@ public class MainActivity extends BaseActivity implements UiActions {
 
     @Override
     public void onConnecting(URI uri) {
-        Log.d(Constants.APP_TAG, "alist.MainActivity onConnecting");
+        Log.d(Constants.APP_TAG, "alist.MainActivity callback onConnecting");
     }
 
     @Override
     public void onConnected() {
-        Log.d(Constants.APP_TAG, "alist.MainActivity onConnected");
+        Log.d(Constants.APP_TAG, "alist.MainActivity callback onConnected");
     }
 
     @Override
     public void onDisconnected() {
-        Log.d(Constants.APP_TAG, "alist.MainActivity onDisconnected");
+        Log.d(Constants.APP_TAG, "alist.MainActivity callback onDisconnected");
     }
 
     @Override
     public void onTimeout() {
-        Log.d(Constants.APP_TAG, "alist.MainActivity onTimeout");
+        Log.d(Constants.APP_TAG, "alist.MainActivity callback onTimeout");
     }
 
     @Override
     public void onNewActivity() {
-        Log.d(Constants.APP_TAG, "alist.MainActivity: onNewActivity");
+        Log.d(Constants.APP_TAG, "alist.MainActivity: callback onNewActivity");
         aList.invalidateView();
     }
 

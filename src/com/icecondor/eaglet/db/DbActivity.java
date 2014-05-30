@@ -20,8 +20,10 @@ public class DbActivity implements Sqlitable {
     }
 
     static public Cursor getAll(Database db) {
-        return db.getReadonly().query(Database.ACTIVITIES_TABLE, null,
-                                        null, null, null, null, "created_at desc", "50");
+        return db.
+                getReadonly().
+                query(Database.ACTIVITIES_TABLE, null,
+                      null, null, null, null, "created_at desc", "50");
     }
 
     @Override
