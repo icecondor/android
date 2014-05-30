@@ -4,6 +4,7 @@ import java.util.Date;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
@@ -16,6 +17,7 @@ public class Database {
     private final String DATABASE_NAME = "icecondor";
     private final OpenHelper dbHelper;
     public static final int DATABASE_VERSION = 1;
+    public static final String ROW_ID = "_id";
     public static final String ROW_CREATED_AT = "created_at";
 
     /* Users table */
@@ -60,14 +62,14 @@ public class Database {
         @Override
         public void onCreate(SQLiteDatabase db) {
             db.execSQL("CREATE TABLE "+USERS_TABLE+" ("+
-                    "_id integer primary key, "+
+                    ROW_ID+" integer primary key, "+
                     USERS_USERNAME + " text," +
                     USERS_SESSION_KEY + " text," +
                     ROW_CREATED_AT + " DATETIME DEFAULT CURRENT_TIMESTAMP" +
                     ")");
 
             db.execSQL("CREATE TABLE "+ACTIVITIES_TABLE+" ("+
-                    "_id integer primary key, "+
+                    ROW_ID+" integer primary key, "+
                     ACTIVITIES_UUID + " text," +
                     ACTIVITIES_VERB + " text," +
                     ACTIVITIES_DESCRIPTION + " text," +
@@ -84,10 +86,26 @@ public class Database {
     }
 
     public void append(Sqlitable obj) {
+        if(rowCount(obj.getTableName()) > 1000) {
+            trimTable(obj.getTableName(), 900);
+        }
         ContentValues cv = obj.getAttributes();
         Date now = new Date();
         Log.d(Constants.APP_TAG, ""+now+" Database append("+obj.getClass().getSimpleName()+") "+cv);
         db.insert(obj.getTableName(), null, cv);
+    }
+
+    private void trimTable(String tableName, int i) {
+        Cursor cursor = db.query(tableName, new String[] {ROW_ID},
+                                 null, null, null, null, ROW_ID+" asc", ""+i);
+        cursor.moveToFirst();
+        long firstRowId = cursor.getLong(cursor.getColumnIndex(ROW_ID));
+        db.delete(tableName, ROW_ID+" < ?", new String[] {""+firstRowId});
+    }
+
+    private int rowCount(String tableName) {
+        Cursor cursor = db.query(tableName, null, null, null, null, null, null);
+        return cursor.getCount();
     }
 
 }
