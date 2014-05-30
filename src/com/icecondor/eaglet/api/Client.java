@@ -41,6 +41,7 @@ public class Client implements ConnectCallbacks {
     }
 
     public void connect() {
+        Log.d(Constants.APP_TAG, "client: connect(). state = "+state);
         if(state != States.CONNECTED) {
             state = States.CONNECTING;
             actions.onConnecting(apiUrl);

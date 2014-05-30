@@ -41,29 +41,28 @@ public class Condor extends Service {
     }
 
     @Override
-    public void onStart(Intent intent, int startId) {
-        Log.d(Constants.APP_TAG, "Condor onStart");
-        handleCommand(intent);
-    }
-
-    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(Constants.APP_TAG, "Condor onStartCommand");
-        handleCommand(intent);
+        Log.d(Constants.APP_TAG, "Condor onStartCommand flags "+flags+" startId "+startId);
+        if(intent == null) {
+            Log.d(Constants.APP_TAG, "Condor null intent - restarted after kill");
+        }
+        if(db == null) { /* init only once */
+            handleCommand(intent);
+        }
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.
         return START_STICKY;
     }
 
     public void handleCommand(Intent intent) {
-        Log.d(Constants.APP_TAG, "Condor handleCommand");
+        Log.d(Constants.APP_TAG, "Condor handleCommand "+intent);
         Context ctx = getApplicationContext();
 
         /* Preferences */
         prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
 
         /* Database */
-        Log.d(Constants.APP_TAG, "Condor opening database");
+        Log.d(Constants.APP_TAG, "Condor opening database. was "+db);
         db = new Database(ctx);
         db.open();
 
