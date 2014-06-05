@@ -20,8 +20,9 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         String action = intent.getAction();
         if (action.equals(Constants.ACTION_WAKE_ALARM)) {
-            Log.i(Constants.APP_TAG, "AlarmReceiver onReceive "+context.getClass().getSimpleName()+" now "+new Date());
-            db.append(new HeartBeat());
+            Log.i(Constants.APP_TAG, "AlarmReceiver onReceive "+
+                     context.getClass().getSimpleName()+" now "+new Date());
+            db.append(new HeartBeat(""+Thread.currentThread().getName()));
             ((Condor)context).binder.onNewActivity();
         }
 
