@@ -104,4 +104,10 @@ public class ActivityListFragment extends Fragment {
             return false;
         }
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        invalidateView();
+    }
 }
