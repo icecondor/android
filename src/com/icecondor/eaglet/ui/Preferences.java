@@ -11,7 +11,7 @@ import com.icecondor.eaglet.R;
 
 public class Preferences extends PreferenceActivity implements OnSharedPreferenceChangeListener {
     SharedPreferences sharedPrefs;
-    String[] keys = {"api_url"};
+    String[] keys = {"api_url", "recording_frequency"};
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

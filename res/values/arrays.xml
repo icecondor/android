@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="recording_frequency_display">
+        <item>1 minute</item>
+        <item>2 minute</item>
+        <item>3 minute</item>
+        <item>5 minute</item>
+        <item>10 minute</item>
+        </string-array>
+    <integer-array name="recording_frequency_value">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>5</item>
+        <item>10</item>
+    </integer-array>
+</resources>

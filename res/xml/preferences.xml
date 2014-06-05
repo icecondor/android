@@ -9,6 +9,13 @@
                 android:title="OnOff"
                 android:summary="Start automatically" />
 
+        <ListPreference
+                android:key="recording_frequency"
+                android:title="Recording Frequency"
+                android:entries="@array/recording_frequency_display"
+                android:entryValues="@array/recording_frequency_value"
+                 />
+
     </PreferenceCategory>
 
     <PreferenceCategory
