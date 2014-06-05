@@ -24,6 +24,7 @@ import com.icecondor.eaglet.db.Connected;
 import com.icecondor.eaglet.db.Connecting;
 import com.icecondor.eaglet.db.Database;
 import com.icecondor.eaglet.db.Disconnected;
+import com.icecondor.eaglet.db.Start;
 import com.icecondor.eaglet.service.AlarmReceiver;
 import com.icecondor.eaglet.ui.UiActions;
 
@@ -42,12 +43,15 @@ public class Condor extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        String start_reason = "started";
         Log.d(Constants.APP_TAG, "Condor onStartCommand flags "+flags+" startId "+startId);
         if(intent == null) {
             Log.d(Constants.APP_TAG, "Condor null intent - restarted after kill");
+            start_reason = "restarted";
         }
         if(db == null) { /* init only once */
             handleCommand(intent);
+            db.append(new Start(start_reason));
         }
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.
