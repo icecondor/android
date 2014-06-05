@@ -23,7 +23,7 @@ public class DbActivity implements Sqlitable {
         return db.
                 getReadonly().
                 query(Database.ACTIVITIES_TABLE, null,
-                      null, null, null, null, "created_at desc", "50");
+                      null, null, null, null, "created_at desc", "150");
     }
 
     @Override
