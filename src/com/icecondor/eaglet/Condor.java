@@ -82,6 +82,9 @@ public class Condor extends Service {
                                                             0);
         startAlarm();
         startApiThread();
+        if(isRecording()) {
+            startGpsMonitor();
+        }
     }
 
     protected void startApiThread() {
@@ -119,6 +122,14 @@ public class Condor extends Service {
                         System.currentTimeMillis(),
                         recording_frequency_millisecs,
                         wake_alarm_intent);
+    }
+
+    public boolean isRecording() {
+        return prefs.getBoolean(Constants.SETTING_ON_OFF, false);
+    }
+
+    public void startGpsMonitor() {
+
     }
 
     /* public methods */
