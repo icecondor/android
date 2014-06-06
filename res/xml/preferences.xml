@@ -5,8 +5,8 @@
             android:title="Settings">
 
         <CheckBoxPreference
-                android:key="checkbox_preference"
-                android:title="OnOff"
+                android:key="autostart"
+                android:title="AutoStart"
                 android:summary="Start automatically" />
 
         <ListPreference

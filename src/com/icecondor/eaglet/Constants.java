@@ -11,6 +11,7 @@ public class Constants {
     public static final String SETTING_ON_OFF = "on_off";
 
     /* user preferences */
+    public static final String PREFERENCE_AUTOSTART = "autostart";
     public static final String PREFERENCE_API_URL = "api_url";
     public static final String PREFERENCE_RECORDING_FREQUENCY = "recording_frequency";
 }
