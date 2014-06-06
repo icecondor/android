@@ -1,13 +1,21 @@
 package com.icecondor.eaglet.ui.alist;
 
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.support.v4.preference.PreferenceFragment;
 import android.util.Log;
 
 import com.icecondor.eaglet.Constants;
 import com.icecondor.eaglet.R;
 
-public class SettingsFragment extends PreferenceFragment {
+public class SettingsFragment extends PreferenceFragment
+                              implements OnSharedPreferenceChangeListener {
+
+    private SharedPreferences sharedPrefs;
+    private final String[] keys = {"api_url", "recording_frequency"};
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -16,5 +24,36 @@ public class SettingsFragment extends PreferenceFragment {
 
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        sharedPrefs.registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshSummaries();
+    }
+
+    protected void refreshSummaries() {
+        for(String key: keys) {
+            refreshSummary(key);
+        }
+    }
+
+    public void refreshSummary(String key) {
+        Preference preference = getPreferenceScreen().findPreference(key);
+        String summary = sharedPrefs.getString(key, "<none>");
+        preference.setSummary(summary);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+            String key) {
+        refreshSummary(key);
     }
 }
