@@ -31,6 +31,7 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(Constants.APP_TAG, "login.Main onCreate");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         setContentView(R.layout.login);
 
         loginFragment = new LoginFragment();
