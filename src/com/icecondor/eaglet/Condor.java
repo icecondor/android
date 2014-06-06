@@ -96,7 +96,8 @@ public class Condor extends Service {
     protected void startApi() {
         /* API */
         try {
-            String apiUrl = prefs.getString("api_url", Constants.ICECONDOR_API_URL);
+            String apiUrl = prefs.getString(Constants.SETTING_API_URL,
+                                            Constants.ICECONDOR_API_URL);
             api = new Client(apiUrl, new ApiActions());
             api.startPersistentConnect();
         } catch (URISyntaxException e) {
@@ -107,11 +108,14 @@ public class Condor extends Service {
     protected void startAlarm() {
         // clear any existing alarms
         alarmManager.cancel(wake_alarm_intent);
-        long record_frequency = 60000; //Long.decode(prefs.getString(SETTING_TRANSMISSION_FREQUENCY, "300000"));
-        Log.d(Constants.APP_TAG, "startAlarm at "+record_frequency/1000/60+" minutes");
+        long recording_frequency_minutes = Long.decode(prefs.getString(
+                                               Constants.SETTING_RECORDING_FREQUENCY,
+                                               "3"));
+        long recording_frequency_millisecs = recording_frequency_minutes*60*1000;
+        Log.d(Constants.APP_TAG, "startAlarm at "+recording_frequency_minutes+" minutes");
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
                         System.currentTimeMillis(),
-                        record_frequency,
+                        recording_frequency_millisecs,
                         wake_alarm_intent);
     }
 
