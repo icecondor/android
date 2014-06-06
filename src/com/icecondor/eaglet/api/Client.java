@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.ExecutionException;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.Handler;
@@ -117,9 +118,20 @@ public class Client implements ConnectCallbacks {
         doConnect();
     }
 
+    /* Track the call and its response */
+    protected void apiCall(JSONObject payload) {
+        websocket.send(payload.toString());
+    }
+
     /* API Calls */
     public void accountCheck(String email) {
-        websocket.send("{1:2}");
+        JSONObject payload = new JSONObject();
+        try {
+            payload.put("email", email);
+            apiCall(payload);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 }
