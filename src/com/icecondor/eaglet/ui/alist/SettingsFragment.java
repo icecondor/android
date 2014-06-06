@@ -15,8 +15,8 @@ public class SettingsFragment extends PreferenceFragment
                               implements OnSharedPreferenceChangeListener {
 
     private SharedPreferences sharedPrefs;
-    private final String[] keys = {Constants.SETTING_API_URL,
-                                   Constants.SETTING_RECORDING_FREQUENCY};
+    private final String[] keys = {Constants.PREFERENCE_API_URL,
+                                   Constants.PREFERENCE_RECORDING_FREQUENCY};
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

@@ -98,7 +98,7 @@ public class Condor extends Service {
     protected void startApi() {
         /* API */
         try {
-            String apiUrl = prefs.getString(Constants.SETTING_API_URL,
+            String apiUrl = prefs.getString(Constants.PREFERENCE_API_URL,
                                             Constants.ICECONDOR_API_URL);
             api = new Client(apiUrl, new ApiActions());
             api.startPersistentConnect();
@@ -111,7 +111,7 @@ public class Condor extends Service {
         // clear any existing alarms
         alarmManager.cancel(wake_alarm_intent);
         long recording_frequency_minutes = Long.decode(prefs.getString(
-                                               Constants.SETTING_RECORDING_FREQUENCY,
+                                               Constants.PREFERENCE_RECORDING_FREQUENCY,
                                                "3"));
         long recording_frequency_millisecs = recording_frequency_minutes*60*1000;
         Log.d(Constants.APP_TAG, "Condor startAlarm at "+recording_frequency_minutes+" minutes");
