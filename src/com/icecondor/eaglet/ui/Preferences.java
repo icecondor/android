@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
+import com.icecondor.eaglet.Constants;
 import com.icecondor.eaglet.R;
 
 public class Preferences extends PreferenceActivity implements OnSharedPreferenceChangeListener {
@@ -16,6 +18,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(Constants.APP_TAG, "Preferences onCreate");
 
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         setDefaults(sharedPrefs);
