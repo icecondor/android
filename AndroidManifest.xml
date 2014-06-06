@@ -29,10 +29,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.Preferences"
-            android:label="Preferences" >
-        </activity>
-        <activity
             android:name=".ui.login.Main"
             android:launchMode="singleInstance"
             android:label="Login" >
