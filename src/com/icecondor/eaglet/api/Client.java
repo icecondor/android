@@ -120,7 +120,6 @@ public class Client implements ConnectCallbacks {
     /* API Calls */
     public void accountCheck(String email) {
         websocket.send("{1:2}");
-
     }
 
 }
