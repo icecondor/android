@@ -26,6 +26,8 @@ import com.icecondor.eaglet.db.Connected;
 import com.icecondor.eaglet.db.Connecting;
 import com.icecondor.eaglet.db.Database;
 import com.icecondor.eaglet.db.Disconnected;
+import com.icecondor.eaglet.db.GpsLocation;
+import com.icecondor.eaglet.db.Point;
 import com.icecondor.eaglet.db.Start;
 import com.icecondor.eaglet.service.AlarmReceiver;
 import com.icecondor.eaglet.service.BatteryReceiver;
@@ -94,7 +96,8 @@ public class Condor extends Service {
         startApiThread();
         batteryReceiver = new BatteryReceiver();
         setupBatteryMonitor();
-        gpsReceiver = new GpsReceiver();
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        gpsReceiver = new GpsReceiver(this);
         if(isRecording()) {
             Log.d(Constants.APP_TAG, "Condor isRecording is ON.");
             startGpsMonitor();
@@ -139,8 +142,9 @@ public class Condor extends Service {
     protected void startAlarm() {
         // clear any existing alarms
         alarmManager.cancel(wake_alarm_intent);
-        long recording_frequency_minutes = getRecordingFrequencyInMilliseconds();
-        Log.d(Constants.APP_TAG, "Condor startAlarm at "+recording_frequency_minutes+" minutes");
+        Log.d(Constants.APP_TAG, "Condor startAlarm at "+prefs.getString(
+                Constants.PREFERENCE_RECORDING_FREQUENCY,
+                "N/A")+" minutes");
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
                         System.currentTimeMillis(),
                         getRecordingFrequencyInMilliseconds(),
@@ -183,7 +187,7 @@ public class Condor extends Service {
     }
 
     public boolean isRecording() {
-        return prefs.getBoolean(Constants.SETTING_ON_OFF, false);
+        return prefs.getBoolean(Constants.SETTING_ON_OFF, true);
     }
 
     /* Callbacks from network client */
@@ -309,6 +313,12 @@ public class Condor extends Service {
     public IBinder onBind(Intent intent) {
         Log.d(Constants.APP_TAG, "Condor onBind");
         return binder;
+    }
+
+    /* Location callbacks */
+    public void onLocationChanged(Point point) {
+        db.append(new GpsLocation(point));
+        binder.onNewActivity();
     }
 
 }
