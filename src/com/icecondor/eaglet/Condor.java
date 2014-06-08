@@ -27,6 +27,7 @@ import com.icecondor.eaglet.db.Database;
 import com.icecondor.eaglet.db.Disconnected;
 import com.icecondor.eaglet.db.Start;
 import com.icecondor.eaglet.service.AlarmReceiver;
+import com.icecondor.eaglet.service.BatteryReceiver;
 import com.icecondor.eaglet.ui.UiActions;
 
 public class Condor extends Service {
@@ -36,6 +37,7 @@ public class Condor extends Service {
     private SharedPreferences prefs;
     private PendingIntent wake_alarm_intent;
     private AlarmManager alarmManager;
+    private BatteryReceiver batteryReceiver;
 
     @Override
     public void onCreate() {
@@ -140,11 +142,18 @@ public class Condor extends Service {
                         wake_alarm_intent);
     }
 
-    public boolean isRecording() {
-        return prefs.getBoolean(Constants.SETTING_ON_OFF, false);
+    protected void setupBatteryMonitor() {
+        /* Battery */
+        batteryReceiver = new BatteryReceiver();
+        registerReceiver(batteryReceiver,
+        new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        registerReceiver(batteryReceiver,
+        new IntentFilter(Intent.ACTION_POWER_CONNECTED));
+        registerReceiver(batteryReceiver,
+        new IntentFilter(Intent.ACTION_POWER_DISCONNECTED));
     }
 
-    public void startGpsMonitor() {
+    protected void startGpsMonitor() {
 
     }
 
@@ -155,6 +164,10 @@ public class Condor extends Service {
 
     public boolean isConnected() {
         return api.getState() == Client.States.CONNECTED;
+    }
+
+    public boolean isRecording() {
+        return prefs.getBoolean(Constants.SETTING_ON_OFF, false);
     }
 
     /* Callbacks from network client */
