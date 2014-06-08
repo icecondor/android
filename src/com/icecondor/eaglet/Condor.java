@@ -2,6 +2,7 @@ package com.icecondor.eaglet;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.UUID;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -72,6 +73,9 @@ public class Condor extends Service {
         db = new Database(ctx);
         db.open();
 
+        /* Device ID */
+        ensureDeviceID();
+
         /* Receive Alarms */
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         AlarmReceiver alarm_receiver = new AlarmReceiver();
@@ -85,6 +89,18 @@ public class Condor extends Service {
         if(isRecording()) {
             startGpsMonitor();
         }
+    }
+
+    private void ensureDeviceID() {
+        String deviceId = getDeviceID();
+        if(deviceId == null) {
+            UUID did = UUID.randomUUID();
+            prefs.edit().putString(Constants.SETTING_DEVICE_ID, did.toString()).commit();
+        }
+    }
+
+    private String getDeviceID() {
+        return prefs.getString(Constants.SETTING_DEVICE_ID, null);
     }
 
     protected void startApiThread() {

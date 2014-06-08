@@ -9,6 +9,7 @@ public class Constants {
 
     /* internal app settings */
     public static final String SETTING_ON_OFF = "on_off";
+    public static final String SETTING_DEVICE_ID = "device_id";
 
     /* user preferences */
     public static final String PREFERENCE_AUTOSTART = "autostart";
