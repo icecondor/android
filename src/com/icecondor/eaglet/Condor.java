@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -28,6 +29,7 @@ import com.icecondor.eaglet.db.Disconnected;
 import com.icecondor.eaglet.db.Start;
 import com.icecondor.eaglet.service.AlarmReceiver;
 import com.icecondor.eaglet.service.BatteryReceiver;
+import com.icecondor.eaglet.service.GpsReceiver;
 import com.icecondor.eaglet.ui.UiActions;
 
 public class Condor extends Service {
@@ -38,6 +40,8 @@ public class Condor extends Service {
     private PendingIntent wake_alarm_intent;
     private AlarmManager alarmManager;
     private BatteryReceiver batteryReceiver;
+    private LocationManager locationManager;
+    private GpsReceiver gpsReceiver;
 
     @Override
     public void onCreate() {
@@ -88,7 +92,11 @@ public class Condor extends Service {
                                                             0);
         startAlarm();
         startApiThread();
+        batteryReceiver = new BatteryReceiver();
+        setupBatteryMonitor();
+        gpsReceiver = new GpsReceiver();
         if(isRecording()) {
+            Log.d(Constants.APP_TAG, "Condor isRecording is ON.");
             startGpsMonitor();
         }
     }
@@ -131,20 +139,24 @@ public class Condor extends Service {
     protected void startAlarm() {
         // clear any existing alarms
         alarmManager.cancel(wake_alarm_intent);
+        long recording_frequency_minutes = getRecordingFrequencyInMilliseconds();
+        Log.d(Constants.APP_TAG, "Condor startAlarm at "+recording_frequency_minutes+" minutes");
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
+                        System.currentTimeMillis(),
+                        getRecordingFrequencyInMilliseconds(),
+                        wake_alarm_intent);
+    }
+
+    public long getRecordingFrequencyInMilliseconds() {
         long recording_frequency_minutes = Long.decode(prefs.getString(
                                                Constants.PREFERENCE_RECORDING_FREQUENCY,
                                                "3"));
         long recording_frequency_millisecs = recording_frequency_minutes*60*1000;
-        Log.d(Constants.APP_TAG, "Condor startAlarm at "+recording_frequency_minutes+" minutes");
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
-                        System.currentTimeMillis(),
-                        recording_frequency_millisecs,
-                        wake_alarm_intent);
+        return recording_frequency_millisecs;
     }
 
     protected void setupBatteryMonitor() {
         /* Battery */
-        batteryReceiver = new BatteryReceiver();
         registerReceiver(batteryReceiver,
         new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         registerReceiver(batteryReceiver,
@@ -154,7 +166,11 @@ public class Condor extends Service {
     }
 
     protected void startGpsMonitor() {
-
+        Log.d(Constants.APP_TAG,"requesting GPS updates");
+        locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                getRecordingFrequencyInMilliseconds(),
+                0.0F, gpsReceiver);
     }
 
     /* public methods */
