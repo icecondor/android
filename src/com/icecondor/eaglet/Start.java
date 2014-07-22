@@ -14,7 +14,7 @@ import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.icecondor.eaglet.ui.login.Main;
+import com.icecondor.eaglet.ui.alist.MainActivity;
 
 public class Start extends Activity {
     @Override
@@ -24,7 +24,7 @@ public class Start extends Activity {
         Intent condorIntent = new Intent(this, Condor.class);
         startService(condorIntent); // keep this for STICKY result
         ensurePreferences();
-        startActivity(new Intent(this, Main.class));
+        startActivity(new Intent(this, MainActivity.class));
         finish();
     }
 
