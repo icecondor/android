@@ -34,8 +34,9 @@ import com.icecondor.eaglet.ui.alist.ActivityListFragment;
 import com.icecondor.eaglet.ui.alist.SettingsFragment;
 import com.icecondor.eaglet.ui.login.Main;
 
-abstract public class BaseActivity extends ActionBarActivity implements ServiceConnection,
-                                                                        UiActions, OnItemClickListener {
+abstract public class BaseActivity extends ActionBarActivity
+                                   implements ServiceConnection,
+                                              UiActions, OnItemClickListener {
     protected SharedPreferences prefs;
     private LocalBinder localBinder;
     protected Condor condor;
@@ -59,6 +60,13 @@ abstract public class BaseActivity extends ActionBarActivity implements ServiceC
         drawerSetup();
         settingsFragment = new SettingsFragment();
         actListFragment = new ActivityListFragment();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(Constants.APP_TAG, "BaseActivity onStart");
+        startService(condorIntent); // keep this for STICKY result
     }
 
     public void drawerSetup() {
@@ -208,5 +216,13 @@ abstract public class BaseActivity extends ActionBarActivity implements ServiceC
     @Override
     public void onServiceDisconnected(ComponentName name) {
         Log.d(Constants.APP_TAG, "BaseActivity: onServiceDisconnected "+name.flattenToShortString());
+    }
+
+    public void authCheck()
+    {
+        if(prefs.getString(Main.PREF_KEY_AUTHENTICATED_USER_ID, null) == null) {
+            startActivity(new Intent(this, Main.class));
+            return;
+        }
     }
 }

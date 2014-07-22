@@ -2,7 +2,6 @@ package com.icecondor.eaglet.ui.alist;
 
 import java.net.URI;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -11,7 +10,6 @@ import android.util.Log;
 import com.icecondor.eaglet.Constants;
 import com.icecondor.eaglet.ui.BaseActivity;
 import com.icecondor.eaglet.ui.UiActions;
-import com.icecondor.eaglet.ui.login.Main;
 
 public class MainActivity extends BaseActivity implements UiActions {
 
@@ -33,21 +31,11 @@ public class MainActivity extends BaseActivity implements UiActions {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        Log.d(Constants.APP_TAG, "alist.MainActivity onStart");
-        startService(condorIntent); // keep this for STICKY result
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
         Log.d(Constants.APP_TAG, "alist.MainActivity onResume");
         enableServiceHandler();
-        if(prefs.getString(Main.PREF_KEY_AUTHENTICATED_USER_ID, null) == null) {
-            startActivity(new Intent(this, Main.class));
-            return;
-        }
+        authCheck();
     }
 
     @Override
