@@ -39,7 +39,7 @@ public class Start extends Activity {
         if(props.contains("api_url")) {
             apiUrl = props.getProperty("api_url");
         } else {
-            apiUrl = Constants.PREFERENCE_API_URL;
+            apiUrl = Constants.ICECONDOR_API_URL;
         }
         editor.putString(Constants.PREFERENCE_API_URL, apiUrl);
 
