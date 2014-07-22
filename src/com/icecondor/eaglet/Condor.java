@@ -61,7 +61,7 @@ public class Condor extends Service {
         if(db == null) { /* init only once */
             handleCommand(intent);
         } else {
-            start_reason += " (no init)";
+            start_reason += " (skipped init)";
         }
         db.append(new Start(start_reason));
         // We want this service to continue running until it is explicitly
@@ -143,7 +143,7 @@ public class Condor extends Service {
         // clear any existing alarms
         alarmManager.cancel(wake_alarm_intent);
         Log.d(Constants.APP_TAG, "Condor startAlarm at "+prefs.getString(
-                Constants.PREFERENCE_RECORDING_FREQUENCY,
+                Constants.PREFERENCE_RECORDING_FREQUENCY_SECONDS,
                 "N/A")+" minutes");
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
                         System.currentTimeMillis(),
@@ -152,10 +152,10 @@ public class Condor extends Service {
     }
 
     public long getRecordingFrequencyInMilliseconds() {
-        long recording_frequency_minutes = Long.decode(prefs.getString(
-                                               Constants.PREFERENCE_RECORDING_FREQUENCY,
+        long recording_frequency_seconds = Long.decode(prefs.getString(
+                                               Constants.PREFERENCE_RECORDING_FREQUENCY_SECONDS,
                                                "3"));
-        long recording_frequency_millisecs = recording_frequency_minutes*60*1000;
+        long recording_frequency_millisecs = recording_frequency_seconds*1000;
         return recording_frequency_millisecs;
     }
 
