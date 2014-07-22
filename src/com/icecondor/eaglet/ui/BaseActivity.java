@@ -218,8 +218,7 @@ abstract public class BaseActivity extends ActionBarActivity
         Log.d(Constants.APP_TAG, "BaseActivity: onServiceDisconnected "+name.flattenToShortString());
     }
 
-    public void authCheck()
-    {
+    public void authCheck() {
         if(prefs.getString(Main.PREF_KEY_AUTHENTICATED_USER_ID, null) == null) {
             startActivity(new Intent(this, Main.class));
             return;

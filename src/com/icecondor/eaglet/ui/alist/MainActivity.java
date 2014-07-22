@@ -4,7 +4,6 @@ import java.net.URI;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.icecondor.eaglet.Constants;
@@ -21,10 +20,7 @@ public class MainActivity extends BaseActivity implements UiActions {
         super.onCreate(savedInstanceState);
         Log.d(Constants.APP_TAG, "alist.MainActivity onCreate");
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
         aList = new ActivityListFragment();
-
         if (savedInstanceState == null) {
             switchFragment(aList);
         }
