@@ -23,14 +23,14 @@ public class Start extends Activity {
         Log.d(Constants.APP_TAG, "Start onStart");
         Intent condorIntent = new Intent(this, Condor.class);
         startService(condorIntent); // keep this for STICKY result
-        ensurePreferences();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        ensurePreferences(prefs);
         startActivity(new Intent(this, MainActivity.class));
         finish();
     }
 
-    private void ensurePreferences() {
+    private void ensurePreferences(SharedPreferences prefs) {
         /* set default user preferences */
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         Properties props = loadProperties();
         Editor editor = prefs.edit();
         editor.putBoolean(Constants.PREFERENCE_AUTOSTART, true);
