@@ -33,7 +33,8 @@
                 <data android:scheme="https"
                       android:host="api.icecondor.com"
                      />
-            </intent-filter>
+                <data android:scheme="icecondor" />
+                </intent-filter>
         </activity>
         <activity
             android:name=".ui.alist.MainActivity"
