@@ -215,8 +215,8 @@ public class Condor extends Service {
     }
 
     /* API actions */
-    public void doAccountCheck(String email) {
-        api.accountCheck(email);
+    public void doAccountAuth(String email) {
+        api.accountAuth(email, getDeviceID());
     }
 
     /* Emit signals to the bound Activity/UI */

@@ -119,16 +119,24 @@ public class Client implements ConnectCallbacks {
     }
 
     /* Track the call and its response */
-    protected void apiCall(JSONObject payload) {
-        websocket.send(payload.toString());
+    protected void apiCall(String method, JSONObject params) {
+        JSONObject payload = new JSONObject();
+        try {
+            payload.put("method", method);
+            payload.put("params", params);
+            websocket.send(payload.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     /* API Calls */
-    public void accountCheck(String email) {
-        JSONObject payload = new JSONObject();
+    public void accountAuth(String email, String deviceId) {
+        JSONObject params = new JSONObject();
         try {
-            payload.put("email", email);
-            apiCall(payload);
+            params.put("email", email);
+            params.put("device_id", deviceId);
+            apiCall("auth.token", params);
         } catch (JSONException e) {
             e.printStackTrace();
         }

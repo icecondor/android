@@ -3,7 +3,6 @@ package com.icecondor.eaglet.ui.login;
 import java.net.URI;
 
 import android.content.ComponentName;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -19,7 +18,6 @@ import com.icecondor.eaglet.Constants;
 import com.icecondor.eaglet.R;
 import com.icecondor.eaglet.ui.BaseActivity;
 import com.icecondor.eaglet.ui.UiActions;
-import com.icecondor.eaglet.ui.alist.MainActivity;
 
 public class Main extends BaseActivity implements UiActions, OnEditorActionListener {
     public static String PREF_KEY_AUTHENTICATED_USER_ID = "icecondor_authenticated_user_id";
@@ -113,18 +111,8 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
             if(actionId == EditorInfo.IME_ACTION_SEND) {
                 Log.d(Constants.APP_TAG, "LoginFragment: action: "+actionId+" emailField "+v.getText());
                 if(condor.isConnected()) {
-                    condor.doAccountCheck(v.getText().toString());
-                    switchLoginFragment(loginPassFragment);
-                }
-            }
-        }
-        if(v.getId() == R.id.login_password_field) {
-            if(actionId == EditorInfo.IME_ACTION_SEND) {
-                Log.d(Constants.APP_TAG, "LoginFragment: action: "+actionId+" passField "+v.getText());
-                if(condor.isConnected()) {
-                    condor.doAccountCheck(v.getText().toString());
-                    prefs.edit().putString(Main.PREF_KEY_AUTHENTICATED_USER_ID, "abc123").commit();
-                    startActivity(new Intent(this, MainActivity.class));
+                    condor.doAccountAuth(v.getText().toString());
+                    loginFragment.setStatusText("Email sent. Please check your email and click the login button.");
                 }
             }
         }
