@@ -131,7 +131,7 @@ public class Client implements ConnectCallbacks {
     }
 
     /* API Calls */
-    public void accountAuth(String email, String deviceId) {
+    public void accountAuthToken(String email, String deviceId) {
         JSONObject params = new JSONObject();
         try {
             params.put("email", email);

@@ -35,4 +35,8 @@ public class LoginEmailFragment extends Fragment {
     public void enableLoginField() {
         emailField.setEnabled(true);
     }
+
+    public void disableLoginField() {
+        emailField.setEnabled(false);
+    }
 }

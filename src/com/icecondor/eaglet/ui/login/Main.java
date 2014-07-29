@@ -114,14 +114,14 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     }
 
     private void emailFieldReady(String email) {
-        //Client.postEmailLogin(email, prefs.getDeviceId());
-//        if(condor.isConnected()) {
-//            condor.doAccountAuth(email);
-//            emailSent();
-//        }
+        if(condor.isConnected()) {
+            condor.doAccountAuth(email);
+            emailSent();
+        }
     }
 
     private void emailSent() {
         loginFragment.setStatusText("Email sent. Please check your email and click the login button.");
+        loginEmailFragment.disableLoginField();
     }
 }
