@@ -10,13 +10,11 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.icecondor.eaglet.api.Client;
@@ -38,7 +36,7 @@ public class Condor extends Service {
 
     private Client api;
     private Database db;
-    private SharedPreferences prefs;
+    private Prefs prefs;
     private PendingIntent wake_alarm_intent;
     private AlarmManager alarmManager;
     private BatteryReceiver batteryReceiver;
@@ -74,7 +72,7 @@ public class Condor extends Service {
         Context ctx = getApplicationContext();
 
         /* Preferences */
-        prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        prefs = new Prefs(ctx);
 
         /* Database */
         Log.d(Constants.APP_TAG, "Condor opening database. was "+db);
@@ -108,12 +106,12 @@ public class Condor extends Service {
         String deviceId = getDeviceID();
         if(deviceId == null) {
             UUID did = UUID.randomUUID();
-            prefs.edit().putString(Constants.SETTING_DEVICE_ID, did.toString()).commit();
+            prefs.setDeviceId(did.toString());
         }
     }
 
     private String getDeviceID() {
-        return prefs.getString(Constants.SETTING_DEVICE_ID, null);
+        return prefs.getDeviceId();
     }
 
     protected void startApiThread() {
@@ -130,9 +128,7 @@ public class Condor extends Service {
     protected void startApi() {
         /* API */
         try {
-            String apiUrl = prefs.getString(Constants.PREFERENCE_API_URL,
-                                            Constants.ICECONDOR_API_URL);
-            api = new Client(apiUrl, new ApiActions());
+            api = new Client(prefs.getApiUrl(), new ApiActions());
             api.startPersistentConnect();
         } catch (URISyntaxException e) {
             e.printStackTrace();
@@ -142,21 +138,13 @@ public class Condor extends Service {
     protected void startAlarm() {
         // clear any existing alarms
         alarmManager.cancel(wake_alarm_intent);
-        Log.d(Constants.APP_TAG, "Condor startAlarm at "+prefs.getString(
-                Constants.PREFERENCE_RECORDING_FREQUENCY_SECONDS,
-                "N/A")+" minutes");
+        int seconds = prefs.getRecordingFrequencyInSeconds();
+        int minutes = seconds / 60;
+        Log.d(Constants.APP_TAG, "Condor startAlarm at "+minutes+" minutes");
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
                         System.currentTimeMillis(),
-                        getRecordingFrequencyInMilliseconds(),
+                        seconds*1000,
                         wake_alarm_intent);
-    }
-
-    public long getRecordingFrequencyInMilliseconds() {
-        long recording_frequency_seconds = Long.decode(prefs.getString(
-                                               Constants.PREFERENCE_RECORDING_FREQUENCY_SECONDS,
-                                               "3"));
-        long recording_frequency_millisecs = recording_frequency_seconds*1000;
-        return recording_frequency_millisecs;
     }
 
     protected void setupBatteryMonitor() {
@@ -171,9 +159,10 @@ public class Condor extends Service {
 
     protected void startGpsMonitor() {
         Log.d(Constants.APP_TAG,"requesting GPS updates");
+        int seconds = prefs.getRecordingFrequencyInSeconds();
         locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
-                getRecordingFrequencyInMilliseconds(),
+                seconds*1000,
                 0.0F, gpsReceiver);
     }
 
@@ -187,7 +176,7 @@ public class Condor extends Service {
     }
 
     public boolean isRecording() {
-        return prefs.getBoolean(Constants.SETTING_ON_OFF, true);
+        return prefs.getOnOff();
     }
 
     /* Callbacks from network client */

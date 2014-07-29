@@ -7,12 +7,10 @@ import java.util.Map;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
@@ -29,6 +27,7 @@ import android.widget.SimpleAdapter;
 import com.icecondor.eaglet.Condor;
 import com.icecondor.eaglet.Condor.LocalBinder;
 import com.icecondor.eaglet.Constants;
+import com.icecondor.eaglet.Prefs;
 import com.icecondor.eaglet.R;
 import com.icecondor.eaglet.ui.alist.ActivityListFragment;
 import com.icecondor.eaglet.ui.alist.SettingsFragment;
@@ -37,7 +36,7 @@ import com.icecondor.eaglet.ui.login.Main;
 abstract public class BaseActivity extends ActionBarActivity
                                    implements ServiceConnection,
                                               UiActions, OnItemClickListener {
-    protected SharedPreferences prefs;
+    protected Prefs prefs;
     private LocalBinder localBinder;
     protected Condor condor;
     protected Intent condorIntent;
@@ -52,7 +51,7 @@ abstract public class BaseActivity extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs = new Prefs(this);
         condorIntent = new Intent(this, Condor.class);
         Log.d(Constants.APP_TAG, "BaseActivity: onCreate new Handler "+this);
         handler = new Handler();
@@ -112,7 +111,7 @@ abstract public class BaseActivity extends ActionBarActivity
         HashMap<String, Object> item;
         item = new HashMap<String, Object>();
         item.put("icon",R.drawable.ic_launcher);
-        item.put("name", prefs.getString(Main.PREF_KEY_AUTHENTICATED_USER_ID, null));
+        item.put("name", prefs.getAuthenticatedUserId());
         list.add(item);
         item = new HashMap<String, Object>();
         item.put("icon",R.drawable.ic_launcher);
@@ -129,7 +128,7 @@ abstract public class BaseActivity extends ActionBarActivity
         Log.d(Constants.APP_TAG, "BaseActivity: onItemClick position:"+position+" id:"+id);
         if(position == 0) {
             // User
-            prefs.edit().putString(Main.PREF_KEY_AUTHENTICATED_USER_ID, null).commit();
+            prefs.setAuthenticatedUserId("");
             drawerLayout.closeDrawers();
             Intent intent = new Intent(this, Main.class);
             startActivity(intent);
@@ -219,7 +218,7 @@ abstract public class BaseActivity extends ActionBarActivity
     }
 
     public void authCheck() {
-        if(prefs.getString(Main.PREF_KEY_AUTHENTICATED_USER_ID, null) == null) {
+        if(prefs.getAuthenticatedUserId() == null) {
             startActivity(new Intent(this, Main.class));
             return;
         }

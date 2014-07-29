@@ -5,7 +5,6 @@ import java.net.URI;
 import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -35,8 +34,6 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
         loginFragment = new LoginFragment();
         loginEmailFragment = new LoginEmailFragment();
         loginPassFragment = new LoginPassFragment();
-
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (savedInstanceState == null) {
             switchFragment(loginFragment);
@@ -110,13 +107,21 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
         if(v.getId() == R.id.login_email_field) {
             if(actionId == EditorInfo.IME_ACTION_SEND) {
                 Log.d(Constants.APP_TAG, "LoginFragment: action: "+actionId+" emailField "+v.getText());
-                if(condor.isConnected()) {
-                    condor.doAccountAuth(v.getText().toString());
-                    loginFragment.setStatusText("Email sent. Please check your email and click the login button.");
-                }
+                emailFieldReady(v.getText().toString());
             }
         }
         return false;
     }
 
+    private void emailFieldReady(String email) {
+        //Client.postEmailLogin(email, prefs.getDeviceId());
+//        if(condor.isConnected()) {
+//            condor.doAccountAuth(email);
+//            emailSent();
+//        }
+    }
+
+    private void emailSent() {
+        loginFragment.setStatusText("Email sent. Please check your email and click the login button.");
+    }
 }
