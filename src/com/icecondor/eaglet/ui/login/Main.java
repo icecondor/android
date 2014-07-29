@@ -53,18 +53,19 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     }
 
     private void refreshStatusFromCondor(Condor condor) {
-        switch (condor.getNetworkState()) {
-        case CONNECTED:
-            loginIsOk();
-            break;
-        case CONNECTING:
-            loginFragment.setStatusText("connecting...");
-            break;
-        case WAITING:
-            loginFragment.setStatusText("waiting...");
-            break;
+        if(condor != null) {
+            switch (condor.getNetworkState()) {
+            case CONNECTED:
+                loginIsOk();
+                break;
+            case CONNECTING:
+                loginFragment.setStatusText("connecting...");
+                break;
+            case WAITING:
+                loginFragment.setStatusText("waiting...");
+                break;
+            }
         }
-
     }
 
     private void loginIsOk() {
