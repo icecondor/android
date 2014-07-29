@@ -22,7 +22,7 @@ public class Main extends BaseActivity implements UiActions {
 
         aList = new ActivityListFragment();
         if (savedInstanceState == null) {
-            //switchFragment(aList);
+            switchFragment(aList);
         }
     }
 
