@@ -10,7 +10,7 @@ import com.icecondor.eaglet.Constants;
 import com.icecondor.eaglet.ui.BaseActivity;
 import com.icecondor.eaglet.ui.UiActions;
 
-public class MainActivity extends BaseActivity implements UiActions {
+public class Main extends BaseActivity implements UiActions {
 
     private ActivityListFragment aList;
     private SharedPreferences prefs;
@@ -22,7 +22,7 @@ public class MainActivity extends BaseActivity implements UiActions {
 
         aList = new ActivityListFragment();
         if (savedInstanceState == null) {
-            switchFragment(aList);
+            //switchFragment(aList);
         }
     }
 
