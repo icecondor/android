@@ -31,7 +31,10 @@ public class LoginFragment extends Fragment {
     }
 
     public void setStatusText(String text) {
-        statusView.setText(text);
+        // this can be called before statusView exists
+        if(statusView != null) {
+            statusView.setText(text);
+        }
     }
 
 }
