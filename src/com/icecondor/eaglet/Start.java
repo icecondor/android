@@ -52,7 +52,7 @@ public class Start extends Activity {
         } catch (InvalidPropertiesFormatException e) {
             e.printStackTrace();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            Log.d(Constants.APP_TAG, "preference_defaults.xml not found. ignoring.");
         } catch (IOException e) {
             e.printStackTrace();
         }
