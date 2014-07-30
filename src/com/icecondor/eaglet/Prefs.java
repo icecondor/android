@@ -88,4 +88,16 @@ public class Prefs {
         return prefs.getString(Main.PREF_KEY_AUTHENTICATED_USER_ID, null) != null;
     }
 
+    public void setUnvalidatedToken(String token) {
+        prefs.edit().putString(Main.PREF_KEY_UNVERIFIED_TOKEN, token).commit();
+    }
+
+    public String getUnvalidatedToken() {
+        return prefs.getString(Main.PREF_KEY_UNVERIFIED_TOKEN, null);
+    }
+
+    public void clearUnvalidatedToken() {
+        prefs.edit().remove(Main.PREF_KEY_UNVERIFIED_TOKEN).commit();
+    }
+
 }

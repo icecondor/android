@@ -12,22 +12,27 @@ public class Start extends Activity {
         Log.d(Constants.APP_TAG, "Start onStart");
         Prefs prefs = new Prefs(this); // ensure defaults are set
 
-        String token = checkForAuth(getIntent().getData());
-
         Intent condorIntent = new Intent(this, Condor.class);
         startService(condorIntent); // keep this for STICKY result
 
+        String token = tokenFromUri(getIntent().getData());
+
         Intent nextActivity;
-        if(prefs.isAuthenticatedUser()){
-            nextActivity = new Intent(this, com.icecondor.eaglet.ui.alist.Main.class);
+        if(token == null) {
+            if(prefs.isAuthenticatedUser()){
+                nextActivity = new Intent(this, com.icecondor.eaglet.ui.alist.Main.class);
+            } else {
+                nextActivity = new Intent(this, com.icecondor.eaglet.ui.login.Main.class);
+            }
         } else {
             nextActivity = new Intent(this, com.icecondor.eaglet.ui.login.Main.class);
+            prefs.setUnvalidatedToken(token);
         }
         nextActivity.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(nextActivity);
     }
 
-    private String checkForAuth(Uri uri) {
+    private String tokenFromUri(Uri uri) {
         if(uri != null) {
             String path = uri.getPath();
             String[] parts = path.split("\\/");

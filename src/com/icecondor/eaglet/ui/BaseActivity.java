@@ -51,9 +51,10 @@ abstract public class BaseActivity extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(Constants.APP_TAG, "BaseActivity("+this.getClass().getName()+"): onCreate");
+        Log.d(Constants.APP_TAG, "BaseActivity("+this.getClass().getName()+"): data "+getIntent().getData());
         prefs = new Prefs(this);
         condorIntent = new Intent(this, Condor.class);
-        Log.d(Constants.APP_TAG, "BaseActivity: onCreate new Handler "+this);
         handler = new Handler();
         setContentView(R.layout.activity_main);
         drawerSetup();
@@ -64,7 +65,7 @@ abstract public class BaseActivity extends ActionBarActivity
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d(Constants.APP_TAG, "BaseActivity onStart");
+        Log.d(Constants.APP_TAG, "BaseActivity("+this.getClass().getName()+"): onStart");
         startService(condorIntent); // keep this for STICKY result
     }
 

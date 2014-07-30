@@ -19,10 +19,14 @@ import com.icecondor.eaglet.ui.BaseActivity;
 import com.icecondor.eaglet.ui.UiActions;
 
 public class Main extends BaseActivity implements UiActions, OnEditorActionListener {
+    public static final String PREF_KEY_UNVERIFIED_TOKEN = "icecondor_unverified_token";
     public static String PREF_KEY_AUTHENTICATED_USER_ID = "icecondor_authenticated_user_id";
     private LoginFragment loginFragment;
     private LoginEmailFragment loginEmailFragment;
     private LoginPassFragment loginPassFragment;
+    private TokenValidateFragment tokenValidateFragment;
+    private Fragment currentLoginFragment;
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,22 +38,39 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
         loginFragment = new LoginFragment();
         loginEmailFragment = new LoginEmailFragment();
         loginPassFragment = new LoginPassFragment();
+        tokenValidateFragment = new TokenValidateFragment();
 
-        if (savedInstanceState == null) {
-            switchFragment(loginFragment);
+        switchFragment(loginFragment);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        token = prefs.getUnvalidatedToken();
+        Log.d(Constants.APP_TAG, "login.Main onStart token: "+token);
+
+        if(token == null) {
             switchLoginFragment(loginEmailFragment);
+        } else {
+            prefs.clearUnvalidatedToken();
+            switchLoginFragment(tokenValidateFragment);
         }
     }
 
     protected void switchLoginFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
             .replace(R.id.login_body_fragment, fragment).commit();
+        currentLoginFragment = fragment;
     }
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         super.onServiceConnected(name, service);
         refreshStatusFromCondor(condor);
+        if(token != null && condor.isConnected()) {
+            Log.d(Constants.APP_TAG, "login.Main onStart condor connected!");
+            processToken();
+        }
     }
 
     private void refreshStatusFromCondor(Condor condor) {
@@ -84,6 +105,17 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     public void onConnected() {
         Log.d(Constants.APP_TAG, "login.Main onConnected");
         refreshStatusFromCondor(condor);
+        if(currentLoginFragment == tokenValidateFragment) {
+            Log.d(Constants.APP_TAG, "login.Main onConnected processToken");
+            processToken();
+        }
+    }
+
+    public void processToken() {
+        Log.d(Constants.APP_TAG, "login.Main processToken abcbob");
+        tokenValidateFragment.indicateProcessToken();
+        //condor.userDetail
+        prefs.setAuthenticatedUserId("abcbob");
     }
 
     @Override
@@ -125,4 +157,5 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
         loginFragment.setStatusText("Email sent. Please check your email and click the login button.");
         loginEmailFragment.disableLoginField();
     }
+
 }
