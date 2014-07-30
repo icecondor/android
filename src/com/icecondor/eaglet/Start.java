@@ -23,6 +23,7 @@ public class Start extends Activity {
         } else {
             nextActivity = new Intent(this, com.icecondor.eaglet.ui.login.Main.class);
         }
+        nextActivity.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(nextActivity);
     }
 
