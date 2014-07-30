@@ -2,6 +2,7 @@ package com.icecondor.eaglet.api;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import org.json.JSONException;
@@ -119,27 +120,49 @@ public class Client implements ConnectCallbacks {
     }
 
     /* Track the call and its response */
-    protected void apiCall(String method, JSONObject params) {
+    protected String apiCall(String method, JSONObject params) {
+        String id = UUID.randomUUID().toString();
         JSONObject payload = new JSONObject();
         try {
+            payload.put("id", id);
             payload.put("method", method);
             payload.put("params", params);
             websocket.send(payload.toString());
+            return id;
         } catch (JSONException e) {
             e.printStackTrace();
+            return null;
         }
     }
 
     /* API Calls */
-    public void accountAuthToken(String email, String deviceId) {
+    public String accountAuthToken(String email, String deviceId) {
         JSONObject params = new JSONObject();
         try {
             params.put("email", email);
             params.put("device_id", deviceId);
-            apiCall("auth.token", params);
+            return apiCall("auth.token", params);
         } catch (JSONException e) {
             e.printStackTrace();
+            return null;
         }
+    }
+
+    public String accountLogin(String token, String deviceId) {
+        JSONObject params = new JSONObject();
+        try {
+            params.put("token", token);
+            params.put("device_id", deviceId);
+            return apiCall("auth.login", params);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public String userDetail() {
+        JSONObject params = new JSONObject();
+        return apiCall("user.detail", params);
     }
 
 }

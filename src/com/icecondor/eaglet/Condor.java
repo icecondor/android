@@ -4,6 +4,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
 
+import org.json.JSONObject;
+
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -208,6 +210,10 @@ public class Condor extends Service {
         api.accountAuthToken(email, getDeviceID());
     }
 
+    public String doUserDetail() {
+        return api.userDetail();
+    }
+
     /* Emit signals to the bound Activity/UI */
     public class LocalBinder extends Binder implements UiActions {
         public Handler handler;
@@ -290,6 +296,19 @@ public class Condor extends Service {
                     @Override
                     public void run() {
                         callback.onNewActivity();
+                    }
+                });
+            }
+        }
+        @Override
+        public void onApiResult(int _id, JSONObject _result) {
+            final int id = _id;
+            final JSONObject result = _result;
+            if(hasHandler()) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onApiResult(id, result);
                     }
                 });
             }

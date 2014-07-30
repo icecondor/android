@@ -2,6 +2,8 @@ package com.icecondor.eaglet.ui.login;
 
 import java.net.URI;
 
+import org.json.JSONObject;
+
 import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -112,10 +114,10 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     }
 
     public void processToken() {
-        Log.d(Constants.APP_TAG, "login.Main processToken abcbob");
+        Log.d(Constants.APP_TAG, "login.Main processToken");
         tokenValidateFragment.indicateProcessToken();
-        //condor.userDetail
-        prefs.setAuthenticatedUserId("abcbob");
+        String userDetailId = condor.doUserDetail();
+        Log.d(Constants.APP_TAG, "login.Main processToken doUserDetail "+userDetailId);
     }
 
     @Override
@@ -126,6 +128,12 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
 
     @Override
     public void onNewActivity() {
+    }
+
+    @Override
+    public void onApiResult(int id, JSONObject result) {
+        Log.d(Constants.APP_TAG, "login.Main onApiResult "+id+" "+result);
+        prefs.setAuthenticatedUserId("abcbob");
     }
 
     @Override

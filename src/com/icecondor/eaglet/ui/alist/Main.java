@@ -2,6 +2,8 @@ package com.icecondor.eaglet.ui.alist;
 
 import java.net.URI;
 
+import org.json.JSONObject;
+
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -64,6 +66,11 @@ public class Main extends BaseActivity implements UiActions {
     public void onNewActivity() {
         Log.d(Constants.APP_TAG, "alist.MainActivity: callback onNewActivity");
         aList.invalidateView();
+    }
+
+    @Override
+    public void onApiResult(int id, JSONObject result) {
+        Log.d(Constants.APP_TAG, "alist.Main onApiResult "+id+" "+result);
     }
 
 }
