@@ -131,7 +131,7 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     }
 
     @Override
-    public void onApiResult(int id, JSONObject result) {
+    public void onApiResult(String id, JSONObject result) {
         Log.d(Constants.APP_TAG, "login.Main onApiResult "+id+" "+result);
         prefs.setAuthenticatedUserId("abcbob");
     }

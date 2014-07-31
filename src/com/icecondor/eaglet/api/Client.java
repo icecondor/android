@@ -93,8 +93,14 @@ public class Client implements ConnectCallbacks {
 
     /* ConnectCallbacks */
     @Override
-    public void onMessage(JSONObject msg) {
+    public void onMessage(String msg) {
         Log.d(Constants.APP_TAG, "Client onMessage: "+msg);
+        try {
+            JSONObject payload = new JSONObject(msg);
+            actions.onMessage(payload);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

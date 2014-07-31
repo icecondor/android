@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.AlarmManager;
@@ -203,6 +204,19 @@ public class Condor extends Service {
         public void onTimeout() {
             binder.onTimeout();
         }
+        @Override
+        public void onMessage(JSONObject msg) {
+            String id;
+            try {
+                id = msg.getString("id");
+                if(msg.has("result")){
+                    JSONObject result = msg.getJSONObject("result");
+                    binder.onApiResult(id, result);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /* API actions */
@@ -301,8 +315,8 @@ public class Condor extends Service {
             }
         }
         @Override
-        public void onApiResult(int _id, JSONObject _result) {
-            final int id = _id;
+        public void onApiResult(String _id, JSONObject _result) {
+            final String id = _id;
             final JSONObject result = _result;
             if(hasHandler()) {
                 handler.post(new Runnable() {

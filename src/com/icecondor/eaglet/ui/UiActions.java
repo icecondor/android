@@ -10,5 +10,5 @@ public interface UiActions {
     public void onDisconnected();
     public void onTimeout();
     public void onNewActivity();
-    public void onApiResult(int id, JSONObject result);
+    public void onApiResult(String id, JSONObject result);
 }

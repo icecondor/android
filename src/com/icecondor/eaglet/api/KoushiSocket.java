@@ -7,8 +7,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
 import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.util.Log;
 
@@ -61,13 +59,7 @@ public class KoushiSocket implements AsyncHttpClient.WebSocketConnectCallback {
         webSocket.setStringCallback(new StringCallback() {
             @Override
             public void onStringAvailable(String s) {
-                JSONObject msg;
-                try {
-                    msg = new JSONObject(s);
-                    connectCallbacks.onMessage(msg);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                    connectCallbacks.onMessage(s);
             }
         });
 
