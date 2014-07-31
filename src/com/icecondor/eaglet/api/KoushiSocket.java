@@ -61,8 +61,6 @@ public class KoushiSocket implements AsyncHttpClient.WebSocketConnectCallback {
         webSocket.setStringCallback(new StringCallback() {
             @Override
             public void onStringAvailable(String s) {
-                Log.d(Constants.APP_TAG, "ws: onStringAvailable: "+s);
-                System.out.println("I got a string: " + s);
                 JSONObject msg;
                 try {
                     msg = new JSONObject(s);
@@ -76,7 +74,6 @@ public class KoushiSocket implements AsyncHttpClient.WebSocketConnectCallback {
         webSocket.setDataCallback(new DataCallback() {
             @Override
             public void onDataAvailable(DataEmitter emitter, ByteBufferList byteBufferList) {
-                Log.d(Constants.APP_TAG, "ws: onStringAvailable ");
                 byteBufferList.recycle();
             }
         });
