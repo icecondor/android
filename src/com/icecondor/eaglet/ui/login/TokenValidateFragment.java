@@ -34,4 +34,8 @@ public class TokenValidateFragment extends Fragment {
     public void indicateProcessToken() {
         status.setText("Validating Token...");
     }
+
+    public void indicateSuccess() {
+        status.setText("Token Accepted!");
+    }
 }

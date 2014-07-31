@@ -2,9 +2,11 @@ package com.icecondor.eaglet.ui.login;
 
 import java.net.URI;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.ComponentName;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
@@ -17,6 +19,7 @@ import android.widget.TextView.OnEditorActionListener;
 import com.icecondor.eaglet.Condor;
 import com.icecondor.eaglet.Constants;
 import com.icecondor.eaglet.R;
+import com.icecondor.eaglet.Start;
 import com.icecondor.eaglet.ui.BaseActivity;
 import com.icecondor.eaglet.ui.UiActions;
 
@@ -29,6 +32,7 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     private TokenValidateFragment tokenValidateFragment;
     private Fragment currentLoginFragment;
     private String token;
+    private String userDetailApiId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,8 +120,22 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     public void processToken() {
         Log.d(Constants.APP_TAG, "login.Main processToken");
         tokenValidateFragment.indicateProcessToken();
-        String userDetailId = condor.doUserDetail();
-        Log.d(Constants.APP_TAG, "login.Main processToken doUserDetail "+userDetailId);
+        userDetailApiId = condor.doUserDetail();
+        Log.d(Constants.APP_TAG, "login.Main processToken doUserDetail "+userDetailApiId);
+    }
+
+    public void goodUser(JSONObject user) {
+        Log.d(Constants.APP_TAG, "login.Main processToken");
+        String userId;
+        try {
+            userId = user.getString("id");
+            prefs.setAuthenticatedUserId(userId);
+            tokenValidateFragment.indicateSuccess();
+            Intent start = new Intent(this, Start.class);
+            startActivity(start);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -133,7 +151,9 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     @Override
     public void onApiResult(String id, JSONObject result) {
         Log.d(Constants.APP_TAG, "login.Main onApiResult "+id+" "+result);
-        prefs.setAuthenticatedUserId("abcbob");
+        if(id.equals(userDetailApiId)) {
+            goodUser(result);
+        }
     }
 
     @Override
