@@ -125,7 +125,7 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     }
 
     public void goodUser(JSONObject user) {
-        Log.d(Constants.APP_TAG, "login.Main processToken");
+        Log.d(Constants.APP_TAG, "login.Main goodUser");
         String userId;
         try {
             userId = user.getString("id");

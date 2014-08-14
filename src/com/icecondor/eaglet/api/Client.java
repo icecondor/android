@@ -2,6 +2,8 @@ package com.icecondor.eaglet.api;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -9,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.Handler;
+import android.util.Base64;
 import android.util.Log;
 
 import com.icecondor.eaglet.Constants;
@@ -142,12 +145,12 @@ public class Client implements ConnectCallbacks {
     }
 
     /* API Calls */
-    public String accountAuthToken(String email, String deviceId) {
+    public String accountAuthEmail(String email, String deviceId) {
         JSONObject params = new JSONObject();
         try {
             params.put("email", email);
             params.put("device_id", deviceId);
-            return apiCall("auth.token", params);
+            return apiCall("auth.email", params);
         } catch (JSONException e) {
             e.printStackTrace();
             return null;
@@ -157,13 +160,21 @@ public class Client implements ConnectCallbacks {
     public String accountLogin(String token, String deviceId) {
         JSONObject params = new JSONObject();
         try {
-            params.put("token", token);
-            params.put("device_id", deviceId);
-            return apiCall("auth.login", params);
+            String deviceKey = sha512base64(token+deviceId);
+            params.put("device_key", deviceKey);
+            return apiCall("auth.session", params);
         } catch (JSONException e) {
             e.printStackTrace();
-            return null;
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
         }
+        return null;
+    }
+
+    private String sha512base64(String text) throws NoSuchAlgorithmException{
+        MessageDigest hash = MessageDigest.getInstance("SHA-512");
+        hash.digest(text.getBytes());
+        return Base64.encodeToString(hash.digest(), Base64.DEFAULT);
     }
 
     public String userDetail() {

@@ -208,10 +208,12 @@ public class Condor extends Service {
         public void onMessage(JSONObject msg) {
             String id;
             try {
-                id = msg.getString("id");
-                if(msg.has("result")){
-                    JSONObject result = msg.getJSONObject("result");
-                    binder.onApiResult(id, result);
+                if(msg.has("id")) {
+                    id = msg.getString("id");
+                    if(msg.has("result")){
+                        JSONObject result = msg.getJSONObject("result");
+                        binder.onApiResult(id, result);
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -221,7 +223,7 @@ public class Condor extends Service {
 
     /* API actions */
     public void doAccountAuth(String email) {
-        api.accountAuthToken(email, getDeviceID());
+        api.accountAuthEmail(email, getDeviceID());
     }
 
     public String doUserDetail() {
