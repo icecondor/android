@@ -45,6 +45,7 @@ public class Condor extends Service {
     private BatteryReceiver batteryReceiver;
     private LocationManager locationManager;
     private GpsReceiver gpsReceiver;
+    private String token;
 
     @Override
     public void onCreate() {
@@ -178,6 +179,10 @@ public class Condor extends Service {
         return api.getState() == Client.States.CONNECTED;
     }
 
+    public String testToken(String token) {
+        return api.accountAuthSession(token, getDeviceID());
+    }
+
     public boolean isRecording() {
         return prefs.getOnOff();
     }
@@ -194,6 +199,9 @@ public class Condor extends Service {
         public void onConnected() {
             db.append(new Connected());
             binder.onConnected();
+            if(prefs.isAuthenticatedUser()){
+                api.accountAuthSession(prefs.getAuthenticationToken(), getDeviceID());
+            }
         }
         @Override
         public void onDisconnected() {

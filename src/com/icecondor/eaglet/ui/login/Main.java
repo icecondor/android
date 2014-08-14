@@ -25,6 +25,7 @@ import com.icecondor.eaglet.ui.UiActions;
 
 public class Main extends BaseActivity implements UiActions, OnEditorActionListener {
     public static final String PREF_KEY_UNVERIFIED_TOKEN = "icecondor_unverified_token";
+    public static final String PREF_KEY_AUTHENTICATION_TOKEN = "icecondor_authentication_token";
     public static String PREF_KEY_AUTHENTICATED_USER_ID = "icecondor_authenticated_user_id";
     private LoginFragment loginFragment;
     private LoginEmailFragment loginEmailFragment;
@@ -33,6 +34,7 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     private Fragment currentLoginFragment;
     private String token;
     private String userDetailApiId;
+    private String testTokenApiId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,8 +122,7 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     public void processToken() {
         Log.d(Constants.APP_TAG, "login.Main processToken");
         tokenValidateFragment.indicateProcessToken();
-        userDetailApiId = condor.doUserDetail();
-        Log.d(Constants.APP_TAG, "login.Main processToken doUserDetail "+userDetailApiId);
+        testTokenApiId = condor.testToken(token);
     }
 
     public void goodUser(JSONObject user) {
@@ -151,6 +152,11 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     @Override
     public void onApiResult(String id, JSONObject result) {
         Log.d(Constants.APP_TAG, "login.Main onApiResult "+id+" "+result);
+        if(id.equals(testTokenApiId)) {
+            prefs.setAuthenticationToken(token);
+            userDetailApiId = condor.doUserDetail();
+            Log.d(Constants.APP_TAG, "login.Main processToken doUserDetail "+userDetailApiId);
+        }
         if(id.equals(userDetailApiId)) {
             goodUser(result);
         }

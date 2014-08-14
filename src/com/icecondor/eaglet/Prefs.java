@@ -104,4 +104,16 @@ public class Prefs {
         prefs.edit().remove(Main.PREF_KEY_UNVERIFIED_TOKEN).commit();
     }
 
+    public void setAuthenticationToken(String token) {
+        prefs.edit().putString(Main.PREF_KEY_AUTHENTICATION_TOKEN, token).commit();
+    }
+
+    public String getAuthenticationToken() {
+        return prefs.getString(Main.PREF_KEY_AUTHENTICATION_TOKEN, null);
+    }
+
+    public void clearAuthenticationToken() {
+        prefs.edit().remove(Main.PREF_KEY_AUTHENTICATION_TOKEN).commit();
+    }
+
 }

@@ -157,7 +157,7 @@ public class Client implements ConnectCallbacks {
         }
     }
 
-    public String accountLogin(String token, String deviceId) {
+    public String accountAuthSession(String token, String deviceId) {
         JSONObject params = new JSONObject();
         try {
             String deviceKey = sha512base64(token+deviceId);
@@ -174,7 +174,7 @@ public class Client implements ConnectCallbacks {
     private String sha512base64(String text) throws NoSuchAlgorithmException{
         MessageDigest hash = MessageDigest.getInstance("SHA-512");
         hash.digest(text.getBytes());
-        return Base64.encodeToString(hash.digest(), Base64.DEFAULT);
+        return Base64.encodeToString(hash.digest(), Base64.NO_WRAP);
     }
 
     public String userDetail() {
