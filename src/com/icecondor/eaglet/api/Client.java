@@ -130,7 +130,7 @@ public class Client implements ConnectCallbacks {
 
     /* Track the call and its response */
     protected String apiCall(String method, JSONObject params) {
-        String id = UUID.randomUUID().toString();
+        String id = UUID.randomUUID().toString().substring(0, 7);
         JSONObject payload = new JSONObject();
         try {
             payload.put("id", id);
@@ -160,7 +160,7 @@ public class Client implements ConnectCallbacks {
     public String accountAuthSession(String token, String deviceId) {
         JSONObject params = new JSONObject();
         try {
-            String deviceKey = sha256base64(token+deviceId);
+            String deviceKey = sha256base64(deviceId+token);
             params.put("device_key", deviceKey);
             return apiCall("auth.session", params);
         } catch (JSONException e) {
