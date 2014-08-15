@@ -187,6 +187,10 @@ public class Condor extends Service {
         return prefs.getOnOff();
     }
 
+    public void connectNow() {
+        api.connect();
+    }
+
     /* Callbacks from network client */
     public class ApiActions implements ClientActions {
         @Override

@@ -54,6 +54,9 @@ public class Client implements ConnectCallbacks {
             String httpQuirkUrl = apiUrl.toString().replace("ws://", "http://").replace("wss://", "https://");
             AsyncHttpRequest get = new AsyncHttpGet(httpQuirkUrl);
             get.setTimeout(2500);
+            if(websocketFuture != null) {
+                websocketFuture.cancel();
+            }
             websocketFuture = client.websocket(get, null, new KoushiSocket(this));
         } else {
             Log.d(Constants.APP_TAG, "client: ignoring connect(). connecting in progress.");
