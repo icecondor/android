@@ -226,6 +226,10 @@ public class Condor extends Service {
                         JSONObject result = msg.getJSONObject("result");
                         binder.onApiResult(id, result);
                     }
+                    if(msg.has("error")){
+                        JSONObject result = msg.getJSONObject("error");
+                        binder.onApiError(id, result);
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -337,6 +341,19 @@ public class Condor extends Service {
                     @Override
                     public void run() {
                         callback.onApiResult(id, result);
+                    }
+                });
+            }
+        }
+        @Override
+        public void onApiError(String _id, JSONObject _result) {
+            final String id = _id;
+            final JSONObject result = _result;
+            if(hasHandler()) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onApiError(id, result);
                     }
                 });
             }

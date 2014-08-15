@@ -11,4 +11,5 @@ public interface UiActions {
     public void onTimeout();
     public void onNewActivity();
     public void onApiResult(String id, JSONObject result);
+    public void onApiError(String id, JSONObject result);
 }

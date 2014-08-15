@@ -73,4 +73,9 @@ public class Main extends BaseActivity implements UiActions {
         Log.d(Constants.APP_TAG, "alist.Main onApiResult "+id+" "+result);
     }
 
+    @Override
+    public void onApiError(String id, JSONObject error) {
+        Log.d(Constants.APP_TAG, "alist.Main onApierror "+id+" "+error);
+    }
+
 }

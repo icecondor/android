@@ -38,4 +38,8 @@ public class TokenValidateFragment extends Fragment {
     public void indicateSuccess() {
         status.setText("Token Accepted!");
     }
+
+    public void indicateUserDetailFetch() {
+        status.setText("Gathering user details...");
+    }
 }

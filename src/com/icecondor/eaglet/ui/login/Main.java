@@ -121,23 +121,61 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     }
 
     public void processToken() {
-        Log.d(Constants.APP_TAG, "login.Main processToken");
         tokenValidateFragment.indicateProcessToken();
         testTokenApiId = condor.testToken(token);
+        Log.d(Constants.APP_TAG, "login.Main processToken call authSession "+testTokenApiId);
+    }
+
+    public void goodToken(JSONObject result) {
+        prefs.setAuthenticationToken(token);
+        try {
+            String userId = result.getJSONObject("user").getString("id");
+            prefs.setAuthenticatedUserId(userId);
+            if(userId.equals(prefs.getAuthenticatedUserId())) {
+                // authed user is the user we know
+                tokenValidateFragment.indicateSuccess();
+                Intent start = new Intent(this, Start.class);
+                startActivity(start);
+            } else {
+                // get details on this user
+                tokenValidateFragment.indicateUserDetailFetch();
+                userDetailApiId = condor.doUserDetail();
+                Log.d(Constants.APP_TAG, "login.Main processToken call doUserDetail "+userDetailApiId);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public void goodUser(JSONObject user) {
         Log.d(Constants.APP_TAG, "login.Main goodUser");
-        String userId;
         try {
-            userId = user.getString("id");
-            prefs.setAuthenticatedUserId(userId);
-            tokenValidateFragment.indicateSuccess();
-            Intent start = new Intent(this, Start.class);
-            startActivity(start);
+            String userId = user.getJSONObject("user").getString("id");
+            if(userId.equals(prefs.getAuthenticatedUserId())) {
+                // TODO: pull out other details
+
+                Intent start = new Intent(this, Start.class);
+                startActivity(start);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onApiResult(String id, JSONObject result) {
+        Log.d(Constants.APP_TAG, "login.Main onApiResult "+id+" "+result);
+        if(id.equals(testTokenApiId)) {
+            goodToken(result);
+        }
+        if(id.equals(userDetailApiId)) {
+            goodUser(result);
+        }
+    }
+
+    @Override
+    public void onApiError(String id, JSONObject result) {
+        Log.d(Constants.APP_TAG, "login.Main onApiError "+id+" "+result);
     }
 
     @Override
@@ -148,19 +186,6 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
 
     @Override
     public void onNewActivity() {
-    }
-
-    @Override
-    public void onApiResult(String id, JSONObject result) {
-        Log.d(Constants.APP_TAG, "login.Main onApiResult "+id+" "+result);
-        if(id.equals(testTokenApiId)) {
-            prefs.setAuthenticationToken(token);
-            userDetailApiId = condor.doUserDetail();
-            Log.d(Constants.APP_TAG, "login.Main processToken doUserDetail "+userDetailApiId);
-        }
-        if(id.equals(userDetailApiId)) {
-            goodUser(result);
-        }
     }
 
     @Override
