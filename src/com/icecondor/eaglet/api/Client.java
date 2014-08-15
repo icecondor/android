@@ -172,9 +172,10 @@ public class Client implements ConnectCallbacks {
     }
 
     private String sha512base64(String text) throws NoSuchAlgorithmException{
-        MessageDigest hash = MessageDigest.getInstance("SHA-512");
-        hash.digest(text.getBytes());
-        return Base64.encodeToString(hash.digest(), Base64.NO_WRAP);
+        MessageDigest hasher = MessageDigest.getInstance("SHA-256");
+        hasher.update(text.getBytes());
+        String hash = Base64.encodeToString(hasher.digest(), Base64.NO_WRAP);
+        return hash;
     }
 
     public String userDetail() {
