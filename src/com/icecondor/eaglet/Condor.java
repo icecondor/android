@@ -109,8 +109,8 @@ public class Condor extends Service {
     private void ensureDeviceID() {
         String deviceId = getDeviceID();
         if(deviceId == null) {
-            UUID did = UUID.randomUUID();
-            prefs.setDeviceId(did.toString());
+            deviceId = "device-"+UUID.randomUUID();
+            prefs.setDeviceId(deviceId);
         }
     }
 
