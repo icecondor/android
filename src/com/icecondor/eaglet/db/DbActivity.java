@@ -3,6 +3,7 @@ package com.icecondor.eaglet.db;
 import java.security.InvalidParameterException;
 import java.util.UUID;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.ContentValues;
@@ -16,6 +17,12 @@ public class DbActivity implements Sqlitable {
 
     public DbActivity() {
         json = new JSONObject();
+        try {
+            json.put("id", UUID.randomUUID());
+            json.put("class", getClass().getName());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

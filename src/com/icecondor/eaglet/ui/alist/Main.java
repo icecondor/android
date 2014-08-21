@@ -66,6 +66,9 @@ public class Main extends BaseActivity implements UiActions {
     public void onNewActivity() {
         Log.d(Constants.APP_TAG, "alist.MainActivity: callback onNewActivity");
         aList.invalidateView();
+        if(condor != null) {
+            condor.pushActivities();
+        }
     }
 
     @Override

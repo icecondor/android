@@ -108,4 +108,10 @@ public class Database {
         return cursor.getCount();
     }
 
+    public Cursor ActivitiesUnsynced() {
+        return db.query(Database.ACTIVITIES_TABLE, null,
+                        Database.ACTIVITIES_SYNCED_AT+" IS NULL", null,
+                        null, null, ROW_ID+" asc", "");
+    }
+
 }

@@ -43,7 +43,9 @@ public class ActivityListFragment extends Fragment {
                                  Database.ROW_CREATED_AT,
                                  Database.ACTIVITIES_VERB,
                                  Database.ACTIVITIES_DESCRIPTION,
-                                 Database.ACTIVITIES_UUID};
+                                 Database.ACTIVITIES_UUID,
+                                 Database.ACTIVITIES_SYNCED_AT
+        };
         int[] toViews = {
                          R.id.activity_row_date,
                          R.id.activity_row_action,
@@ -102,7 +104,11 @@ public class ActivityListFragment extends Fragment {
 
             int descriptionIndex = cursor.getColumnIndex(Database.ACTIVITIES_DESCRIPTION);
             if(dbColumnIndex == descriptionIndex) {
-                ((TextView)view).setText(cursor.getString(descriptionIndex));
+                String desc = "";
+                desc = cursor.getString(descriptionIndex);
+                int syncedAtIndex = cursor.getColumnIndex(Database.ACTIVITIES_DESCRIPTION);
+                desc = desc + "-"+ cursor.getString(syncedAtIndex);
+                ((TextView)view).setText(desc);
                 return true;
             }
 

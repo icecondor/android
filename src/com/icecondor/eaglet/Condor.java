@@ -13,6 +13,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Handler;
@@ -191,6 +192,12 @@ public class Condor extends Service {
         api.connect();
     }
 
+    public void pushActivities() {
+        Cursor unsynced = db.ActivitiesUnsynced();
+        unsynced.moveToFirst();
+        api.activityAdd(unsynced.getString(unsynced.getColumnIndex(Database.ACTIVITIES_JSON)));
+    }
+
     /* Callbacks from network client */
     public class ApiActions implements ClientActions {
         @Override
@@ -206,6 +213,7 @@ public class Condor extends Service {
             if(prefs.isAuthenticatedUser()){
                 api.accountAuthSession(prefs.getAuthenticationToken(), getDeviceID());
             }
+            pushActivities();
         }
         @Override
         public void onDisconnected() {
