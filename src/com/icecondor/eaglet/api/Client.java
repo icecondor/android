@@ -100,7 +100,7 @@ public class Client implements ConnectCallbacks {
     /* ConnectCallbacks */
     @Override
     public void onMessage(String msg) {
-        Log.d(Constants.APP_TAG, "Client onMessage: "+msg);
+        Log.d(Constants.APP_TAG, "api.Client onMessage: "+msg);
         try {
             JSONObject payload = new JSONObject(msg);
             actions.onMessage(payload);
@@ -111,7 +111,7 @@ public class Client implements ConnectCallbacks {
 
     @Override
     public void onConnected() {
-        Log.d(Constants.APP_TAG, "Client onConnected.");
+        Log.d(Constants.APP_TAG, "api.Client onConnected.");
         try {
             websocket = websocketFuture.get();
             state = States.CONNECTED;
@@ -124,7 +124,7 @@ public class Client implements ConnectCallbacks {
 
     @Override
     public void onDisconnected() {
-        Log.d(Constants.APP_TAG, "Client onDisconnected.");
+        Log.d(Constants.APP_TAG, "api.Client onDisconnected.");
         state = States.WAITING;
         reconnects = 0;
         actions.onDisconnected();
@@ -139,6 +139,7 @@ public class Client implements ConnectCallbacks {
             payload.put("id", id);
             payload.put("method", method);
             payload.put("params", params);
+            Log.d(Constants.APP_TAG, "api.Client apiCall "+payload);
             websocket.send(payload.toString());
             return id;
         } catch (JSONException e) {
