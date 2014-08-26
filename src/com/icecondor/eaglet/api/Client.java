@@ -110,6 +110,8 @@ public class Client implements ConnectCallbacks {
         Log.d(Constants.APP_TAG, "api.Client onMessage: "+msg);
         try {
             JSONObject payload = new JSONObject(msg);
+            String id = payload.getString("id");
+            apiQueue.remove(id);
             actions.onMessage(payload);
         } catch (JSONException e) {
             e.printStackTrace();
