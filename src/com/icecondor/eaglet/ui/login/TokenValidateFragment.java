@@ -39,6 +39,14 @@ public class TokenValidateFragment extends Fragment {
         status.setText("Token Accepted!");
     }
 
+    public void indicateFail() {
+        status.setText("Token Denied.");
+    }
+
+    public void indicateCommErr() {
+        status.setText("Network timeout. Please try again.");
+    }
+
     public void indicateUserDetailFetch() {
         status.setText("Gathering user details...");
     }

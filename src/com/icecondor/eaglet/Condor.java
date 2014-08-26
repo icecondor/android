@@ -221,8 +221,8 @@ public class Condor extends Service {
             binder.onDisconnected();
         }
         @Override
-        public void onTimeout() {
-            binder.onTimeout();
+        public void onConnectTimeout() {
+            binder.onConnectTimeout();
         }
         @Override
         public void onMessage(JSONObject msg) {
@@ -239,6 +239,16 @@ public class Condor extends Service {
                         binder.onApiError(id, result);
                     }
                 }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        @Override
+        public void onMessageTimeout(String id) {
+            try {
+                JSONObject err = new JSONObject();
+                err.put("reason", "timeout");
+                binder.onApiError(id, err);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -318,12 +328,12 @@ public class Condor extends Service {
             }
         }
         @Override
-        public void onTimeout() {
+        public void onConnectTimeout() {
             if(hasHandler()) {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        callback.onTimeout();
+                        callback.onConnectTimeout();
                         callback.onNewActivity();
                     }
                 });

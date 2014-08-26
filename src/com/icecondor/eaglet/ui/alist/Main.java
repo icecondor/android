@@ -58,7 +58,7 @@ public class Main extends BaseActivity implements UiActions {
     }
 
     @Override
-    public void onTimeout() {
+    public void onConnectTimeout() {
         Log.d(Constants.APP_TAG, "alist.MainActivity callback onTimeout");
     }
 

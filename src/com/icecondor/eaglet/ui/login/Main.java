@@ -176,6 +176,20 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     @Override
     public void onApiError(String id, JSONObject result) {
         Log.d(Constants.APP_TAG, "login.Main onApiError "+id+" "+result);
+        if(id.equals(testTokenApiId)) {
+            try {
+                if(result.getString("reason").equals("timeout")){
+                    tokenValidateFragment.indicateCommErr();
+                } else {
+                    tokenValidateFragment.indicateFail();
+                }
+            } catch (JSONException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        if(id.equals(userDetailApiId)) {
+        }
     }
 
     @Override
@@ -189,8 +203,8 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     }
 
     @Override
-    public void onTimeout() {
-        Log.d(Constants.APP_TAG, "login.Main onTimeout");
+    public void onConnectTimeout() {
+        Log.d(Constants.APP_TAG, "login.Main onConnectTimeout");
         refreshStatusFromCondor(condor);
     }
 

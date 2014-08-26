@@ -4,6 +4,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashSet;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -32,6 +35,8 @@ public class Client implements ConnectCallbacks {
     private final Handler handler;
     private Future<WebSocket> websocketFuture;
     private WebSocket websocket;
+    private final Timer apiTimer;
+    private final HashSet<String> apiQueue;
 
     public enum States { WAITING, CONNECTING, CONNECTED};
     private States state;
@@ -43,6 +48,8 @@ public class Client implements ConnectCallbacks {
         this.client = AsyncHttpClient.getDefaultInstance();
         KoushiSocket.disableSSLCheck(client);
         state = States.WAITING;
+        apiTimer = new Timer("apiTimer");
+        apiQueue = new HashSet<String>();
     }
 
     public void connect() {
@@ -75,7 +82,7 @@ public class Client implements ConnectCallbacks {
     @Override
     public void onTimeout() {
         state = States.WAITING;
-        actions.onTimeout();
+        actions.onConnectTimeout();
         if(reconnect) {
             reconnects += 1;
             long waitMillis = exponentialBackoffTime(reconnects);
@@ -140,11 +147,30 @@ public class Client implements ConnectCallbacks {
             payload.put("method", method);
             payload.put("params", params);
             Log.d(Constants.APP_TAG, "api.Client apiCall "+payload);
-            websocket.send(payload.toString());
+            apiQueue(payload);
             return id;
         } catch (JSONException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    private void apiQueue(JSONObject payload) {
+        try {
+            final String id = payload.getString("id");
+            apiQueue.add(id);
+            websocket.send(payload.toString());
+            apiTimer.schedule(new TimerTask(){
+                @Override
+                public void run() {
+                    if(apiQueue.contains(id)) {
+                        // timeout
+                        Log.d(Constants.APP_TAG,"api.Client apiCall "+id+" timed out!");
+                        actions.onMessageTimeout(id);
+                    }
+                }}, 1000);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
