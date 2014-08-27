@@ -39,6 +39,8 @@ import com.icecondor.eaglet.ui.UiActions;
 public class Condor extends Service {
 
     private Client api;
+    private boolean clientAuthenticated;
+    private String authApiCall;
     private Database db;
     private Prefs prefs;
     private PendingIntent wake_alarm_intent;
@@ -180,6 +182,10 @@ public class Condor extends Service {
         return api.getState() == Client.States.CONNECTED;
     }
 
+    public boolean isAuthenticated() {
+        return clientAuthenticated;
+    }
+
     public String testToken(String token) {
         return api.accountAuthSession(token, getDeviceID());
     }
@@ -193,12 +199,11 @@ public class Condor extends Service {
     }
 
     public void pushActivities() {
-        if(api.getState() == Client.States.CONNECTED) {
-
+        if(clientAuthenticated) {
+            Cursor unsynced = db.ActivitiesUnsynced();
+            unsynced.moveToFirst();
+            api.activityAdd(unsynced.getString(unsynced.getColumnIndex(Database.ACTIVITIES_JSON)));
         }
-        Cursor unsynced = db.ActivitiesUnsynced();
-        unsynced.moveToFirst();
-        api.activityAdd(unsynced.getString(unsynced.getColumnIndex(Database.ACTIVITIES_JSON)));
     }
 
     /* Callbacks from network client */
@@ -214,12 +219,13 @@ public class Condor extends Service {
             db.append(new Connected());
             binder.onConnected();
             if(prefs.isAuthenticatedUser()){
-                api.accountAuthSession(prefs.getAuthenticationToken(), getDeviceID());
+                authApiCall = api.accountAuthSession(prefs.getAuthenticationToken(), getDeviceID());
             }
             pushActivities();
         }
         @Override
         public void onDisconnected() {
+            clientAuthenticated = false;
             db.append(new Disconnected());
             binder.onDisconnected();
         }
@@ -357,13 +363,18 @@ public class Condor extends Service {
         public void onApiResult(String _id, JSONObject _result) {
             final String id = _id;
             final JSONObject result = _result;
-            if(hasHandler()) {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        callback.onApiResult(id, result);
-                    }
-                });
+            if(_id.equals(authApiCall)){
+                Log.d(Constants.APP_TAG, "condor: onApiResult caught authApiCall "+_result);
+                clientAuthenticated = true;
+            } else {
+                if(hasHandler()) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onApiResult(id, result);
+                        }
+                    });
+                }
             }
         }
         @Override
