@@ -25,7 +25,7 @@ public class Database {
     /* Users table */
     public static final String USERS_TABLE = "users";
     public static final String USERS_USERNAME = "username";
-    public static final String USERS_SESSION_KEY = "session_key";
+    public static final String USERS_UUID = "uuid";
 
     /* Activities table */
     public static final String ACTIVITIES_TABLE = "activities";
@@ -66,7 +66,7 @@ public class Database {
             db.execSQL("CREATE TABLE "+USERS_TABLE+" ("+
                     ROW_ID+" integer primary key, "+
                     USERS_USERNAME + " text," +
-                    USERS_SESSION_KEY + " text," +
+                    USERS_UUID + " text," +
                     ROW_CREATED_AT + " DATETIME DEFAULT CURRENT_TIMESTAMP" +
                     ")");
 
@@ -116,9 +116,10 @@ public class Database {
                         null, null, ROW_ID+" asc", "");
     }
 
-    public void updateUser(JSONObject user) {
-        ContentValues cv = new ContentValues();
-        db.insertWithOnConflict(Database.USERS_TABLE, null, cv, SQLiteDatabase.CONFLICT_REPLACE);
+    public void updateUser(JSONObject userJson) {
+        User user = new User(userJson);
+        db.insertWithOnConflict(Database.USERS_TABLE, null, user.getAttributes(),
+                                 SQLiteDatabase.CONFLICT_REPLACE);
     }
 
 }
