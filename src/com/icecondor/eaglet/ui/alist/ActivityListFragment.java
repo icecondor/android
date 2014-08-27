@@ -16,8 +16,8 @@ import android.widget.TextView;
 
 import com.icecondor.eaglet.Constants;
 import com.icecondor.eaglet.R;
+import com.icecondor.eaglet.db.Activity;
 import com.icecondor.eaglet.db.Database;
-import com.icecondor.eaglet.db.activity.Base;
 
 public class ActivityListFragment extends Fragment {
 
@@ -54,7 +54,7 @@ public class ActivityListFragment extends Fragment {
         db = new Database(getActivity());
         sCursorAdapter = new SimpleCursorAdapter(getActivity(),
                                                       R.layout.activity_row,
-                                                      Base.getAll(db),
+                                                      Activity.getAll(db),
                                                       fromColumns,
                                                       toViews);
         activityListViewBinder = new ActivityListViewBinder();
@@ -66,7 +66,7 @@ public class ActivityListFragment extends Fragment {
     public void invalidateView() {
         /* its possible for MainActivity to call this before db is ready */
         if(db != null) {
-            Cursor rows = Base.getAll(db);
+            Cursor rows = Activity.getAll(db);
             sCursorAdapter.changeCursor(rows);
         } else {
             Log.d(Constants.APP_TAG, "ActivityListFragment invalidateView skipped, no database");

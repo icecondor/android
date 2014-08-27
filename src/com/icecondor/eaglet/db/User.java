@@ -1,5 +1,7 @@
 package com.icecondor.eaglet.db;
 
+import org.json.JSONObject;
+
 import android.content.ContentValues;
 
 public class User implements Sqlitable {
@@ -15,4 +17,7 @@ public class User implements Sqlitable {
         return cv;
     }
 
+    public void insertOrReplace(JSONObject user) {
+
+    }
 }

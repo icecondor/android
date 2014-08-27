@@ -1,10 +1,11 @@
 package com.icecondor.eaglet.db.activity;
 
+import com.icecondor.eaglet.db.Activity;
 import com.icecondor.eaglet.db.Database;
 
 import android.content.ContentValues;
 
-public class HeartBeat extends Base  {
+public class HeartBeat extends Activity  {
     private static final String VERB = "heartbeat";
     private final String description;
 
