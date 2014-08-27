@@ -2,6 +2,8 @@ package com.icecondor.eaglet.db;
 
 import java.util.Date;
 
+import org.json.JSONObject;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -112,6 +114,11 @@ public class Database {
         return db.query(Database.ACTIVITIES_TABLE, null,
                         Database.ACTIVITIES_SYNCED_AT+" IS NULL", null,
                         null, null, ROW_ID+" asc", "");
+    }
+
+    public void updateUser(JSONObject user) {
+        ContentValues cv = new ContentValues();
+        db.insertWithOnConflict(Database.USERS_TABLE, null, cv, SQLiteDatabase.CONFLICT_REPLACE);
     }
 
 }

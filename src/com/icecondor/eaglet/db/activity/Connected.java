@@ -1,11 +1,13 @@
-package com.icecondor.eaglet.db;
+package com.icecondor.eaglet.db.activity;
+
+import com.icecondor.eaglet.db.Database;
 
 import android.content.ContentValues;
 
-public class Disconnected  extends DbActivity  {
-    private static final String VERB = "disconnected";
+public class Connected extends Base  {
+    private static final String VERB = "connected";
 
-    public Disconnected() {
+    public Connected() {
     }
 
     @Override

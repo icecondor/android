@@ -10,7 +10,7 @@ import android.util.Log;
 import com.icecondor.eaglet.Condor;
 import com.icecondor.eaglet.Constants;
 import com.icecondor.eaglet.db.Database;
-import com.icecondor.eaglet.db.HeartBeat;
+import com.icecondor.eaglet.db.activity.HeartBeat;
 
 public class AlarmReceiver extends BroadcastReceiver {
     @Override

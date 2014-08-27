@@ -1,8 +1,11 @@
-package com.icecondor.eaglet.db;
+package com.icecondor.eaglet.db.activity;
+
+import com.icecondor.eaglet.db.Database;
+import com.icecondor.eaglet.db.Point;
 
 import android.content.ContentValues;
 
-public class GpsLocation extends DbActivity {
+public class GpsLocation extends Base {
     private static final String VERB = "gps_point";
     private final Point point;
 

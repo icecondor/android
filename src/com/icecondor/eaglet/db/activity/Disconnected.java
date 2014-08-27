@@ -1,21 +1,22 @@
-package com.icecondor.eaglet.db;
+package com.icecondor.eaglet.db.activity;
+
+import com.icecondor.eaglet.db.Database;
 
 import android.content.ContentValues;
 
-public class Connecting extends DbActivity  {
-    private static final String VERB = "connecting";
-    private final String url;
+public class Disconnected  extends Base  {
+    private static final String VERB = "disconnected";
 
-    public Connecting(String url) {
-        this.url = url;
+    public Disconnected() {
     }
 
     @Override
     public ContentValues getAttributes() {
         ContentValues cv = super.getAttributes();
         cv.put(Database.ACTIVITIES_VERB, VERB);
-        cv.put(Database.ACTIVITIES_DESCRIPTION, ""+url);
+        cv.put(Database.ACTIVITIES_DESCRIPTION, "");
         cv.put(Database.ACTIVITIES_JSON, json.toString());
         return cv;
     }
+
 }

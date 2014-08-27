@@ -1,15 +1,16 @@
-package com.icecondor.eaglet.db;
+package com.icecondor.eaglet.db.activity;
+
+import com.icecondor.eaglet.db.Database;
 
 import android.content.ContentValues;
 
-public class Start extends DbActivity  {
-    private static final String VERB = "start";
+public class HeartBeat extends Base  {
+    private static final String VERB = "heartbeat";
     private final String description;
 
-    public Start(String desc) {
+    public HeartBeat(String desc) {
         description = desc;
     }
-
     @Override
     public ContentValues getAttributes() {
         ContentValues cv = super.getAttributes();
@@ -18,5 +19,4 @@ public class Start extends DbActivity  {
         cv.put(Database.ACTIVITIES_JSON, json.toString());
         return cv;
     }
-
 }

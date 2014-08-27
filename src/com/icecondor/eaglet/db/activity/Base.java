@@ -1,4 +1,4 @@
-package com.icecondor.eaglet.db;
+package com.icecondor.eaglet.db.activity;
 
 import java.security.InvalidParameterException;
 import java.util.UUID;
@@ -11,11 +11,13 @@ import android.database.Cursor;
 import android.util.Log;
 
 import com.icecondor.eaglet.Constants;
+import com.icecondor.eaglet.db.Database;
+import com.icecondor.eaglet.db.Sqlitable;
 
-public class DbActivity implements Sqlitable {
+public class Base implements Sqlitable {
     protected final JSONObject json;
 
-    public DbActivity() {
+    public Base() {
         json = new JSONObject();
         try {
             json.put("id", UUID.randomUUID());

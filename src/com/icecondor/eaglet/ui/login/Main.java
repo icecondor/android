@@ -20,6 +20,7 @@ import com.icecondor.eaglet.Condor;
 import com.icecondor.eaglet.Constants;
 import com.icecondor.eaglet.R;
 import com.icecondor.eaglet.Start;
+import com.icecondor.eaglet.db.Database;
 import com.icecondor.eaglet.ui.BaseActivity;
 import com.icecondor.eaglet.ui.UiActions;
 
@@ -31,10 +32,12 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     private LoginEmailFragment loginEmailFragment;
     private LoginPassFragment loginPassFragment;
     private TokenValidateFragment tokenValidateFragment;
+    //private UsernameFragment usernameFragment;
     private Fragment currentLoginFragment;
     private String token;
     private String userDetailApiId;
     private String testTokenApiId;
+    private Database db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +46,15 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         setContentView(R.layout.login);
 
+        /* Database */
+        db = new Database(this);
+        db.open();
+
         loginFragment = new LoginFragment();
         loginEmailFragment = new LoginEmailFragment();
         loginPassFragment = new LoginPassFragment();
         tokenValidateFragment = new TokenValidateFragment();
+        //usernameFragment = new UsernameFragment();
 
         switchFragment(loginFragment);
     }
@@ -130,13 +138,13 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
         prefs.setAuthenticationToken(token);
         try {
             String userId = result.getJSONObject("user").getString("id");
-            prefs.setAuthenticatedUserId(userId);
             if(userId.equals(prefs.getAuthenticatedUserId())) {
                 // authed user is the user we know
                 tokenValidateFragment.indicateSuccess();
                 Intent start = new Intent(this, Start.class);
                 startActivity(start);
             } else {
+                prefs.setAuthenticatedUserId(userId);
                 // get details on this user
                 tokenValidateFragment.indicateUserDetailFetch();
                 userDetailApiId = condor.doUserDetail();
@@ -153,22 +161,31 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
             String userId = user.getJSONObject("user").getString("id");
             if(userId.equals(prefs.getAuthenticatedUserId())) {
                 // TODO: pull out other details
+                if(user.has("username")) {
+                    db.updateUser(user);
+                    Intent start = new Intent(this, Start.class);
+                    startActivity(start);
 
-                Intent start = new Intent(this, Start.class);
-                startActivity(start);
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
+    public void getUsername() {
+    }
+
     @Override
     public void onApiResult(String id, JSONObject result) {
         Log.d(Constants.APP_TAG, "login.Main onApiResult "+id+" "+result);
+        // lame state machine
         if(id.equals(testTokenApiId)) {
+            testTokenApiId = null;
             goodToken(result);
         }
         if(id.equals(userDetailApiId)) {
+            userDetailApiId = null;
             goodUser(result);
         }
     }

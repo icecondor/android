@@ -24,13 +24,13 @@ import android.util.Log;
 import com.icecondor.eaglet.api.Client;
 import com.icecondor.eaglet.api.Client.States;
 import com.icecondor.eaglet.api.ClientActions;
-import com.icecondor.eaglet.db.Connected;
-import com.icecondor.eaglet.db.Connecting;
 import com.icecondor.eaglet.db.Database;
-import com.icecondor.eaglet.db.Disconnected;
-import com.icecondor.eaglet.db.GpsLocation;
 import com.icecondor.eaglet.db.Point;
-import com.icecondor.eaglet.db.Start;
+import com.icecondor.eaglet.db.activity.Connected;
+import com.icecondor.eaglet.db.activity.Connecting;
+import com.icecondor.eaglet.db.activity.Disconnected;
+import com.icecondor.eaglet.db.activity.GpsLocation;
+import com.icecondor.eaglet.db.activity.Start;
 import com.icecondor.eaglet.service.AlarmReceiver;
 import com.icecondor.eaglet.service.BatteryReceiver;
 import com.icecondor.eaglet.service.GpsReceiver;
@@ -193,6 +193,9 @@ public class Condor extends Service {
     }
 
     public void pushActivities() {
+        if(api.getState() == Client.States.CONNECTED) {
+
+        }
         Cursor unsynced = db.ActivitiesUnsynced();
         unsynced.moveToFirst();
         api.activityAdd(unsynced.getString(unsynced.getColumnIndex(Database.ACTIVITIES_JSON)));
