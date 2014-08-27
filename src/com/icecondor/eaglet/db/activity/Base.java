@@ -47,7 +47,11 @@ public class Base implements Sqlitable {
     @Override
     public ContentValues getAttributes() {
         ContentValues cv = new ContentValues();
-        cv.put(Database.ACTIVITIES_UUID, UUID.randomUUID().toString());
+        try {
+            cv.put(Database.ACTIVITIES_UUID, json.getString("id"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return cv;
     }
 
