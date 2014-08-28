@@ -32,10 +32,11 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     private LoginEmailFragment loginEmailFragment;
     private LoginPassFragment loginPassFragment;
     private TokenValidateFragment tokenValidateFragment;
-    //private UsernameFragment usernameFragment;
+    private UserEditFragment userEditFragment;
     private Fragment currentLoginFragment;
     private String token;
     private String userDetailApiId;
+    private String userUpdateApiId;
     private String testTokenApiId;
     private Database db;
 
@@ -54,7 +55,7 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
         loginEmailFragment = new LoginEmailFragment();
         loginPassFragment = new LoginPassFragment();
         tokenValidateFragment = new TokenValidateFragment();
-        //usernameFragment = new UsernameFragment();
+        userEditFragment = new UserEditFragment();
 
         switchFragment(loginFragment);
     }
@@ -158,7 +159,7 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     public void goodUser(JSONObject user) {
         Log.d(Constants.APP_TAG, "login.Main goodUser");
         try {
-            String userId = user.getJSONObject("user").getString("id");
+            String userId = user.getString("id");
             if(userId.equals(prefs.getAuthenticatedUserId())) {
                 // TODO: pull out other details
                 if(user.has("username")) {
@@ -166,6 +167,8 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
                     Intent start = new Intent(this, Start.class);
                     startActivity(start);
 
+                } else {
+                    switchFragment(userEditFragment);
                 }
             }
         } catch (JSONException e) {
@@ -187,6 +190,9 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
         if(id.equals(userDetailApiId)) {
             userDetailApiId = null;
             goodUser(result);
+        }
+        if(id.equals(userUpdateApiId)) {
+            userDetailApiId = condor.doUserDetail();
         }
     }
 
@@ -230,8 +236,14 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         if(v.getId() == R.id.login_email_field) {
             if(actionId == EditorInfo.IME_ACTION_SEND) {
-                Log.d(Constants.APP_TAG, "LoginFragment: action: "+actionId+" emailField "+v.getText());
+                Log.d(Constants.APP_TAG, "login.Main: onEditorAction: "+actionId+" emailField "+v.getText());
                 emailFieldReady(v.getText().toString());
+            }
+        }
+        if(v.getId() == R.id.login_user_username) {
+            if(actionId == EditorInfo.IME_ACTION_SEND) {
+                Log.d(Constants.APP_TAG, "login.Main: onEditorAction: "+actionId+" usernameField "+v.getText());
+                usernameFieldReady(v.getText().toString());
             }
         }
         return false;
@@ -247,6 +259,10 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     private void emailSent(String email) {
         loginFragment.setStatusText("Email sent to "+email+". Please check your email and click the login button.");
         loginEmailFragment.disableLoginField();
+    }
+
+    private void usernameFieldReady(String username) {
+        userUpdateApiId = condor.updateUsername(username);
     }
 
 }

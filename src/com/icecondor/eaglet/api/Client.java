@@ -226,4 +226,15 @@ public class Client implements ConnectCallbacks {
         return null;
     }
 
+    public String accountSetUsername(String username) {
+        JSONObject params = new JSONObject();
+        try {
+            params.put("username", username);
+            return apiCall("user.update", params);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

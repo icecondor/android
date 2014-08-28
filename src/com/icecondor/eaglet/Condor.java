@@ -406,4 +406,8 @@ public class Condor extends Service {
         binder.onNewActivity();
     }
 
+    public String updateUsername(String username) {
+        return api.accountSetUsername(username);
+    }
+
 }

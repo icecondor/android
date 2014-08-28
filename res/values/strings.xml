@@ -13,4 +13,5 @@
     <!-- Optional button to Skip a PreferenceActivity [CHAR LIMIT=20] -->
     <string name="skip_button_label">Skip</string>
 
+    <string name="username_description">Please enter a username. This will describe your account without revealing your email address.</string>
 </resources>
