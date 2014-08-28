@@ -45,7 +45,6 @@ abstract public class BaseActivity extends ActionBarActivity
     private ActionBarDrawerToggle drawerToggle;
     private ListView drawerList;
     private SettingsFragment settingsFragment;
-    private ActionBar bar;
     private ActivityListFragment actListFragment;
 
     @Override
@@ -57,7 +56,8 @@ abstract public class BaseActivity extends ActionBarActivity
         condorIntent = new Intent(this, Condor.class);
         handler = new Handler();
         setContentView(R.layout.activity_main);
-        drawerSetup();
+        ActionBar bar = getSupportActionBar();
+        drawerSetup(bar);
         settingsFragment = new SettingsFragment();
         actListFragment = new ActivityListFragment();
     }
@@ -69,9 +69,7 @@ abstract public class BaseActivity extends ActionBarActivity
         startService(condorIntent); // keep this for STICKY result
     }
 
-    public void drawerSetup() {
-        bar = getSupportActionBar();
-
+    public void drawerSetup(ActionBar bar) {
         drawerList = (ListView) findViewById(R.id.left_drawer);
         ArrayList<Map<String, ?>> list = new ArrayList<Map<String, ?>>();
         populateDrawer(list);

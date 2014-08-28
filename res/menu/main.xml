@@ -3,10 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.icecondor.nest.MainActivity" >
 
+    <item android:id="@+id/action_menu_onoff"
+          android:icon="@drawable/ic_launcher"
+          android:title="Search"
+          android:showAsAction="always" />
+
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"
-        app:showAsAction="never"/>
+        app:showAsAction="never"
+        />
 
 </menu>
