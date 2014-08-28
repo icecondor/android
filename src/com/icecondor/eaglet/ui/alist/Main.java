@@ -13,13 +13,15 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.CompoundButton;
 
 import com.icecondor.eaglet.Constants;
 import com.icecondor.eaglet.R;
 import com.icecondor.eaglet.ui.BaseActivity;
 import com.icecondor.eaglet.ui.UiActions;
 
-public class Main extends BaseActivity implements UiActions {
+public class Main extends BaseActivity implements UiActions, OnClickListener {
 
     private ActivityListFragment aList;
     private SharedPreferences prefs;
@@ -32,7 +34,9 @@ public class Main extends BaseActivity implements UiActions {
         LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT,
                 Gravity.RIGHT | Gravity.CENTER_VERTICAL);
-        View customNav = LayoutInflater.from(this).inflate(R.layout.custion_action_bar, null);
+        View customNav = LayoutInflater.from(this).inflate(R.layout.action_bar_extra, null);
+        CompoundButton onOff = (CompoundButton)customNav.findViewById(R.id.actionbar_onoff);
+        onOff.setOnClickListener(this);
         ActionBar bar = getSupportActionBar();
         bar.setCustomView(customNav, lp);
         bar.setDisplayShowCustomEnabled(true);
@@ -101,6 +105,13 @@ public class Main extends BaseActivity implements UiActions {
     @Override
     public void onApiError(String id, JSONObject error) {
         Log.d(Constants.APP_TAG, "alist.Main onApierror "+id+" "+error);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.actionbar_onoff){
+            Log.d(Constants.APP_TAG, "OnOff Click!!");
+        }
     }
 
 }
