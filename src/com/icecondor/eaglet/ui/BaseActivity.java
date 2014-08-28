@@ -112,7 +112,7 @@ abstract public class BaseActivity extends ActionBarActivity
         HashMap<String, Object> item;
         item = new HashMap<String, Object>();
         item.put("icon",R.drawable.ic_launcher);
-        item.put("name", prefs.getAuthenticatedUserId());
+        item.put("name", prefs.getAuthenticatedUsername());
         list.add(item);
         item = new HashMap<String, Object>();
         item.put("icon",R.drawable.ic_launcher);

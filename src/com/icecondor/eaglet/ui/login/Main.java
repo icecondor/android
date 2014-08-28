@@ -28,6 +28,7 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     public static final String PREF_KEY_UNVERIFIED_TOKEN = "icecondor_unverified_token";
     public static final String PREF_KEY_AUTHENTICATION_TOKEN = "icecondor_authentication_token";
     public static String PREF_KEY_AUTHENTICATED_USER_ID = "icecondor_authenticated_user_id";
+    public static String PREF_KEY_AUTHENTICATED_USER_NAME = "icecondor_authenticated_user_name";
     private LoginFragment loginFragment;
     private LoginEmailFragment loginEmailFragment;
     private LoginPassFragment loginPassFragment;
@@ -164,6 +165,7 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
                 // TODO: pull out other details
                 if(user.has("username")) {
                     db.updateUser(user);
+                    prefs.setAuthenticatedUsername(user.getString("username"));
                     Intent start = new Intent(this, Start.class);
                     startActivity(start);
 

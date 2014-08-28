@@ -84,8 +84,17 @@ public class Prefs {
         prefs.edit().putString(Main.PREF_KEY_AUTHENTICATED_USER_ID, userId).commit();
     }
 
+    public void setAuthenticatedUsername(String username) {
+        prefs.edit().putString(Main.PREF_KEY_AUTHENTICATED_USER_NAME, username).commit();
+    }
+
+    public String getAuthenticatedUsername() {
+        return prefs.getString(Main.PREF_KEY_AUTHENTICATED_USER_NAME, null);
+    }
+
     public void clearAuthenticatedUser() {
         prefs.edit().remove(Main.PREF_KEY_AUTHENTICATED_USER_ID).commit();
+        prefs.edit().remove(Main.PREF_KEY_AUTHENTICATED_USER_NAME).commit();
     }
 
     public boolean isAuthenticatedUser() {
