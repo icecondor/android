@@ -106,7 +106,7 @@ public class ActivityListFragment extends Fragment {
             if(dbColumnIndex == descriptionIndex) {
                 String desc = "";
                 desc = cursor.getString(descriptionIndex);
-                int syncedAtIndex = cursor.getColumnIndex(Database.ACTIVITIES_DESCRIPTION);
+                int syncedAtIndex = cursor.getColumnIndex(Database.ACTIVITIES_SYNCED_AT);
                 desc = desc + "-"+ cursor.getString(syncedAtIndex);
                 ((TextView)view).setText(desc);
                 return true;
