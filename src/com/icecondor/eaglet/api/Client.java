@@ -126,9 +126,11 @@ public class Client implements ConnectCallbacks {
             state = States.CONNECTED;
             reconnects = 0;
             actions.onConnected();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
-        }
+        } catch (ExecutionException e) {
+			e.printStackTrace();
+		}
     }
 
     @Override
