@@ -4,7 +4,6 @@ import java.net.URI;
 
 import org.json.JSONObject;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.LayoutParams;
@@ -23,7 +22,6 @@ import com.icecondor.eaglet.ui.UiActions;
 public class Main extends BaseActivity implements UiActions, CompoundButton.OnCheckedChangeListener {
 
     private ActivityListFragment aList;
-    private SharedPreferences prefs;
     CompoundButton onOff;
 
     @Override
@@ -31,6 +29,15 @@ public class Main extends BaseActivity implements UiActions, CompoundButton.OnCh
         super.onCreate(savedInstanceState);
         Log.d(Constants.APP_TAG, "alist.MainActivity onCreate");
 
+        actionBarExtraSetup();
+
+        aList = new ActivityListFragment();
+        if (savedInstanceState == null) {
+            switchFragment(aList);
+        }
+    }
+
+    public void actionBarExtraSetup() {
         LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT,
                 Gravity.RIGHT | Gravity.CENTER_VERTICAL);
@@ -40,17 +47,13 @@ public class Main extends BaseActivity implements UiActions, CompoundButton.OnCh
         ActionBar bar = getSupportActionBar();
         bar.setCustomView(customNav, lp);
         bar.setDisplayShowCustomEnabled(true);
-
-        aList = new ActivityListFragment();
-        if (savedInstanceState == null) {
-            switchFragment(aList);
-        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         Log.d(Constants.APP_TAG, "alist.MainActivity onResume");
+        onOff.setChecked(prefs.getOnOff());
         enableServiceHandler();
         authCheck();
     }
