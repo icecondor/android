@@ -45,6 +45,10 @@ public class Prefs {
         return prefs.getBoolean(Constants.SETTING_ON_OFF, true);
     }
 
+    public void setOnOff(boolean b) {
+        prefs.edit().putBoolean(Constants.SETTING_ON_OFF, b).commit();
+    }
+
     private void ensureDefaults() {
         /* set default user preferences */
         Properties props = loadProperties();

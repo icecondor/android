@@ -194,6 +194,11 @@ public class Condor extends Service {
         return prefs.getOnOff();
     }
 
+    public void setRecording(boolean b) {
+        Log.d(Constants.APP_TAG, "condor setRecording("+b+")");
+        prefs.setOnOff(b);
+    }
+
     public void connectNow() {
         api.connect();
     }
