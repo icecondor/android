@@ -105,7 +105,7 @@ public class Condor extends Service {
         gpsReceiver = new GpsReceiver(this);
         if(isRecording()) {
             Log.d(Constants.APP_TAG, "Condor isRecording is ON.");
-            startGpsMonitor();
+            startRecording();
         }
     }
 
@@ -165,12 +165,17 @@ public class Condor extends Service {
     }
 
     protected void startGpsMonitor() {
-        Log.d(Constants.APP_TAG,"requesting GPS updates");
+        Log.d(Constants.APP_TAG,"condor requesting GPS updates");
         int seconds = prefs.getRecordingFrequencyInSeconds();
         locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
                 seconds*1000,
                 0.0F, gpsReceiver);
+    }
+
+    protected void stopGpsMonitor() {
+        Log.d(Constants.APP_TAG,"condor unrequesting GPS updates");
+        locationManager.removeUpdates(gpsReceiver);
     }
 
     /* public methods */
@@ -194,9 +199,26 @@ public class Condor extends Service {
         return prefs.getOnOff();
     }
 
-    public void setRecording(boolean b) {
-        Log.d(Constants.APP_TAG, "condor setRecording("+b+")");
-        prefs.setOnOff(b);
+    public void setRecording(boolean onOff) {
+        Log.d(Constants.APP_TAG, "condor setRecording("+onOff+")");
+        boolean oldOnOff = isRecording();
+        prefs.setOnOff(onOff);
+        if(!oldOnOff && onOff) {
+            // transition to on
+            startRecording();
+        }
+        if(oldOnOff && !onOff) {
+            // transition to off
+            stopRecording();
+        }
+    }
+
+    protected void startRecording() {
+        startGpsMonitor();
+    }
+
+    protected void stopRecording() {
+        stopGpsMonitor();
     }
 
     public void connectNow() {
