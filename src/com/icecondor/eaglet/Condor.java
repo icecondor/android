@@ -97,7 +97,6 @@ public class Condor extends Service {
                                                             0,
                                                             new Intent(Constants.ACTION_WAKE_ALARM),
                                                             0);
-        startAlarm();
         startApiThread();
         batteryReceiver = new BatteryReceiver();
         setupBatteryMonitor();
@@ -144,14 +143,20 @@ public class Condor extends Service {
 
     protected void startAlarm() {
         // clear any existing alarms
-        alarmManager.cancel(wake_alarm_intent);
+        stopAlarm();
         int seconds = prefs.getRecordingFrequencyInSeconds();
         int minutes = seconds / 60;
-        Log.d(Constants.APP_TAG, "Condor startAlarm at "+minutes+" minutes");
+        Log.d(Constants.APP_TAG, "condor startAlarm at "+minutes+" minutes");
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
                         System.currentTimeMillis(),
                         seconds*1000,
                         wake_alarm_intent);
+    }
+
+    protected void stopAlarm() {
+        // clear any existing alarms
+        alarmManager.cancel(wake_alarm_intent);
+        Log.d(Constants.APP_TAG, "condor stopAlarm");
     }
 
     protected void setupBatteryMonitor() {
@@ -214,11 +219,13 @@ public class Condor extends Service {
     }
 
     protected void startRecording() {
+        startAlarm();
         startGpsMonitor();
     }
 
     protected void stopRecording() {
         stopGpsMonitor();
+        stopAlarm();
     }
 
     public void connectNow() {
