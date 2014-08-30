@@ -235,11 +235,13 @@ public class Condor extends Service {
     public void pushActivities() {
         if(clientAuthenticated) {
             Cursor unsynced = db.ActivitiesUnsynced();
-            unsynced.moveToFirst();
-            String json = unsynced.getString(unsynced.getColumnIndex(Database.ACTIVITIES_JSON));
-            int rowId = unsynced.getInt(unsynced.getColumnIndex(Database.ROW_ID));
-            String apiId = api.activityAdd(json);
-            activityAddQueue.put(apiId, rowId);
+            if(unsynced.getCount() > 0) {
+                unsynced.moveToFirst();
+                String json = unsynced.getString(unsynced.getColumnIndex(Database.ACTIVITIES_JSON));
+                int rowId = unsynced.getInt(unsynced.getColumnIndex(Database.ROW_ID));
+                String apiId = api.activityAdd(json);
+                activityAddQueue.put(apiId, rowId);
+            }
         }
     }
 
@@ -280,6 +282,7 @@ public class Condor extends Service {
                         int rowId = activityAddQueue.get(apiId);
                         activityAddQueue.remove(apiId);
                         db.markActivitySynced(rowId);
+                        binder.onNewActivity();
                         Log.d(Constants.APP_TAG,"condor marked as synced "+rowId);
                     }
                     if(msg.has("result")){
