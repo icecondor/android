@@ -2,6 +2,7 @@ package com.icecondor.eaglet.db;
 
 import java.util.Date;
 
+import org.joda.time.DateTime;
 import org.json.JSONObject;
 
 import android.content.ContentValues;
@@ -23,12 +24,12 @@ public class Database {
     public static final String ROW_CREATED_AT = "created_at";
 
     /* Users table */
-    public static final String USERS_TABLE = "users";
+    public static final String TABLE_USERS = "users";
     public static final String USERS_USERNAME = "username";
     public static final String USERS_UUID = "uuid";
 
     /* Activities table */
-    public static final String ACTIVITIES_TABLE = "activities";
+    public static final String TABLE_ACTIVITIES = "activities";
     public static final String ACTIVITIES_UUID = "uuid";
     public static final String ACTIVITIES_VERB = "verb";
     public static final String ACTIVITIES_DESCRIPTION = "description";
@@ -63,14 +64,14 @@ public class Database {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE "+USERS_TABLE+" ("+
+            db.execSQL("CREATE TABLE "+TABLE_USERS+" ("+
                     ROW_ID+" integer primary key, "+
                     USERS_USERNAME + " text," +
                     USERS_UUID + " text," +
                     ROW_CREATED_AT + " DATETIME DEFAULT CURRENT_TIMESTAMP" +
                     ")");
 
-            db.execSQL("CREATE TABLE "+ACTIVITIES_TABLE+" ("+
+            db.execSQL("CREATE TABLE "+TABLE_ACTIVITIES+" ("+
                     ROW_ID+" integer primary key, "+
                     ACTIVITIES_UUID + " text," +
                     ACTIVITIES_VERB + " text," +
@@ -111,15 +112,22 @@ public class Database {
     }
 
     public Cursor ActivitiesUnsynced() {
-        return db.query(Database.ACTIVITIES_TABLE, null,
+        return db.query(Database.TABLE_ACTIVITIES, null,
                         Database.ACTIVITIES_SYNCED_AT+" IS NULL", null,
-                        null, null, ROW_ID+" asc", "");
+                        null, null, ROW_ID+" desc", "");
     }
 
     public void updateUser(JSONObject userJson) {
         User user = new User(userJson);
-        db.insertWithOnConflict(Database.USERS_TABLE, null, user.getAttributes(),
+        db.insertWithOnConflict(Database.TABLE_USERS, null, user.getAttributes(),
                                  SQLiteDatabase.CONFLICT_REPLACE);
+    }
+
+    public void markActivitySynced(int id) {
+        ContentValues cv = new ContentValues();
+        cv.put(ACTIVITIES_SYNCED_AT, DateTime.now().toString());
+        int rows = db.update(TABLE_ACTIVITIES, cv,
+                              ROW_ID+" = ?", new String[]{Integer.toString(id)});
     }
 
 }

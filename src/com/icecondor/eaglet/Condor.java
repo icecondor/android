@@ -2,6 +2,7 @@ package com.icecondor.eaglet;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.UUID;
 
 import org.json.JSONException;
@@ -48,7 +49,7 @@ public class Condor extends Service {
     private BatteryReceiver batteryReceiver;
     private LocationManager locationManager;
     private GpsReceiver gpsReceiver;
-    private String token;
+    private final HashMap<String, Integer> activityAddQueue = new HashMap<String, Integer>();
 
     @Override
     public void onCreate() {
@@ -154,7 +155,6 @@ public class Condor extends Service {
     }
 
     protected void stopAlarm() {
-        // clear any existing alarms
         alarmManager.cancel(wake_alarm_intent);
         Log.d(Constants.APP_TAG, "condor stopAlarm");
     }
@@ -236,7 +236,10 @@ public class Condor extends Service {
         if(clientAuthenticated) {
             Cursor unsynced = db.ActivitiesUnsynced();
             unsynced.moveToFirst();
-            api.activityAdd(unsynced.getString(unsynced.getColumnIndex(Database.ACTIVITIES_JSON)));
+            String json = unsynced.getString(unsynced.getColumnIndex(Database.ACTIVITIES_JSON));
+            int rowId = unsynced.getInt(unsynced.getColumnIndex(Database.ROW_ID));
+            String apiId = api.activityAdd(json);
+            activityAddQueue.put(apiId, rowId);
         }
     }
 
@@ -269,17 +272,23 @@ public class Condor extends Service {
         }
         @Override
         public void onMessage(JSONObject msg) {
-            String id;
+            String apiId;
             try {
                 if(msg.has("id")) {
-                    id = msg.getString("id");
+                    apiId = msg.getString("id");
+                    if(activityAddQueue.containsKey(apiId)){
+                        int rowId = activityAddQueue.get(apiId);
+                        activityAddQueue.remove(apiId);
+                        db.markActivitySynced(rowId);
+                        Log.d(Constants.APP_TAG,"condor marked as synced "+rowId);
+                    }
                     if(msg.has("result")){
                         JSONObject result = msg.getJSONObject("result");
-                        binder.onApiResult(id, result);
+                        binder.onApiResult(apiId, result);
                     }
                     if(msg.has("error")){
                         JSONObject result = msg.getJSONObject("error");
-                        binder.onApiError(id, result);
+                        binder.onApiError(apiId, result);
                     }
                 }
             } catch (JSONException e) {

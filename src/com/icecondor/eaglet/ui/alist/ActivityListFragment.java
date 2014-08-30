@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -98,7 +99,14 @@ public class ActivityListFragment extends Fragment {
             int uuidIndex = cursor.getColumnIndex(Database.ACTIVITIES_UUID);
             if(dbColumnIndex == uuidIndex) {
                 String shortUuid = "#"+cursor.getString(uuidIndex).substring(32);
-                ((TextView)view).setText(shortUuid);
+                TextView uuidView = ((TextView)view);
+                uuidView.setText(shortUuid);
+                String syncedAt = cursor.getString(cursor.getColumnIndex(Database.ACTIVITIES_SYNCED_AT));
+                if(syncedAt == null) {
+                    uuidView.setTextColor(Color.GRAY);
+                } else {
+                    uuidView.setTextColor(Color.GREEN);
+                }
                 return true;
             }
 
@@ -106,8 +114,6 @@ public class ActivityListFragment extends Fragment {
             if(dbColumnIndex == descriptionIndex) {
                 String desc = "";
                 desc = cursor.getString(descriptionIndex);
-                int syncedAtIndex = cursor.getColumnIndex(Database.ACTIVITIES_SYNCED_AT);
-                desc = desc + "-"+ cursor.getString(syncedAtIndex);
                 ((TextView)view).setText(desc);
                 return true;
             }

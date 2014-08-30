@@ -27,7 +27,7 @@ public class Activity implements Sqlitable {
 
     @Override
     public String getTableName() {
-        return Database.ACTIVITIES_TABLE;
+        return Database.TABLE_ACTIVITIES;
     }
 
     static public Cursor getAll(Database db) {
@@ -37,7 +37,7 @@ public class Activity implements Sqlitable {
         } else {
             return db.
                     getReadonly().
-                    query(Database.ACTIVITIES_TABLE, null,
+                    query(Database.TABLE_ACTIVITIES, null,
                           null, null, null, null, "created_at desc", "150");
         }
     }

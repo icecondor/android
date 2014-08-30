@@ -20,7 +20,7 @@ public class User implements Sqlitable {
 
     @Override
     public String getTableName() {
-        return Database.USERS_TABLE;
+        return Database.TABLE_USERS;
     }
 
     @Override
