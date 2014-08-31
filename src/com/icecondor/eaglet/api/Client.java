@@ -226,15 +226,8 @@ public class Client implements ConnectCallbacks {
         return apiCall("user.detail", params);
     }
 
-    public String activityAdd(String string) {
-        JSONObject params = new JSONObject();
-        try {
-            params.put("object", string);
-            return apiCall("activity.add", params);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public String activityAdd(JSONObject activity) {
+        return apiCall("activity.add", activity);
     }
 
     public String accountSetUsername(String username) {

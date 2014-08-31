@@ -266,9 +266,15 @@ public class Condor extends Service {
             if(unsynced.getCount() > 0) {
                 unsynced.moveToFirst();
                 String json = unsynced.getString(unsynced.getColumnIndex(Database.ACTIVITIES_JSON));
-                int rowId = unsynced.getInt(unsynced.getColumnIndex(Database.ROW_ID));
-                String apiId = api.activityAdd(json);
-                activityAddQueue.put(apiId, rowId);
+                JSONObject activity;
+                try {
+                    activity = new JSONObject(json);
+                    int rowId = unsynced.getInt(unsynced.getColumnIndex(Database.ROW_ID));
+                    String apiId = api.activityAdd(activity);
+                    activityAddQueue.put(apiId, rowId);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
