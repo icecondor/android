@@ -75,6 +75,11 @@ public class Client implements ConnectCallbacks {
         doConnect();
     }
 
+    public void stop() {
+        reconnect = false;
+        websocket.close();
+    }
+
     public States getState() {
         return state;
     }
@@ -139,7 +144,9 @@ public class Client implements ConnectCallbacks {
         state = States.WAITING;
         reconnects = 0;
         actions.onDisconnected();
-        doConnect();
+        if(reconnect) {
+            doConnect();
+        }
     }
 
     /* Track the call and its response */
@@ -163,7 +170,9 @@ public class Client implements ConnectCallbacks {
         try {
             final String id = payload.getString("id");
             apiQueue.add(id);
-            websocket.send(payload.toString());
+            if(state == States.CONNECTED) {
+                websocket.send(payload.toString());
+            }
             apiTimer.schedule(new TimerTask(){
                 @Override
                 public void run() {

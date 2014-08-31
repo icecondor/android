@@ -50,6 +50,8 @@ public class Condor extends Service {
     private LocationManager locationManager;
     private GpsReceiver gpsReceiver;
     private final HashMap<String, Integer> activityAddQueue = new HashMap<String, Integer>();
+    protected Handler apiThreadHandler;
+    private Thread apiThread;
 
     @Override
     public void onCreate() {
@@ -98,7 +100,6 @@ public class Condor extends Service {
                                                             0,
                                                             new Intent(Constants.ACTION_WAKE_ALARM),
                                                             0);
-        startApiThread();
         batteryReceiver = new BatteryReceiver();
         setupBatteryMonitor();
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -122,14 +123,39 @@ public class Condor extends Service {
     }
 
     protected void startApiThread() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Looper.prepare();
-                startApi();
-                Looper.loop();
+        boolean start = false;
+        if(apiThread == null) {
+            start = true;
+        } else {
+            if(!apiThread.isAlive()) {
+                start = true;
             }
-        }).start();
+        }
+        if(start) {
+            apiThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Looper.prepare();
+                    apiThreadHandler = new Handler();
+                    startApi();
+                    Looper.loop();
+                    Log.d(Constants.APP_TAG, "condor.startApiThread thread finishing");
+                }
+            });
+            apiThread.start();
+        }
+    }
+
+    protected void stopApiThread() {
+        if(apiThreadHandler != null) {
+            apiThreadHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    api.stop();
+                    Looper.myLooper().quit();
+                }
+            });
+        }
     }
 
     protected void startApi() {
@@ -219,11 +245,13 @@ public class Condor extends Service {
     }
 
     protected void startRecording() {
+        startApiThread();
         startAlarm();
         startGpsMonitor();
     }
 
     protected void stopRecording() {
+        stopApiThread();
         stopGpsMonitor();
         stopAlarm();
     }
