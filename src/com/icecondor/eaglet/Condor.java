@@ -9,7 +9,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.AlarmManager;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -53,8 +52,7 @@ public class Condor extends Service {
     private final HashMap<String, Integer> activityAddQueue = new HashMap<String, Integer>();
     protected Handler apiThreadHandler;
     private Thread apiThread;
-    private NotificationManager notificationManager;
-    private PendingIntent contentIntent;
+    private NotificationBar notificationBar;
 
     @Override
     public void onCreate() {
@@ -112,9 +110,7 @@ public class Condor extends Service {
         gpsReceiver = new GpsReceiver(this);
 
         /* Notification Bar */
-        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        contentIntent = PendingIntent.getActivity(this, 0, new Intent(this,
-        Start.class), 0);
+        notificationBar = new NotificationBar(this);
 
         if(isRecording()) {
             Log.d(Constants.APP_TAG, "Condor isRecording is ON.");
@@ -155,6 +151,7 @@ public class Condor extends Service {
                 }
             });
             apiThread.start();
+            notificationBar.updateText("I am condor.");
         }
     }
 
@@ -165,6 +162,7 @@ public class Condor extends Service {
                 public void run() {
                     api.stop();
                     Looper.myLooper().quit();
+                    notificationBar.cancel();
                 }
             });
         }
