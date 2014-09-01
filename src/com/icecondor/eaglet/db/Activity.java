@@ -4,6 +4,7 @@ import java.security.InvalidParameterException;
 import java.util.UUID;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,7 +22,7 @@ public class Activity implements Sqlitable {
     public Activity() {
         json = new JSONObject();
         id = UUID.randomUUID().toString();
-        date = new DateTime();
+        date = new DateTime(DateTimeZone.UTC);
         try {
             json.put("id", id);
             json.put("class", getClass().getName());
