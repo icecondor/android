@@ -3,6 +3,7 @@ package com.icecondor.eaglet.db;
 import java.security.InvalidParameterException;
 import java.util.UUID;
 
+import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,12 +15,17 @@ import com.icecondor.eaglet.Constants;
 
 public class Activity implements Sqlitable {
     protected final JSONObject json;
+    protected final String id;
+    protected final DateTime date;
 
     public Activity() {
         json = new JSONObject();
+        id = UUID.randomUUID().toString();
+        date = new DateTime();
         try {
-            json.put("id", UUID.randomUUID());
+            json.put("id", id);
             json.put("class", getClass().getName());
+            json.put("date", date);
         } catch (JSONException e) {
             e.printStackTrace();
         }
