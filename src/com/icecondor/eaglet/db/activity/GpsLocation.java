@@ -1,10 +1,12 @@
 package com.icecondor.eaglet.db.activity;
 
+import org.json.JSONException;
+
+import android.content.ContentValues;
+
 import com.icecondor.eaglet.db.Activity;
 import com.icecondor.eaglet.db.Database;
 import com.icecondor.eaglet.db.Point;
-
-import android.content.ContentValues;
 
 public class GpsLocation extends Activity {
     private static final String VERB = "gps_point";
@@ -12,6 +14,14 @@ public class GpsLocation extends Activity {
 
     public GpsLocation(Point point) {
         this.point = point;
+        try {
+            json.put("type", VERB);
+            json.put("latitude", point.getLatitude());
+            json.put("longitude", point.getLongitude());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
