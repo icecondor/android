@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.AlarmManager;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -52,6 +53,8 @@ public class Condor extends Service {
     private final HashMap<String, Integer> activityAddQueue = new HashMap<String, Integer>();
     protected Handler apiThreadHandler;
     private Thread apiThread;
+    private NotificationManager notificationManager;
+    private PendingIntent contentIntent;
 
     @Override
     public void onCreate() {
@@ -100,10 +103,19 @@ public class Condor extends Service {
                                                             0,
                                                             new Intent(Constants.ACTION_WAKE_ALARM),
                                                             0);
+        /* Battery Monitor */
         batteryReceiver = new BatteryReceiver();
         setupBatteryMonitor();
+
+        /* Location Manager */
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         gpsReceiver = new GpsReceiver(this);
+
+        /* Notification Bar */
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        contentIntent = PendingIntent.getActivity(this, 0, new Intent(this,
+        Start.class), 0);
+
         if(isRecording()) {
             Log.d(Constants.APP_TAG, "Condor isRecording is ON.");
             startRecording();
