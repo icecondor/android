@@ -1,7 +1,6 @@
 package com.icecondor.eaglet.api;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
@@ -41,8 +40,8 @@ public class Client implements ConnectCallbacks {
     public enum States { WAITING, CONNECTING, CONNECTED};
     private States state;
 
-    public Client(String serverURL, ClientActions actions) throws URISyntaxException {
-        this.apiUrl = new URI(serverURL);
+    public Client(URI serverURI, ClientActions actions) {
+        this.apiUrl = serverURI;
         this.actions = actions;
         handler = new Handler();
         this.client = AsyncHttpClient.getDefaultInstance();

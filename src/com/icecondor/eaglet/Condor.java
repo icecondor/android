@@ -1,7 +1,6 @@
 package com.icecondor.eaglet;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -111,6 +110,8 @@ public class Condor extends Service {
         /* Notification Bar */
         notificationBar = new NotificationBar(this);
 
+        /* API */
+        api = new Client(prefs.getApiUrl(), new ApiActions());
         if(isRecording()) {
             Log.d(Constants.APP_TAG, "Condor isRecording is ON.");
             startRecording();
@@ -130,13 +131,8 @@ public class Condor extends Service {
     }
 
     protected void startApi() {
-        try {
-            notificationBar.updateText("Background location service.");
-            api = new Client(prefs.getApiUrl(), new ApiActions());
-            api.startPersistentConnect();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        notificationBar.updateText("Background location service.");
+        api.startPersistentConnect();
     }
 
     protected void stopApi() {

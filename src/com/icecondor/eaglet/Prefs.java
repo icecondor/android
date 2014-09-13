@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
 
@@ -31,9 +33,15 @@ public class Prefs {
         return prefs.getString(Constants.SETTING_DEVICE_ID, null);
     }
 
-    public String getApiUrl() {
-        return prefs.getString(Constants.PREFERENCE_API_URL,
-                               Constants.ICECONDOR_API_URL);
+    public URI getApiUrl() {
+        try {
+            return new URI(prefs.getString(Constants.PREFERENCE_API_URL,
+                                           Constants.ICECONDOR_API_URL));
+        } catch (URISyntaxException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public int getRecordingFrequencyInSeconds() {
