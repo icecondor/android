@@ -181,6 +181,13 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     public void getUsername() {
     }
 
+    public void badToken() {
+        tokenValidateFragment.indicateFail();
+        loginEmailFragment.enableLoginField();
+        switchLoginFragment(loginEmailFragment);
+        loginFragment.setStatusText("Invalid token. Please try again");
+    }
+
     @Override
     public void onApiResult(String id, JSONObject result) {
         Log.d(Constants.APP_TAG, "login.Main onApiResult "+id+" "+result);
@@ -203,13 +210,12 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
         Log.d(Constants.APP_TAG, "login.Main onApiError "+id+" "+result);
         if(id.equals(testTokenApiId)) {
             try {
-                if(result.getString("reason").equals("timeout")){
+                if(result.has("reason") && result.getString("reason").equals("timeout")){
                     tokenValidateFragment.indicateCommErr();
                 } else {
-                    tokenValidateFragment.indicateFail();
+                    badToken();
                 }
             } catch (JSONException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
