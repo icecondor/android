@@ -72,7 +72,7 @@ public class Client implements ConnectCallbacks {
 
     public void startPersistentConnect() {
         reconnect = true;
-        doConnect();
+        connect();
     }
 
     public void stop() {
@@ -95,7 +95,7 @@ public class Client implements ConnectCallbacks {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    doConnect();
+                    connect();
                 }
             }, waitMillis);
         }
@@ -103,10 +103,6 @@ public class Client implements ConnectCallbacks {
 
     private long exponentialBackoffTime(int reconnects) {
         return (long)Math.pow(RECONNECT_WAIT_MS/1000,reconnects);
-    }
-
-    private void doConnect() {
-        connect();
     }
 
     /* ConnectCallbacks */
@@ -145,7 +141,7 @@ public class Client implements ConnectCallbacks {
         reconnects = 0;
         actions.onDisconnected();
         if(reconnect) {
-            doConnect();
+            connect();
         }
     }
 

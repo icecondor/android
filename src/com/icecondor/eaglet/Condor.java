@@ -19,7 +19,6 @@ import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.util.Log;
 
 import com.icecondor.eaglet.api.Client;
@@ -130,52 +129,19 @@ public class Condor extends Service {
         return prefs.getDeviceId();
     }
 
-    protected void startApiThread() {
-        boolean start = false;
-        if(apiThread == null) {
-            start = true;
-        } else {
-            if(!apiThread.isAlive()) {
-                start = true;
-            }
-        }
-        if(start) {
-            apiThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Looper.prepare();
-                    apiThreadHandler = new Handler();
-                    startApi();
-                    Looper.loop();
-                    Log.d(Constants.APP_TAG, "condor.startApiThread thread finishing");
-                }
-            });
-            apiThread.start();
-            notificationBar.updateText("I am condor.");
-        }
-    }
-
-    protected void stopApiThread() {
-        if(apiThreadHandler != null) {
-            apiThreadHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    api.stop();
-                    Looper.myLooper().quit();
-                    notificationBar.cancel();
-                }
-            });
-        }
-    }
-
     protected void startApi() {
-        /* API */
         try {
+            notificationBar.updateText("Background location service.");
             api = new Client(prefs.getApiUrl(), new ApiActions());
             api.startPersistentConnect();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
+    }
+
+    protected void stopApi() {
+        notificationBar.cancel();
+        api.stop();
     }
 
     protected void startAlarm() {
@@ -255,13 +221,13 @@ public class Condor extends Service {
     }
 
     protected void startRecording() {
-        startApiThread();
+        startApi();
         startAlarm();
         startGpsMonitor();
     }
 
     protected void stopRecording() {
-        stopApiThread();
+        stopApi();
         stopGpsMonitor();
         stopAlarm();
     }
