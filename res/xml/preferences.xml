@@ -16,6 +16,10 @@
                 android:entryValues="@array/recording_frequency_value"
                  />
 
+        <Preference
+            android:key="logout_pref_notused"
+            android:title="Log out"
+            />
     </PreferenceCategory>
 
     <PreferenceCategory

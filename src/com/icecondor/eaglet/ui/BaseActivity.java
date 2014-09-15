@@ -127,10 +127,6 @@ abstract public class BaseActivity extends ActionBarActivity
         Log.d(Constants.APP_TAG, "BaseActivity: onItemClick position:"+position+" id:"+id);
         if(position == 0) {
             // User
-            prefs.clearAuthenticatedUser();
-            drawerLayout.closeDrawers();
-            Intent intent = new Intent(this, Main.class);
-            startActivity(intent);
         }
         if(position == 1) {
             // Activity List
