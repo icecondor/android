@@ -235,7 +235,9 @@ public class Condor extends Service {
     public void pushActivities() {
         if(clientAuthenticated) {
             Cursor unsynced = db.ActivitiesUnsynced();
-            if(unsynced.getCount() > 0) {
+            int count = unsynced.getCount();
+            Log.d(Constants.APP_TAG, "condor pushActivities unsynced count "+count);
+            if(count > 0) {
                 unsynced.moveToFirst();
                 String json = unsynced.getString(unsynced.getColumnIndex(Database.ACTIVITIES_JSON));
                 JSONObject activity;
@@ -248,6 +250,8 @@ public class Condor extends Service {
                     e.printStackTrace();
                 }
             }
+        } else {
+            Log.d(Constants.APP_TAG, "condor pushActivities ignored, no authentication");
         }
     }
 
@@ -266,7 +270,6 @@ public class Condor extends Service {
             if(prefs.isAuthenticatedUser()){
                 authApiCall = api.accountAuthSession(prefs.getAuthenticationToken(), getDeviceID());
             }
-            pushActivities();
         }
         @Override
         public void onDisconnected() {
@@ -290,6 +293,7 @@ public class Condor extends Service {
                         db.markActivitySynced(rowId);
                         binder.onNewActivity();
                         Log.d(Constants.APP_TAG,"condor marked as synced "+rowId);
+                        pushActivities();
                     }
                     if(msg.has("result")){
                         JSONObject result = msg.getJSONObject("result");
@@ -418,6 +422,7 @@ public class Condor extends Service {
             if(_id.equals(authApiCall)){
                 Log.d(Constants.APP_TAG, "condor: onApiResult caught authApiCall "+_result);
                 clientAuthenticated = true;
+                pushActivities();
             } else {
                 if(hasHandler()) {
                     handler.post(new Runnable() {
@@ -455,6 +460,7 @@ public class Condor extends Service {
     /* Location callbacks */
     public void onLocationChanged(Point point) {
         db.append(new GpsLocation(point));
+        pushActivities();
         binder.onNewActivity();
     }
 

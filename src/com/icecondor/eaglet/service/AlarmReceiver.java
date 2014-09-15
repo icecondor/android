@@ -24,6 +24,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                      context.getClass().getSimpleName()+" now "+new Date());
             db.append(new HeartBeat(""+Thread.currentThread().getName()));
             ((Condor)context).binder.onNewActivity();
+            ((Condor)context).pushActivities();
         }
 
         db.close();
