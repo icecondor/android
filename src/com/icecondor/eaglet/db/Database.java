@@ -81,6 +81,7 @@ public class Database {
                     ROW_CREATED_AT + " DATETIME DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))" +
                     ")");
 
+            db.execSQL("CREATE INDEX "+TABLE_ACTIVITIES+"_"+ACTIVITIES_SYNCED_AT+"_idx on "+TABLE_ACTIVITIES+"("+ACTIVITIES_SYNCED_AT+")");
         }
 
         @Override
