@@ -82,6 +82,7 @@ public class Database {
                     ")");
 
             db.execSQL("CREATE INDEX "+TABLE_ACTIVITIES+"_"+ACTIVITIES_SYNCED_AT+"_idx on "+TABLE_ACTIVITIES+"("+ACTIVITIES_SYNCED_AT+")");
+            db.execSQL("CREATE INDEX "+TABLE_ACTIVITIES+"_"+ROW_CREATED_AT+"_idx on "+TABLE_ACTIVITIES+"("+ROW_CREATED_AT+")");
         }
 
         @Override

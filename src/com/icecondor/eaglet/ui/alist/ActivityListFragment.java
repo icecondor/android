@@ -55,7 +55,7 @@ public class ActivityListFragment extends Fragment {
         db = new Database(getActivity());
         sCursorAdapter = new SimpleCursorAdapter(getActivity(),
                                                       R.layout.activity_row,
-                                                      Activity.getAll(db),
+                                                      Activity.getAll(db, 200),
                                                       fromColumns,
                                                       toViews);
         activityListViewBinder = new ActivityListViewBinder();
@@ -67,7 +67,7 @@ public class ActivityListFragment extends Fragment {
     public void invalidateView() {
         /* its possible for MainActivity to call this before db is ready */
         if(db != null) {
-            Cursor rows = Activity.getAll(db);
+            Cursor rows = Activity.getAll(db, 200);
             sCursorAdapter.changeCursor(rows);
         } else {
             Log.d(Constants.APP_TAG, "ActivityListFragment invalidateView skipped, no database");

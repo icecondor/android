@@ -37,7 +37,7 @@ public class Activity implements Sqlitable {
         return Database.TABLE_ACTIVITIES;
     }
 
-    static public Cursor getAll(Database db) {
+    static public Cursor getAll(Database db, int i) {
         if(db == null) {
             Log.d(Constants.APP_TAG, "getAll called with null db!");
             throw new InvalidParameterException();
@@ -45,7 +45,7 @@ public class Activity implements Sqlitable {
             return db.
                     getReadonly().
                     query(Database.TABLE_ACTIVITIES, null,
-                          null, null, null, null, "created_at desc", "150");
+                          null, null, null, null, "created_at desc", Integer.toString(i));
         }
     }
 
