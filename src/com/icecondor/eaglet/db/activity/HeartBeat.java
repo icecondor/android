@@ -29,7 +29,8 @@ public class HeartBeat extends Activity  {
     public ContentValues getAttributes() {
         ContentValues cv = super.getAttributes();
         cv.put(Database.ACTIVITIES_VERB, VERB);
-        cv.put(Database.ACTIVITIES_DESCRIPTION, description);
+        String desc = description + " batt "+batteryPercentage+"%";
+        cv.put(Database.ACTIVITIES_DESCRIPTION, desc);
         cv.put(Database.ACTIVITIES_JSON, json.toString());
         return cv;
     }
