@@ -172,8 +172,8 @@ public class Condor extends Service {
     }
 
     protected void startGpsMonitor() {
-        Log.d(Constants.APP_TAG,"condor requesting GPS updates");
         int seconds = prefs.getRecordingFrequencyInSeconds();
+        Log.d(Constants.APP_TAG,"condor requesting GPS updates every "+seconds+" sec");
         locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
                 seconds*1000,
@@ -186,8 +186,8 @@ public class Condor extends Service {
     }
 
     protected void startNetworkMonitor() {
-        Log.d(Constants.APP_TAG,"condor requesting NETWORK updates");
         int seconds = prefs.getRecordingFrequencyInSeconds();
+        Log.d(Constants.APP_TAG,"condor requesting NETWORK updates every "+seconds+" sec");
         locationManager.requestLocationUpdates(
                 LocationManager.NETWORK_PROVIDER,
                 seconds*1000,
@@ -238,11 +238,9 @@ public class Condor extends Service {
         startApi();
         startAlarm();
         if(prefs.isGpsOn()) {
-            Log.d(Constants.APP_TAG, "condor startRecording GPS ON");
             startGpsMonitor();
         }
         if(prefs.isCellOn() || prefs.isWifiOn()) {
-            Log.d(Constants.APP_TAG, "condor startRecording NETWORK ON");
             startNetworkMonitor();
         }
     }
