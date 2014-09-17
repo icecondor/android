@@ -319,12 +319,13 @@ public class Condor extends Service {
                 if(msg.has("id")) {
                     apiId = msg.getString("id");
                     if(activityAddQueue.containsKey(apiId)){
-                        notificationBar.updateText("Location updated");
                         int rowId = activityAddQueue.get(apiId);
                         activityAddQueue.remove(apiId);
                         db.markActivitySynced(rowId);
                         binder.onNewActivity();
                         Log.d(Constants.APP_TAG,"condor marked as synced "+rowId);
+                        GpsLocation loc = new GpsLocation(db.activityJson(rowId));
+                        notificationBar.updateText("Location updated from "+loc.getPoint().getProvider()+" with "+loc.getPoint());
                         pushActivities();
                     }
                     if(msg.has("result")){
