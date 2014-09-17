@@ -18,11 +18,16 @@ public class AlarmReceiver extends BroadcastReceiver {
         Database db = new Database(context);
         db.open();
 
+        // can we always assume context is Condor?
+        Condor condor = (Condor)context;
+
         String action = intent.getAction();
         if (action.equals(Constants.ACTION_WAKE_ALARM)) {
             Log.i(Constants.APP_TAG, "AlarmReceiver onReceive "+
                      context.getClass().getSimpleName()+" now "+new Date());
-            db.append(new HeartBeat(""+Thread.currentThread().getName()));
+            HeartBeat heartBeat = new HeartBeat(" thread "+Thread.currentThread().getName());
+            heartBeat.setBatteryPercentage(condor.getBattPercent());
+            db.append(heartBeat);
             ((Condor)context).binder.onNewActivity();
             ((Condor)context).pushActivities();
         }

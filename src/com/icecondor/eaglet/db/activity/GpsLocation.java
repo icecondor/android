@@ -9,7 +9,7 @@ import com.icecondor.eaglet.db.Database;
 import com.icecondor.eaglet.db.Point;
 
 public class GpsLocation extends Activity {
-    private static final String VERB = "gps_point";
+    private static final String VERB = "location";
     private final Point point;
 
     public GpsLocation(Point point) {

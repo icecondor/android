@@ -216,6 +216,14 @@ public class Condor extends Service {
         return api.accountAuthSession(token, getDeviceID());
     }
 
+    public int getBattPercent() {
+        return batteryReceiver.getLastBatteryLevel();
+    }
+
+    public boolean getBattAc() {
+        return batteryReceiver.isOnAcPower();
+    }
+
     public boolean isRecording() {
         return prefs.isOnOff();
     }

@@ -11,7 +11,7 @@ public class BatteryReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
-        if (action.equals("android.intent.action.BATTERY_CHANGED")) {
+        if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
             last_battery_level = intent.getIntExtra("level", 0);
         }
         if (action.equals("android.intent.action.ACTION_POWER_CONNECTED")) {
