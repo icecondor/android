@@ -311,6 +311,7 @@ public class Condor extends Service {
                 if(msg.has("id")) {
                     apiId = msg.getString("id");
                     if(activityAddQueue.containsKey(apiId)){
+                        notificationBar.updateText("Location updated");
                         int rowId = activityAddQueue.get(apiId);
                         activityAddQueue.remove(apiId);
                         db.markActivitySynced(rowId);

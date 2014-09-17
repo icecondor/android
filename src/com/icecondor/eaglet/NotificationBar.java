@@ -6,7 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
-import com.icecondor.eaglet.db.activity.Start;
+import com.icecondor.eaglet.ui.alist.Main;
 
 public class NotificationBar {
     private NotificationManager notificationManager;
@@ -18,7 +18,8 @@ public class NotificationBar {
     public NotificationBar(Context ctx) {
         this.ctx = ctx;
         notificationManager = (NotificationManager)ctx.getSystemService(Context.NOTIFICATION_SERVICE);
-        contentIntent = PendingIntent.getActivity(ctx, 0, new Intent(ctx,Start.class), 0);
+        contentIntent = PendingIntent.getActivity(ctx, 0, new Intent(ctx, Main.class),
+                                          Intent.FLAG_ACTIVITY_NEW_TASK);
     }
 
     public void updateText(String msg) {
