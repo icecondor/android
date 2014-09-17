@@ -19,7 +19,7 @@ public class BootReceiver extends BroadcastReceiver {
         db.open();
 
         String action = intent.getAction();
-        if (action.equals(Constants.ACTION_WAKE_ALARM)) {
+        if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
             Log.i(Constants.APP_TAG, "BootReceiver onReceive "+
                      context.getClass().getSimpleName()+" now "+new Date());
             db.append(new HeartBeat("Phone power on"));
