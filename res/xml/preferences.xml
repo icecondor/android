@@ -31,4 +31,11 @@
         />
 
     </PreferenceCategory>
+    <PreferenceCategory
+            android:title="Enhancements">
+        <Preference
+            android:key="purchase_high_recording_rate"
+            android:title="Recording at 5 minutes or faster"
+            />
+    </PreferenceCategory>
 </PreferenceScreen>
