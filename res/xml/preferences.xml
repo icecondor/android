@@ -7,7 +7,7 @@
         <CheckBoxPreference
                 android:key="autostart"
                 android:title="AutoStart"
-                android:summary="Start automatically" />
+                android:summary="Start automatically after reboot" />
 
         <ListPreference
                 android:key="recording_frequency"

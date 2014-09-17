@@ -45,5 +45,8 @@
         </activity>
         <service android:name=".Condor">
         </service>
+        <receiver android:name=".service.BootReceiver" >
+            <action android:name="android.intent.action.BOOT_COMPLETED"/>
+        </receiver>
     </application>
 </manifest>
