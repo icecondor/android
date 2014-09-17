@@ -1,9 +1,9 @@
 package com.icecondor.eaglet.db.activity;
 
+import android.content.ContentValues;
+
 import com.icecondor.eaglet.db.Activity;
 import com.icecondor.eaglet.db.Database;
-
-import android.content.ContentValues;
 
 public class HeartBeat extends Activity  {
     private static final String VERB = "heartbeat";
@@ -12,6 +12,7 @@ public class HeartBeat extends Activity  {
     public HeartBeat(String desc) {
         description = desc;
     }
+
     @Override
     public ContentValues getAttributes() {
         ContentValues cv = super.getAttributes();

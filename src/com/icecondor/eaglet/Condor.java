@@ -33,6 +33,7 @@ import com.icecondor.eaglet.db.activity.GpsLocation;
 import com.icecondor.eaglet.db.activity.Start;
 import com.icecondor.eaglet.service.AlarmReceiver;
 import com.icecondor.eaglet.service.BatteryReceiver;
+import com.icecondor.eaglet.service.BootReceiver;
 import com.icecondor.eaglet.service.CellReceiver;
 import com.icecondor.eaglet.service.GpsReceiver;
 import com.icecondor.eaglet.ui.UiActions;
@@ -54,6 +55,7 @@ public class Condor extends Service {
     protected Handler apiThreadHandler;
     private Thread apiThread;
     private NotificationBar notificationBar;
+    private BootReceiver bootReceiver;
 
     @Override
     public void onCreate() {
@@ -102,6 +104,12 @@ public class Condor extends Service {
                                                             0,
                                                             new Intent(Constants.ACTION_WAKE_ALARM),
                                                             0);
+        /* Boot Monitor */
+        bootReceiver = new BootReceiver();
+        if(prefs.isStartOnBoot()){
+            registerBootReceiver();
+        }
+
         /* Battery Monitor */
         batteryReceiver = new BatteryReceiver();
         setupBatteryMonitor();
@@ -164,11 +172,11 @@ public class Condor extends Service {
     protected void setupBatteryMonitor() {
         /* Battery */
         registerReceiver(batteryReceiver,
-        new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+                new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         registerReceiver(batteryReceiver,
-        new IntentFilter(Intent.ACTION_POWER_CONNECTED));
+                new IntentFilter(Intent.ACTION_POWER_CONNECTED));
         registerReceiver(batteryReceiver,
-        new IntentFilter(Intent.ACTION_POWER_DISCONNECTED));
+                new IntentFilter(Intent.ACTION_POWER_DISCONNECTED));
     }
 
     protected void startGpsMonitor() {
@@ -214,6 +222,14 @@ public class Condor extends Service {
 
     public String testToken(String token) {
         return api.accountAuthSession(token, getDeviceID());
+    }
+
+    public void registerBootReceiver() {
+        registerReceiver(bootReceiver, new IntentFilter(Intent.ACTION_BOOT_COMPLETED));
+    }
+
+    public void unregisterBootReceiver() {
+        unregisterReceiver(bootReceiver);
     }
 
     public boolean isRecording() {

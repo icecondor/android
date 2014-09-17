@@ -45,7 +45,7 @@ abstract public class BaseActivity extends ActionBarActivity
     private ActionBarDrawerToggle drawerToggle;
     private ListView drawerList;
     private SettingsFragment settingsFragment;
-    private ActivityListFragment actListFragment;
+    protected ActivityListFragment actListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +58,8 @@ abstract public class BaseActivity extends ActionBarActivity
         setContentView(R.layout.activity_main);
         ActionBar bar = getSupportActionBar();
         drawerSetup(bar);
-        settingsFragment = new SettingsFragment();
-        actListFragment = new ActivityListFragment();
+        settingsFragment = new SettingsFragment(handler);
+        actListFragment = new ActivityListFragment(handler);
     }
 
     @Override

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceManager;
@@ -22,6 +23,11 @@ public class SettingsFragment extends PreferenceFragment
     private SharedPreferences sharedPrefs;
     private final String[] keys = {Constants.PREFERENCE_API_URL,
                                    Constants.PREFERENCE_RECORDING_FREQUENCY_SECONDS};
+    private Handler handler;
+
+    public SettingsFragment(Handler handler) {
+        this.handler = handler;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,6 +87,15 @@ public class SettingsFragment extends PreferenceFragment
             String key) {
         Preference preference = getPreferenceScreen().findPreference(key);
         if(preference != null) {
+            if(key.equals(Constants.PREFERENCE_AUTOSTART)){
+                boolean onOff = sharedPreferences.getBoolean(Constants.PREFERENCE_AUTOSTART, false);
+                if(onOff){
+
+                } else {
+
+                }
+
+            }
             refreshSummary(key);
         }
     }

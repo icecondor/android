@@ -69,6 +69,10 @@ public class Prefs {
         return prefs.getBoolean(Constants.PREFERENCE_SOURCE_WIFI, true);
     }
 
+    public boolean isStartOnBoot() {
+        return prefs.getBoolean(Constants.PREFERENCE_AUTOSTART, true);
+    }
+
     private void ensureDefaults() {
         /* set default user preferences */
         Properties props = loadProperties();

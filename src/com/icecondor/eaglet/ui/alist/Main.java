@@ -21,7 +21,6 @@ import com.icecondor.eaglet.ui.UiActions;
 
 public class Main extends BaseActivity implements UiActions, CompoundButton.OnCheckedChangeListener {
 
-    private ActivityListFragment aList;
     CompoundButton onOff;
 
     @Override
@@ -31,9 +30,8 @@ public class Main extends BaseActivity implements UiActions, CompoundButton.OnCh
 
         actionBarExtraSetup();
 
-        aList = new ActivityListFragment();
         if (savedInstanceState == null) {
-            switchFragment(aList);
+            switchFragment(actListFragment);
         }
     }
 
@@ -94,7 +92,7 @@ public class Main extends BaseActivity implements UiActions, CompoundButton.OnCh
     @Override
     public void onNewActivity() {
         Log.d(Constants.APP_TAG, "alist.MainActivity: callback onNewActivity");
-        aList.invalidateView();
+        actListFragment.invalidateView();
     }
 
     @Override
