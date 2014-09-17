@@ -49,12 +49,24 @@ public class Prefs {
         return Integer.parseInt(secondsStr);
     }
 
-    public boolean getOnOff() {
+    public boolean isOnOff() {
         return prefs.getBoolean(Constants.SETTING_ON_OFF, true);
     }
 
     public void setOnOff(boolean b) {
         prefs.edit().putBoolean(Constants.SETTING_ON_OFF, b).commit();
+    }
+
+    public boolean isGpsOn() {
+        return prefs.getBoolean(Constants.PREFERENCE_SOURCE_GPS, true);
+    }
+
+    public boolean isCellOn() {
+        return prefs.getBoolean(Constants.PREFERENCE_SOURCE_CELL, true);
+    }
+
+    public boolean isWifiOn() {
+        return prefs.getBoolean(Constants.PREFERENCE_SOURCE_WIFI, true);
     }
 
     private void ensureDefaults() {

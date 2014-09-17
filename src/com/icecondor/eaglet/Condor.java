@@ -181,6 +181,14 @@ public class Condor extends Service {
         locationManager.removeUpdates(gpsReceiver);
     }
 
+    protected void startNetworkMonitor() {
+
+    }
+
+    protected void stopNetworkMonitor() {
+
+    }
+
     /* public methods */
     public States getNetworkState() {
         return api.getState();
@@ -199,7 +207,7 @@ public class Condor extends Service {
     }
 
     public boolean isRecording() {
-        return prefs.getOnOff();
+        return prefs.isOnOff();
     }
 
     public void setRecording(boolean onOff) {
@@ -219,7 +227,14 @@ public class Condor extends Service {
     protected void startRecording() {
         startApi();
         startAlarm();
-        startGpsMonitor();
+        if(prefs.isGpsOn()) {
+            Log.d(Constants.APP_TAG, "condor startRecording GPS ON");
+            startGpsMonitor();
+        }
+        if(prefs.isCellOn() || prefs.isWifiOn()) {
+            Log.d(Constants.APP_TAG, "condor startRecording NETWORK ON");
+            startNetworkMonitor();
+        }
     }
 
     protected void stopRecording() {

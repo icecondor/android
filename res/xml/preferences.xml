@@ -23,6 +23,26 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+            android:title="Location Sources">
+
+        <CheckBoxPreference
+                android:key="source_gps"
+                android:title="GPS"
+                android:summary="Use GPS" />
+
+        <CheckBoxPreference
+                android:key="source_cell"
+                android:title="Cell Towers"
+                android:summary="Use cellular towers" />
+
+        <CheckBoxPreference
+                android:key="source_wifi"
+                android:title="Wifi"
+                android:summary="Use wifi access points" />
+        
+    </PreferenceCategory>
+
+    <PreferenceCategory
             android:title="Advanced">
 
         <EditTextPreference

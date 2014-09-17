@@ -53,7 +53,7 @@ public class Main extends BaseActivity implements UiActions, CompoundButton.OnCh
     protected void onResume() {
         super.onResume();
         Log.d(Constants.APP_TAG, "alist.MainActivity onResume");
-        onOff.setChecked(prefs.getOnOff());
+        onOff.setChecked(prefs.isOnOff());
         enableServiceHandler();
         authCheck();
     }

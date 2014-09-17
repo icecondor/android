@@ -55,17 +55,23 @@ public class SettingsFragment extends PreferenceFragment
 
     public void refreshSummary(String key) {
         Preference preference = getPreferenceScreen().findPreference(key);
-        String summary = sharedPrefs.getString(key, "<none>");
-        if(key.equals(Constants.PREFERENCE_RECORDING_FREQUENCY_SECONDS)) {
-            int seconds = Integer.parseInt(summary);
-            int minutes = seconds/60;
-            if(seconds < 60) {
-                summary = "every "+seconds+" seconds";
-            } else if (seconds == 60) {
-                summary = "every minute";
-            } else if (seconds > 60) {
-                summary = "every "+minutes+" minutes";
+        String summary = "";
+        try {
+            summary = sharedPrefs.getString(key, "<none>");
+            if(key.equals(Constants.PREFERENCE_RECORDING_FREQUENCY_SECONDS)) {
+                int seconds = Integer.parseInt(summary);
+                int minutes = seconds/60;
+                if(seconds < 60) {
+                    summary = "every "+seconds+" seconds";
+                } else if (seconds == 60) {
+                    summary = "every minute";
+                } else if (seconds > 60) {
+                    summary = "every "+minutes+" minutes";
+                }
             }
+        } catch (java.lang.ClassCastException e) {
+            boolean onOff = sharedPrefs.getBoolean(key, false);
+            summary = onOff ? "On" : "Off";
         }
         preference.setSummary(summary);
     }

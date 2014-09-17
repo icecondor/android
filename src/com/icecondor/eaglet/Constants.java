@@ -15,4 +15,7 @@ public class Constants {
     public static final String PREFERENCE_AUTOSTART = "autostart";
     public static final String PREFERENCE_API_URL = "api_url";
     public static final String PREFERENCE_RECORDING_FREQUENCY_SECONDS = "recording_frequency";
+    public static final String PREFERENCE_SOURCE_GPS = "source_gps";
+    public static final String PREFERENCE_SOURCE_CELL = "source_cell";
+    public static final String PREFERENCE_SOURCE_WIFI = "source_wifi";
 }
