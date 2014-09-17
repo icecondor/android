@@ -32,6 +32,7 @@ import com.icecondor.eaglet.db.activity.GpsLocation;
 import com.icecondor.eaglet.db.activity.Start;
 import com.icecondor.eaglet.service.AlarmReceiver;
 import com.icecondor.eaglet.service.BatteryReceiver;
+import com.icecondor.eaglet.service.CellReceiver;
 import com.icecondor.eaglet.service.GpsReceiver;
 import com.icecondor.eaglet.ui.UiActions;
 
@@ -47,6 +48,7 @@ public class Condor extends Service {
     private BatteryReceiver batteryReceiver;
     private LocationManager locationManager;
     private GpsReceiver gpsReceiver;
+    private CellReceiver cellReceiver;
     private final HashMap<String, Integer> activityAddQueue = new HashMap<String, Integer>();
     protected Handler apiThreadHandler;
     private Thread apiThread;
@@ -106,6 +108,7 @@ public class Condor extends Service {
         /* Location Manager */
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         gpsReceiver = new GpsReceiver(this);
+        cellReceiver = new CellReceiver(this);
 
         /* Notification Bar */
         notificationBar = new NotificationBar(this);
@@ -182,11 +185,17 @@ public class Condor extends Service {
     }
 
     protected void startNetworkMonitor() {
-
+        Log.d(Constants.APP_TAG,"condor requesting NETWORK updates");
+        int seconds = prefs.getRecordingFrequencyInSeconds();
+        locationManager.requestLocationUpdates(
+                LocationManager.NETWORK_PROVIDER,
+                seconds*1000,
+                0.0F, cellReceiver);
     }
 
     protected void stopNetworkMonitor() {
-
+        Log.d(Constants.APP_TAG,"condor unrequesting NETWORK updates");
+        locationManager.removeUpdates(cellReceiver);
     }
 
     /* public methods */
