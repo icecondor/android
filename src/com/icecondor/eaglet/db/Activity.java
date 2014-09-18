@@ -19,7 +19,7 @@ public class Activity implements Sqlitable {
     protected final String id;
     protected final DateTime date;
 
-    public Activity() {
+    public Activity(String type) {
         json = new JSONObject();
         id = UUID.randomUUID().toString();
         date = new DateTime(DateTimeZone.UTC);
@@ -27,6 +27,7 @@ public class Activity implements Sqlitable {
             json.put("id", id);
             json.put("class", getClass().getName());
             json.put("date", date);
+            json.put("type", type);
         } catch (JSONException e) {
             e.printStackTrace();
         }

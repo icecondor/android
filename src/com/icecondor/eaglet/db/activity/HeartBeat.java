@@ -14,9 +14,9 @@ public class HeartBeat extends Activity  {
     private int batteryPercentage;
 
     public HeartBeat(String desc) {
+        super(VERB);
         description = desc;
         try {
-            json.put("type", VERB);
             JSONObject battery = new JSONObject();
             battery.put("percentage", batteryPercentage);
             json.put("battery", battery);
