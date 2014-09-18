@@ -85,12 +85,12 @@ public class SettingsFragment extends PreferenceFragment
         }
         LocationManager lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         if(key.equals(Constants.PREFERENCE_SOURCE_GPS)) {
-            if(!lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                summary += " - Warning: GPS set to OFF";
+            if(sharedPrefs.getBoolean(key, false) && !lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                summary += " - Warning: System GPS is OFF";
             }
         }
         if(key.equals(Constants.PREFERENCE_SOURCE_CELL) || key.equals(Constants.PREFERENCE_SOURCE_WIFI)) {
-            if(!lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            if(sharedPrefs.getBoolean(key, false)  && !lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                 summary += " - Warning: NETWORK set to OFF";
             }
         }
