@@ -46,7 +46,7 @@ public class GpsLocation extends Activity {
     public ContentValues getAttributes() {
         ContentValues cv = super.getAttributes();
         cv.put(Database.ACTIVITIES_VERB, VERB);
-        cv.put(Database.ACTIVITIES_DESCRIPTION, "accuracy "+(int)point.getAccuracy());
+        cv.put(Database.ACTIVITIES_DESCRIPTION, point.getProvider()+" accuracy "+(int)point.getAccuracy());
         cv.put(Database.ACTIVITIES_JSON, json.toString());
         return cv;
     }
