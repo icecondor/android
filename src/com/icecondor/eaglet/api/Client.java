@@ -138,7 +138,7 @@ public class Client implements ConnectCallbacks {
 
     @Override
     public void onDisconnected() {
-        Log.d(Constants.APP_TAG, "api.Client onDisconnected.");
+        Log.d(Constants.APP_TAG, "api.Client onDisconnected. reconnect is "+reconnect);
         state = States.WAITING;
         reconnects = 0;
         actions.onDisconnected();

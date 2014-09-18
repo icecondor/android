@@ -267,7 +267,7 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     }
 
     private void emailSent(String email) {
-        loginFragment.setStatusText("Email sent to "+email+". Please check your email and click the login button.");
+        loginFragment.setStatusText("Email sent to "+email+". \n\nPlease check your email and click the login button.");
         loginEmailFragment.disableLoginField();
     }
 
