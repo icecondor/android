@@ -31,7 +31,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="icecondor" />
-                </intent-filter>
+             </intent-filter>
         </activity>
         <activity
             android:name=".ui.alist.Main"
@@ -46,7 +46,9 @@
         <service android:name=".Condor">
         </service>
         <receiver android:name=".service.BootReceiver" >
-            <action android:name="android.intent.action.BOOT_COMPLETED"/>
+             <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+             </intent-filter>
         </receiver>
     </application>
 </manifest>
