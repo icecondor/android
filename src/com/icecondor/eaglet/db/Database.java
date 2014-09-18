@@ -109,6 +109,10 @@ public class Database {
         db.delete(tableName, ROW_ID+" < ?", new String[] {""+firstRowId});
     }
 
+    public void emptyTable(String tableName) {
+        db.delete(tableName, null, null);
+    }
+
     private int rowCount(String tableName) {
         Cursor cursor = db.query(tableName, null, null, null, null, null, null);
         return cursor.getCount();

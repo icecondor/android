@@ -263,6 +263,14 @@ public class Condor extends Service {
         api.connect();
     }
 
+    public void disconnect() {
+        api.stop();
+    }
+
+    public void clearHistory() {
+        db.emptyTable(Database.TABLE_ACTIVITIES);
+    }
+
     public void pushActivities() {
         if(clientAuthenticated) {
             Cursor unsynced = db.ActivitiesUnsynced();

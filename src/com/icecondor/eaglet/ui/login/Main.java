@@ -166,6 +166,9 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
                 if(user.has("username")) {
                     db.updateUser(user);
                     prefs.setAuthenticatedUsername(user.getString("username"));
+                    condor.disconnect(); // auth management hack
+                    condor.clearHistory();
+                    condor.connectNow();
                     Intent start = new Intent(this, Start.class);
                     startActivity(start);
 
