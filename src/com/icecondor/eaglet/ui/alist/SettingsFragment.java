@@ -1,8 +1,10 @@
 package com.icecondor.eaglet.ui.alist;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
@@ -21,7 +23,11 @@ public class SettingsFragment extends PreferenceFragment
 
     private SharedPreferences sharedPrefs;
     private final String[] keys = {Constants.PREFERENCE_API_URL,
-                                   Constants.PREFERENCE_RECORDING_FREQUENCY_SECONDS};
+                                   Constants.PREFERENCE_RECORDING_FREQUENCY_SECONDS,
+                                   Constants.PREFERENCE_AUTOSTART,
+                                   Constants.PREFERENCE_SOURCE_GPS,
+                                   Constants.PREFERENCE_SOURCE_CELL,
+                                   Constants.PREFERENCE_SOURCE_WIFI};
 
     public SettingsFragment() {
         super();
@@ -76,6 +82,17 @@ public class SettingsFragment extends PreferenceFragment
         } catch (java.lang.ClassCastException e) {
             boolean onOff = sharedPrefs.getBoolean(key, false);
             summary = onOff ? "On" : "Off";
+        }
+        LocationManager lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        if(key.equals(Constants.PREFERENCE_SOURCE_GPS)) {
+            if(!lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                summary += " - Warning: GPS set to OFF";
+            }
+        }
+        if(key.equals(Constants.PREFERENCE_SOURCE_CELL) || key.equals(Constants.PREFERENCE_SOURCE_WIFI)) {
+            if(!lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                summary += " - Warning: NETWORK set to OFF";
+            }
         }
         preference.setSummary(summary);
     }
