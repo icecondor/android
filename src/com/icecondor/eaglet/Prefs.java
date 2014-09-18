@@ -19,10 +19,13 @@ import com.icecondor.eaglet.ui.login.Main;
 
 public class Prefs {
     private final SharedPreferences prefs;
+    private String KEY_CONFIGURED = "configured";
 
     public Prefs(Context ctx) {
         prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-        ensureDefaults();
+        if(prefs.getBoolean(KEY_CONFIGURED, false) == false) {
+            ensureDefaults();
+        }
     }
 
     public void setDeviceId(String deviceId) {
@@ -77,8 +80,13 @@ public class Prefs {
         /* set default user preferences */
         Properties props = loadProperties();
         Editor editor = prefs.edit();
+        /* Autostart: true */
         editor.putBoolean(Constants.PREFERENCE_AUTOSTART, true);
+
+        /* Recording frequency: 1minute */
         editor.putString(Constants.PREFERENCE_RECORDING_FREQUENCY_SECONDS, "60");
+
+        /* API url */
         String apiUrl;
         if(props.contains("api_url")) {
             apiUrl = props.getProperty("api_url");
@@ -87,8 +95,15 @@ public class Prefs {
         }
         editor.putString(Constants.PREFERENCE_API_URL, apiUrl);
 
+        /* Location Sources */
+        editor.putBoolean(Constants.PREFERENCE_SOURCE_GPS, true);
+        editor.putBoolean(Constants.PREFERENCE_SOURCE_CELL, true);
+        editor.putBoolean(Constants.PREFERENCE_SOURCE_WIFI, true);
+
+        editor.putBoolean(KEY_CONFIGURED, true);
         editor.commit();
     }
+
 
     private Properties loadProperties() {
         Properties props = new Properties();
