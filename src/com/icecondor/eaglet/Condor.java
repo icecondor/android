@@ -135,7 +135,7 @@ public class Condor extends Service {
     }
 
     protected void startApi() {
-        notificationBar.updateText("Background location service.");
+        notificationBar.updateText("Waiting for first location.");
         api.startPersistentConnect();
     }
 
