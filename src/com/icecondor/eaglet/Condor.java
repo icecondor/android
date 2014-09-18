@@ -340,7 +340,8 @@ public class Condor extends Service {
                         Log.d(Constants.APP_TAG,"condor marked as synced "+rowId+" "+actJson);
                         if(actJson.getString("type").equals("location")) {
                             GpsLocation loc = new GpsLocation(actJson);
-                            notificationBar.updateText("Location updated from "+loc.getPoint().getProvider()+" with "+loc.getPoint());
+                            int feet = (int)(loc.getPoint().getAccuracy() * 3.28084);
+                            notificationBar.updateText(""+loc.getPoint().getProvider().toUpperCase()+" located within "+feet+" feet");
                         }
                         pushActivities();
                     }
