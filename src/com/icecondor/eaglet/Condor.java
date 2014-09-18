@@ -289,9 +289,13 @@ public class Condor extends Service {
     /* Callbacks from network client */
     public class ApiActions implements ClientActions {
         @Override
-        public void onConnecting(URI url) {
+        public void onConnecting(URI url, int attempts) {
             Log.d(Constants.APP_TAG, "Condor connecting to "+url);
-            db.append(new Connecting(url.toString()));
+            String status = url.toString();
+            if(attempts > 0) {
+                status += " attempt #"+attempts;
+            }
+            db.append(new Connecting(status));
             binder.onConnecting(url);
         }
         @Override

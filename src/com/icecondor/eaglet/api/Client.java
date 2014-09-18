@@ -55,7 +55,7 @@ public class Client implements ConnectCallbacks {
         Log.d(Constants.APP_TAG, "client: connect(). state = "+state);
         if(state != States.CONNECTED) {
             state = States.CONNECTING;
-            actions.onConnecting(apiUrl);
+            actions.onConnecting(apiUrl, reconnects);
             // AndroidSync quirk, uses http urls
             String httpQuirkUrl = apiUrl.toString().replace("ws://", "http://").replace("wss://", "https://");
             AsyncHttpRequest get = new AsyncHttpGet(httpQuirkUrl);
@@ -76,7 +76,10 @@ public class Client implements ConnectCallbacks {
 
     public void stop() {
         reconnect = false;
-        websocket.close();
+        reconnects = 0;
+        if(websocket != null) {
+            websocket.close();
+        }
     }
 
     public States getState() {

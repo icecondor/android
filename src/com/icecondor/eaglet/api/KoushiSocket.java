@@ -32,12 +32,12 @@ public class KoushiSocket implements AsyncHttpClient.WebSocketConnectCallback {
         if (ex != null) {
             if(ex.getClass().isAssignableFrom(java.util.concurrent.TimeoutException.class)) {
                 Log.d(Constants.APP_TAG, "ws: timeout!");
-                connectCallbacks.onTimeout();
             } else {
                 Log.d(Constants.APP_TAG, "ws: stacktrace!!");
                 ex.printStackTrace();
             }
-            return; // no webSocket
+            connectCallbacks.onTimeout();
+            return; // bail out
         }
 
         webSocket.setClosedCallback(new CompletedCallback() {
