@@ -7,7 +7,7 @@
 
     <ImageView
         android:id="@+id/drawer_row_icon"
-        android:layout_width="wrap_content"
+        android:layout_width="30sp"
         android:layout_height="wrap_content" />
 
     <TextView
@@ -17,7 +17,7 @@
         android:textColor="#ffffff"
         android:textSize="20sp"
         android:layout_marginLeft="2sp"
-        android:layout_marginTop="1sp"
+        android:layout_marginTop="3sp"
          />
 
 </LinearLayout>
