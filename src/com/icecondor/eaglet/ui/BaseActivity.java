@@ -110,7 +110,7 @@ abstract public class BaseActivity extends ActionBarActivity
     public void populateDrawer(ArrayList<Map<String, ?>> list) {
         HashMap<String, Object> item;
         item = new HashMap<String, Object>();
-        item.put("icon",R.drawable.ic_launcher);
+        item.put("icon",R.drawable.ic_person);
         item.put("name", prefs.getAuthenticatedUsername());
         list.add(item);
         item = new HashMap<String, Object>();
@@ -118,7 +118,7 @@ abstract public class BaseActivity extends ActionBarActivity
         item.put("name", "Activity");
         list.add(item);
         item = new HashMap<String, Object>();
-        item.put("icon",R.drawable.ic_launcher);
+        item.put("icon",R.drawable.ic_jar);
         item.put("name", "Settings");
         list.add(item);
     }
