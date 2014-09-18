@@ -29,7 +29,10 @@ public class ActivityListFragment extends Fragment {
     private SimpleCursorAdapter sCursorAdapter;
     private Handler handler;
 
-    public ActivityListFragment(Handler handler) {
+    public ActivityListFragment() {
+    }
+
+    public void setHandler(Handler handler) {
         this.handler = handler;
     }
 

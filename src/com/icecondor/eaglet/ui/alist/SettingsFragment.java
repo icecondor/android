@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceManager;
@@ -23,10 +22,9 @@ public class SettingsFragment extends PreferenceFragment
     private SharedPreferences sharedPrefs;
     private final String[] keys = {Constants.PREFERENCE_API_URL,
                                    Constants.PREFERENCE_RECORDING_FREQUENCY_SECONDS};
-    private Handler handler;
 
-    public SettingsFragment(Handler handler) {
-        this.handler = handler;
+    public SettingsFragment() {
+        super();
     }
 
     @Override

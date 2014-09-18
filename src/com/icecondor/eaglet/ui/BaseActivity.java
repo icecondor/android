@@ -58,8 +58,9 @@ abstract public class BaseActivity extends ActionBarActivity
         setContentView(R.layout.activity_main);
         ActionBar bar = getSupportActionBar();
         drawerSetup(bar);
-        settingsFragment = new SettingsFragment(handler);
-        actListFragment = new ActivityListFragment(handler);
+        settingsFragment = new SettingsFragment();
+        actListFragment = new ActivityListFragment();
+        actListFragment.setHandler(handler);
     }
 
     @Override
