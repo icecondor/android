@@ -13,18 +13,14 @@ import com.icecondor.eaglet.Constants;
 public class BootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        //Database db = new Database(context);
-        //db.open();
+        // ReceiverRestrictedContext
 
         String action = intent.getAction();
         if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
             Log.i(Constants.APP_TAG, "BootReceiver onReceive "+
                      context.getClass().getSimpleName()+" now "+new Date());
-            //db.append(new HeartBeat("Phone power on"));
             context.startService(new Intent(context, Condor.class));
         }
-
-        //db.close();
     }
 
 
