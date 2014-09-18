@@ -28,7 +28,7 @@ public class LoginEmailFragment extends Fragment {
                                container, false);
         emailField = (EditText)rootView.findViewById(R.id.login_email_field);
         emailField.setOnEditorActionListener((Main)getActivity());
-        emailField.setEnabled(false);
+        emailField.requestFocus();
         return rootView;
     }
 

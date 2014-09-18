@@ -183,9 +183,8 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
 
     public void badToken() {
         tokenValidateFragment.indicateFail();
-        loginEmailFragment.enableLoginField();
         switchLoginFragment(loginEmailFragment);
-        loginFragment.setStatusText("Invalid token. Please try again");
+        loginFragment.setStatusText("Invalid token. Enter your email for a new token.");
     }
 
     @Override
