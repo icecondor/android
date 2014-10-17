@@ -8,7 +8,9 @@
     <ImageView
         android:id="@+id/drawer_row_icon"
         android:layout_width="30sp"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3sp" 
+        />
 
     <TextView
         android:id="@+id/drawer_row_name"
