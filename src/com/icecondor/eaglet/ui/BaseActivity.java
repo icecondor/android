@@ -8,6 +8,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -128,6 +129,10 @@ abstract public class BaseActivity extends ActionBarActivity
         Log.d(Constants.APP_TAG, "BaseActivity: onItemClick position:"+position+" id:"+id);
         if(position == 0) {
             // User
+            String url = "https://staging.icecondor.com/"+prefs.getAuthenticatedUsername();
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
         }
         if(position == 1) {
             // Activity List
