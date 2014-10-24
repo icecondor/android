@@ -114,4 +114,8 @@ public class Main extends BaseActivity implements UiActions, CompoundButton.OnCh
         }
     }
 
+    public void doLogout() { // called from SettingsFragment
+        prefs.clearAuthenticatedUser();
+        condor.disconnect();
+    }
 }

@@ -15,7 +15,6 @@ import android.util.Log;
 import com.icecondor.eaglet.Constants;
 import com.icecondor.eaglet.Prefs;
 import com.icecondor.eaglet.R;
-import com.icecondor.eaglet.ui.login.Main;
 
 public class SettingsFragment extends PreferenceFragment
                               implements OnSharedPreferenceChangeListener,
@@ -121,7 +120,7 @@ public class SettingsFragment extends PreferenceFragment
         if(preference.getKey().equals("logout_pref_notused")) {
             Prefs prefs = new Prefs(this.getActivity());
             Log.d(Constants.APP_TAG, "logging out "+prefs.getAuthenticatedUsername());
-            prefs.clearAuthenticatedUser();
+            ((Main)getActivity()).doLogout();
             Intent intent = new Intent(this.getActivity(), Main.class);
             startActivity(intent);
         }
