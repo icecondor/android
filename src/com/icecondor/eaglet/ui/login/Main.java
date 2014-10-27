@@ -79,7 +79,7 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     public void onPause() {
         if(condor != null) {
             Log.d(Constants.APP_TAG, "login.Main onPause stoppin condor");
-            condor.setRecording(false);
+            condor.stopApi();
             condor.disconnect();
         } else {
             Log.d(Constants.APP_TAG, "login.Main onPause no condor");
@@ -97,7 +97,7 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     public void onServiceConnected(ComponentName name, IBinder service) {
         super.onServiceConnected(name, service);
         refreshStatusFromCondor(condor);
-        condor.connectNow(); // network tickle
+        condor.startApi(); // network tickle
         if(token != null && condor.isConnected()) {
             Log.d(Constants.APP_TAG, "login.Main onStart condor connected!");
             processToken();

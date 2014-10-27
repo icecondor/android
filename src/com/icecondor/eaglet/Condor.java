@@ -139,7 +139,7 @@ public class Condor extends Service {
         api.startPersistentConnect();
     }
 
-    protected void stopApi() {
+    public void stopApi() {
         notificationBar.cancel();
         api.stop();
     }
