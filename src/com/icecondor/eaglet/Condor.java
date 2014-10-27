@@ -116,7 +116,7 @@ public class Condor extends Service {
 
         /* API */
         api = new Client(prefs.getApiUrl(), new ApiActions());
-        if(isRecording()) {
+        if(prefs.isAuthenticatedUser() && isRecording()) {
             Log.d(Constants.APP_TAG, "Condor isRecording is ON.");
             startRecording();
         }
@@ -134,7 +134,7 @@ public class Condor extends Service {
         return prefs.getDeviceId();
     }
 
-    protected void startApi() {
+    public void startApi() {
         notificationBar.updateText("Waiting for first location.");
         api.startPersistentConnect();
     }

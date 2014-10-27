@@ -98,10 +98,7 @@ abstract public class BaseActivity extends ActionBarActivity
 
     protected void enableServiceHandler() {
         if(localBinder != null) {
-            log("enableServiceHandler localBinder is good");
             localBinder.setHandler(handler, this);
-        } else {
-            log("enableServiceHandler WARNING: localBinder is null");
         }
     }
 

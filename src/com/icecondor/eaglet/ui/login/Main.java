@@ -80,6 +80,7 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
         if(condor != null) {
             Log.d(Constants.APP_TAG, "login.Main onPause stoppin condor");
             condor.setRecording(false);
+            condor.disconnect();
         } else {
             Log.d(Constants.APP_TAG, "login.Main onPause no condor");
         }
