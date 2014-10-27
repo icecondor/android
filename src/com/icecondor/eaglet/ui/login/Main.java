@@ -75,6 +75,17 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
         }
     }
 
+    @Override
+    public void onPause() {
+        if(condor != null) {
+            Log.d(Constants.APP_TAG, "login.Main onPause stoppin condor");
+            condor.setRecording(false);
+        } else {
+            Log.d(Constants.APP_TAG, "login.Main onPause no condor");
+        }
+        super.onPause();
+    }
+
     protected void switchLoginFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
             .replace(R.id.login_body_fragment, fragment).commit();

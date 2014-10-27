@@ -71,6 +71,51 @@ abstract public class BaseActivity extends ActionBarActivity
         startService(condorIntent); // keep this for STICKY result
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(Constants.APP_TAG, "BaseActivity("+this.getClass().getName()+"): onResume");
+        bindService(condorIntent, this, BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(Constants.APP_TAG, "BaseActivity("+this.getClass().getName()+"): onPause");
+        if(condor != null) {
+            condor = null;
+            unbindService(this);
+        }
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+        Log.d(Constants.APP_TAG, "BaseActivity: onServiceConnected "+name.flattenToShortString());
+        localBinder = (Condor.LocalBinder)service;
+        enableServiceHandler();
+        condor = localBinder.getService();
+    }
+
+    protected void enableServiceHandler() {
+        if(localBinder != null) {
+            log("enableServiceHandler localBinder is good");
+            localBinder.setHandler(handler, this);
+        } else {
+            log("enableServiceHandler WARNING: localBinder is null");
+        }
+    }
+
+    protected void disableServiceHandler() {
+        if(localBinder != null) {
+            localBinder.clearHandler();
+        }
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+        Log.d(Constants.APP_TAG, "BaseActivity: onServiceDisconnected "+name.flattenToShortString());
+    }
+
     public void drawerSetup(ActionBar bar) {
         drawerList = (ListView) findViewById(R.id.left_drawer);
         ArrayList<Map<String, ?>> list = new ArrayList<Map<String, ?>>();
@@ -165,23 +210,6 @@ abstract public class BaseActivity extends ActionBarActivity
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d(Constants.APP_TAG, "BaseActivity("+this.getClass().getName()+"): onResume");
-        bindService(condorIntent, this, BIND_AUTO_CREATE);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.d(Constants.APP_TAG, "BaseActivity("+this.getClass().getName()+"): onPause");
-        if(condor != null) {
-            condor = null;
-            unbindService(this);
-        }
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Pass the event to ActionBarDrawerToggle, if it returns
         // true, then it has handled the app icon touch event
@@ -193,35 +221,14 @@ abstract public class BaseActivity extends ActionBarActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onServiceConnected(ComponentName name, IBinder service) {
-        Log.d(Constants.APP_TAG, "BaseActivity: onServiceConnected "+name.flattenToShortString());
-        localBinder = (Condor.LocalBinder)service;
-        enableServiceHandler();
-        condor = localBinder.getService();
-    }
-
-    protected void enableServiceHandler() {
-        if(localBinder != null) {
-            localBinder.setHandler(handler, this);
-        }
-    }
-
-    protected void disableServiceHandler() {
-        if(localBinder != null) {
-            localBinder.clearHandler();
-        }
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName name) {
-        Log.d(Constants.APP_TAG, "BaseActivity: onServiceDisconnected "+name.flattenToShortString());
-    }
-
     public void authCheck() {
         if(prefs.getAuthenticatedUserId() == null) {
             startActivity(new Intent(this, Main.class));
             return;
         }
+    }
+
+    protected void log(String msg){
+        Log.d(Constants.APP_TAG, "BaseActivity("+this.getClass().getName()+"): "+msg);
     }
 }
