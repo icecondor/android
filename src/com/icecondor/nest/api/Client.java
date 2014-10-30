@@ -147,6 +147,11 @@ public class Client implements ConnectCallbacks {
         }
     }
 
+    @Override
+    public void onConnectionException(Exception ex) {
+        actions.onConnectException(ex);
+    }
+
     /* Track the call and its response */
     protected String apiCall(String method, JSONObject params) {
         String id = UUID.randomUUID().toString().substring(0, 7);

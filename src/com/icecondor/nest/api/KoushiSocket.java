@@ -35,6 +35,7 @@ public class KoushiSocket implements AsyncHttpClient.WebSocketConnectCallback {
             } else {
                 Log.d(Constants.APP_TAG, "ws: stacktrace!!");
                 ex.printStackTrace();
+                connectCallbacks.onConnectionException(ex);
             }
             connectCallbacks.onTimeout();
             return; // bail out

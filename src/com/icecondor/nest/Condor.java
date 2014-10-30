@@ -22,8 +22,8 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.icecondor.nest.api.Client;
-import com.icecondor.nest.api.ClientActions;
 import com.icecondor.nest.api.Client.States;
+import com.icecondor.nest.api.ClientActions;
 import com.icecondor.nest.db.Database;
 import com.icecondor.nest.db.Point;
 import com.icecondor.nest.db.activity.Connected;
@@ -326,6 +326,10 @@ public class Condor extends Service {
             binder.onConnectTimeout();
         }
         @Override
+        public void onConnectException(Exception ex) {
+            binder.onConnectException(ex);
+        }
+        @Override
         public void onMessage(JSONObject msg) {
             String apiId;
             try {
@@ -451,6 +455,19 @@ public class Condor extends Service {
                     @Override
                     public void run() {
                         callback.onConnectTimeout();
+                        callback.onNewActivity();
+                    }
+                });
+            }
+        }
+        @Override
+        public void onConnectException(Exception ex) {
+            final Exception fex = ex;
+            if(hasHandler()) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onConnectException(fex);
                         callback.onNewActivity();
                     }
                 });

@@ -11,4 +11,5 @@ public interface ClientActions {
     public void onConnectTimeout();
     public void onMessageTimeout(String id);
     public void onMessage(JSONObject result);
+    public void onConnectException(Exception ex);
 }

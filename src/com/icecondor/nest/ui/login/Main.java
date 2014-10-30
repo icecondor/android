@@ -253,6 +253,12 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
         refreshStatusFromCondor(condor);
     }
 
+    @Override
+    public void onConnectException(Exception ex) {
+        Log.d(Constants.APP_TAG, "login.Main onConnectTimeout");
+        loginFragment.setStatusText(""+ex);
+    }
+
     /* Login email field */
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {

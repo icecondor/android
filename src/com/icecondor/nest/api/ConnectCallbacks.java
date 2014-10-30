@@ -6,4 +6,5 @@ public interface ConnectCallbacks {
     public void onConnected();
     public void onDisconnected();
     public void onMessage(String msg);
+    public void onConnectionException(Exception ex);
 }
