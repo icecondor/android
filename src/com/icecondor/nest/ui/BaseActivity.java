@@ -31,7 +31,6 @@ import com.icecondor.nest.Constants;
 import com.icecondor.nest.Prefs;
 import com.icecondor.nest.R;
 import com.icecondor.nest.ui.alist.ActivityListFragment;
-import com.icecondor.nest.ui.alist.Main;
 import com.icecondor.nest.ui.alist.SettingsFragment;
 
 abstract public class BaseActivity extends ActionBarActivity
@@ -220,7 +219,7 @@ abstract public class BaseActivity extends ActionBarActivity
 
     public void authCheck() {
         if(prefs.getAuthenticatedUserId() == null) {
-            startActivity(new Intent(this, Main.class));
+            startActivity(new Intent(this, com.icecondor.nest.ui.login.Main.class));
             return;
         }
     }
