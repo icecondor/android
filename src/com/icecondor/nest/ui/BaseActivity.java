@@ -89,7 +89,7 @@ abstract public class BaseActivity extends ActionBarActivity
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
-        Log.d(Constants.APP_TAG, "BaseActivity: onServiceConnected "+name.flattenToShortString());
+        log("onServiceConnected "+name.flattenToShortString());
         localBinder = (Condor.LocalBinder)service;
         enableServiceHandler();
         condor = localBinder.getService();
@@ -109,7 +109,7 @@ abstract public class BaseActivity extends ActionBarActivity
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
-        Log.d(Constants.APP_TAG, "BaseActivity: onServiceDisconnected "+name.flattenToShortString());
+        log("onServiceDisconnected "+name.flattenToShortString());
     }
 
     public void drawerSetup(ActionBar bar) {

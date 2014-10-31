@@ -78,11 +78,12 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     @Override
     public void onPause() {
         if(condor != null) {
-            Log.d(Constants.APP_TAG, "login.Main onPause stoppin condor");
-            condor.stopApi();
-            condor.disconnect();
+            if(!prefs.isAuthenticatedUser()){
+                condor.stopApi();
+                condor.disconnect();
+            }
         } else {
-            Log.d(Constants.APP_TAG, "login.Main onPause no condor");
+            Log.d(Constants.APP_TAG, "login.Main onPause no condor to stop");
         }
         super.onPause();
     }
