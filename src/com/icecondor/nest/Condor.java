@@ -242,7 +242,7 @@ public class Condor extends Service {
         }
     }
 
-    protected void startRecording() {
+    public void startRecording() {
         startApi();
         startAlarm();
         if(prefs.isGpsOn()) {

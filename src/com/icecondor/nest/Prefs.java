@@ -83,6 +83,9 @@ public class Prefs {
         /* Autostart: true */
         editor.putBoolean(Constants.PREFERENCE_AUTOSTART, true);
 
+        /* On/Off: On */
+        editor.putBoolean(Constants.SETTING_ON_OFF, true);
+
         /* Recording frequency: 1minute */
         editor.putString(Constants.PREFERENCE_RECORDING_FREQUENCY_SECONDS, "60");
 

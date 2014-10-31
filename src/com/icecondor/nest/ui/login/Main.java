@@ -79,8 +79,11 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     public void onPause() {
         if(condor != null) {
             if(!prefs.isAuthenticatedUser()){
+                Log.d(Constants.APP_TAG, "login.Main condor exists. user unauthed.");
                 condor.stopApi();
                 condor.disconnect();
+            } else {
+                Log.d(Constants.APP_TAG, "login.Main condor exists. user authed.");
             }
         } else {
             Log.d(Constants.APP_TAG, "login.Main onPause no condor to stop");
@@ -181,7 +184,9 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
                     prefs.setAuthenticatedUsername(user.getString("username"));
                     condor.disconnect(); // auth management hack
                     condor.clearHistory();
-                    condor.connectNow();
+                    if(prefs.isOnOff()){
+                        condor.startRecording();
+                    }
                     Intent start = new Intent(this, Start.class);
                     startActivity(start);
 
