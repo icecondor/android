@@ -38,7 +38,7 @@ public class NotificationBar {
     }
 
     private Notification buildNotification() {
-        int icon = R.drawable.ic_launcher;
+        int icon = R.drawable.ic_notification;
         Notification notification = new Notification(icon, null, System.currentTimeMillis());
         notification.flags = notification.flags ^ Notification.FLAG_ONGOING_EVENT;
         notification.setLatestEventInfo(ctx, "IceCondor", "", contentIntent);
