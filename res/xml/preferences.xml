@@ -50,5 +50,10 @@
                 android:title="API url"
         />
 
+        <Preference
+            android:key="version_string"
+            android:title="Version"
+            />
+        
     </PreferenceCategory>
 </PreferenceScreen>

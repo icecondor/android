@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.icecondor.nest"
-    android:versionCode="20141027"
-    android:versionName="20141027" >
+    android:versionCode="20141029"
+    android:versionName="20141029" >
 
     <uses-sdk
         android:minSdkVersion="8"

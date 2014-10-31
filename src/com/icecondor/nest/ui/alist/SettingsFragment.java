@@ -26,7 +26,9 @@ public class SettingsFragment extends PreferenceFragment
                                    Constants.PREFERENCE_AUTOSTART,
                                    Constants.PREFERENCE_SOURCE_GPS,
                                    Constants.PREFERENCE_SOURCE_CELL,
-                                   Constants.PREFERENCE_SOURCE_WIFI};
+                                   Constants.PREFERENCE_SOURCE_WIFI,
+                                   Constants.PREFERENCE_VERSION
+                                   };
 
     public SettingsFragment() {
         super();
@@ -92,6 +94,9 @@ public class SettingsFragment extends PreferenceFragment
             if(sharedPrefs.getBoolean(key, false)  && !lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                 summary += " - Warning: NETWORK set to OFF";
             }
+        }
+        if(key.equals(Constants.PREFERENCE_VERSION)) {
+            summary = Constants.VERSION;
         }
         preference.setSummary(summary);
     }
