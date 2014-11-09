@@ -60,7 +60,6 @@ abstract public class BaseActivity extends ActionBarActivity
         drawerSetup(bar);
         settingsFragment = new SettingsFragment();
         actListFragment = new ActivityListFragment();
-        actListFragment.setHandler(handler);
     }
 
     @Override
