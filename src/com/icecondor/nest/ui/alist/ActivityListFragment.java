@@ -6,7 +6,6 @@ import org.joda.time.format.ISODateTimeFormat;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
@@ -27,13 +26,8 @@ public class ActivityListFragment extends Fragment {
     private ActivityListViewBinder activityListViewBinder;
     private ListView listView;
     private SimpleCursorAdapter sCursorAdapter;
-    private Handler handler;
 
     public ActivityListFragment() {
-    }
-
-    public void setHandler(Handler handler) {
-        this.handler = handler;
     }
 
     @Override
