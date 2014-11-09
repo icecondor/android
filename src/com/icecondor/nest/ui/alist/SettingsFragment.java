@@ -1,7 +1,6 @@
 package com.icecondor.nest.ui.alist;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.location.LocationManager;
@@ -13,7 +12,6 @@ import android.support.v4.preference.PreferenceFragment;
 import android.util.Log;
 
 import com.icecondor.nest.Constants;
-import com.icecondor.nest.Prefs;
 import com.icecondor.nest.R;
 
 public class SettingsFragment extends PreferenceFragment
@@ -123,11 +121,7 @@ public class SettingsFragment extends PreferenceFragment
     public boolean onPreferenceClick(Preference preference) {
         Log.d(Constants.APP_TAG, "onPreferenceClick "+preference.getKey());
         if(preference.getKey().equals("logout_pref_notused")) {
-            Prefs prefs = new Prefs(this.getActivity());
-            Log.d(Constants.APP_TAG, "logging out "+prefs.getAuthenticatedUsername());
             ((Main)getActivity()).doLogout();
-            Intent intent = new Intent(this.getActivity(), Main.class);
-            startActivity(intent);
         }
         return false;
     }

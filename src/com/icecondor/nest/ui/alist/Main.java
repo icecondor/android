@@ -4,6 +4,7 @@ import java.net.URI;
 
 import org.json.JSONObject;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.LayoutParams;
@@ -124,6 +125,8 @@ public class Main extends BaseActivity implements UiActions, CompoundButton.OnCh
         if(condor != null) {
             condor.disconnect();
         }
+        Intent intent = new Intent(this, com.icecondor.nest.ui.login.Main.class);
+        startActivity(intent);
         finish();
     }
 }
