@@ -124,5 +124,6 @@ public class Main extends BaseActivity implements UiActions, CompoundButton.OnCh
         if(condor != null) {
             condor.disconnect();
         }
+        finish();
     }
 }
