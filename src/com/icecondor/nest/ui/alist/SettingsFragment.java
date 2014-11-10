@@ -1,5 +1,7 @@
 package com.icecondor.nest.ui.alist;
 
+import java.net.URI;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -10,6 +12,7 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceManager;
 import android.support.v4.preference.PreferenceFragment;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.icecondor.nest.Constants;
 import com.icecondor.nest.R;
@@ -39,8 +42,33 @@ public class SettingsFragment extends PreferenceFragment
 
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences);
+
+        // Connect any validators
+        connectValidators();
+
+        // logout is special
         Preference logout = findPreference("logout_pref_notused");
         logout.setOnPreferenceClickListener(this);
+    }
+
+    private void connectValidators() {
+        findPreference(Constants.PREFERENCE_API_URL).setOnPreferenceChangeListener(
+                new Preference.OnPreferenceChangeListener() {
+
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    boolean valid = false;
+                    String url = (String) newValue;
+                    URI uri = URI.create(url);
+                    valid = uri != null;
+                    if(!valid) {
+                        Toast.makeText(getActivity().getApplicationContext(),
+                                "Invalid API URL", Toast.LENGTH_SHORT).show();
+                    }
+                    return valid;
+                }
+            });
+
     }
 
     @Override
@@ -100,8 +128,7 @@ public class SettingsFragment extends PreferenceFragment
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-            String key) {
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Preference preference = getPreferenceScreen().findPreference(key);
         if(preference != null) {
             if(key.equals(Constants.PREFERENCE_AUTOSTART)){
@@ -111,7 +138,9 @@ public class SettingsFragment extends PreferenceFragment
                 } else {
 
                 }
-
+            }
+            if(key.equals(Constants.PREFERENCE_API_URL)){
+                ((Main)getActivity()).resetApiUrl(sharedPreferences.getString(Constants.PREFERENCE_API_URL, null));
             }
             refreshSummary(key);
         }
