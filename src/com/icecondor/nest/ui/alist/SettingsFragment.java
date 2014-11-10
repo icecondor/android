@@ -1,6 +1,7 @@
 package com.icecondor.nest.ui.alist;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -57,18 +58,17 @@ public class SettingsFragment extends PreferenceFragment
 
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    boolean valid = false;
                     String url = (String) newValue;
-                    URI uri = URI.create(url);
-                    valid = uri != null;
-                    if(!valid) {
+                    try {
+                        new URI(url);
+                        return true;
+                    } catch (URISyntaxException e) {
                         Toast.makeText(getActivity().getApplicationContext(),
                                 "Invalid API URL", Toast.LENGTH_SHORT).show();
+                        return false;
                     }
-                    return valid;
                 }
             });
-
     }
 
     @Override
@@ -140,7 +140,8 @@ public class SettingsFragment extends PreferenceFragment
                 }
             }
             if(key.equals(Constants.PREFERENCE_API_URL)){
-                ((Main)getActivity()).resetApiUrl(sharedPreferences.getString(Constants.PREFERENCE_API_URL, null));
+                URI apiUrl = URI.create(sharedPreferences.getString(Constants.PREFERENCE_API_URL, null));
+                ((Main)getActivity()).resetApiUrl(apiUrl);
             }
             refreshSummary(key);
         }

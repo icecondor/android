@@ -48,6 +48,7 @@
         <EditTextPreference
                 android:key="api_url"
                 android:title="API url"
+                android:inputType="textUri"
         />
 
         <Preference

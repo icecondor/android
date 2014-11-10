@@ -129,4 +129,8 @@ public class Main extends BaseActivity implements UiActions, CompoundButton.OnCh
         startActivity(intent);
         finish();
     }
+
+    public void resetApiUrl(URI url) {
+        condor.resetApiUrl(url);
+    }
 }

@@ -537,4 +537,12 @@ public class Condor extends Service {
         return api.accountSetUsername(username);
     }
 
+    public void resetApiUrl(URI uri) {
+        stopApi();
+        api = new Client(uri, new ApiActions());
+        if(isRecording()) {
+            startApi();
+        }
+    }
+
 }
