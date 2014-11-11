@@ -25,7 +25,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         if (action.equals(Constants.ACTION_WAKE_ALARM)) {
             Log.i(Constants.APP_TAG, "AlarmReceiver onReceive "+
                      context.getClass().getSimpleName()+" now "+new Date());
-            HeartBeat heartBeat = new HeartBeat(" thread "+Thread.currentThread().getName());
+            HeartBeat heartBeat = new HeartBeat("");
             if(condor.isBatteryValid()){
                 heartBeat.setBatteryPercentage(condor.getBattPercent());
                 heartBeat.setPower(condor.getBattAc());
