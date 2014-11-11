@@ -12,10 +12,26 @@ public class HeartBeat extends Activity  {
     private static final String VERB = "heartbeat";
     private final String description;
     private int batteryPercentage;
+    private boolean power;
 
     public HeartBeat(String desc) {
         super(VERB);
         description = desc;
+    }
+
+    @Override
+    public ContentValues getAttributes() {
+        ContentValues cv = super.getAttributes();
+        cv.put(Database.ACTIVITIES_VERB, VERB);
+        String desc = description + " battery "+batteryPercentage+"%";
+        if(power) { desc = desc + " charging"; }
+        cv.put(Database.ACTIVITIES_DESCRIPTION, desc);
+        cv.put(Database.ACTIVITIES_JSON, json.toString());
+        return cv;
+    }
+
+    public void setBatteryPercentage(int battPercent) {
+        batteryPercentage = battPercent;
         try {
             JSONObject battery = new JSONObject();
             battery.put("percentage", batteryPercentage);
@@ -25,17 +41,13 @@ public class HeartBeat extends Activity  {
         }
     }
 
-    @Override
-    public ContentValues getAttributes() {
-        ContentValues cv = super.getAttributes();
-        cv.put(Database.ACTIVITIES_VERB, VERB);
-        String desc = description + " batt "+batteryPercentage+"%";
-        cv.put(Database.ACTIVITIES_DESCRIPTION, desc);
-        cv.put(Database.ACTIVITIES_JSON, json.toString());
-        return cv;
+    public void setPower(boolean power) {
+        this.power = power;
+        try {
+            json.put("power", power);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void setBatteryPercentage(int battPercent) {
-        batteryPercentage = battPercent;
-    }
 }
