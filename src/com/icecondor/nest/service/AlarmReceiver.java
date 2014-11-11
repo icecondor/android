@@ -34,7 +34,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             }
             db.append(heartBeat);
             ((Condor)context).binder.onNewActivity();
-            //((Condor)context).pushActivities();
+            ((Condor)context).pushActivities();
         }
 
         db.close();
