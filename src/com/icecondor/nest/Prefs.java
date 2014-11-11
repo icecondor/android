@@ -86,8 +86,8 @@ public class Prefs {
         /* On/Off: On */
         editor.putBoolean(Constants.SETTING_ON_OFF, true);
 
-        /* Recording frequency: 1minute */
-        editor.putString(Constants.PREFERENCE_RECORDING_FREQUENCY_SECONDS, "60");
+        /* Recording frequency: 3 minutes */
+        editor.putString(Constants.PREFERENCE_RECORDING_FREQUENCY_SECONDS, "180");
 
         /* API url */
         String apiUrl;
