@@ -5,6 +5,7 @@ import java.util.Date;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.BatteryManager;
 import android.util.Log;
 
 import com.icecondor.nest.Constants;
@@ -20,7 +21,9 @@ public class BatteryReceiver extends BroadcastReceiver {
         if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
             last_battery_level = intent.getIntExtra("level", 0);
             last_battery_date = new Date();
-            Log.d(Constants.APP_TAG, "battery changed "+last_battery_level);
+            int ac_int = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
+            ac_power = ac_int != 0;
+            Log.d(Constants.APP_TAG, "battery changed "+last_battery_level+" charging "+ac_power+" "+ac_int);
         }
         if (action.equals("android.intent.action.ACTION_POWER_CONNECTED")) {
             ac_power = true;
