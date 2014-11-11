@@ -370,6 +370,8 @@ public class Condor extends Service {
                 JSONObject err = new JSONObject();
                 err.put("reason", "timeout");
                 binder.onApiError(id, err);
+                Log.d(Constants.APP_TAG, "condor: onMessageTimeout. disconnecting");
+                api.disconnect();
             } catch (JSONException e) {
                 e.printStackTrace();
             }

@@ -59,7 +59,7 @@ public class Client implements ConnectCallbacks {
             // AndroidSync quirk, uses http urls
             String httpQuirkUrl = apiUrl.toString().replace("ws://", "http://").replace("wss://", "https://");
             AsyncHttpRequest get = new AsyncHttpGet(httpQuirkUrl);
-            get.setTimeout(2500);
+            get.setTimeout(0);
             if(websocketFuture != null) {
                 websocketFuture.cancel();
             }
@@ -77,6 +77,11 @@ public class Client implements ConnectCallbacks {
     public void stop() {
         reconnect = false;
         reconnects = 0;
+        disconnect();
+    }
+
+    public void disconnect() {
+        apiQueue.clear();
         if(websocket != null) {
             websocket.close();
         }
@@ -142,6 +147,7 @@ public class Client implements ConnectCallbacks {
         state = States.WAITING;
         reconnects = 0;
         actions.onDisconnected();
+        apiQueue.clear();
         if(reconnect) {
             connect();
         }
@@ -184,7 +190,7 @@ public class Client implements ConnectCallbacks {
                         Log.d(Constants.APP_TAG,"api.Client apiCall "+id+" timed out!");
                         actions.onMessageTimeout(id);
                     }
-                }}, 1000);
+                }}, 30000);
         } catch (JSONException e) {
             e.printStackTrace();
         }
