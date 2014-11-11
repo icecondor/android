@@ -30,7 +30,6 @@ import com.icecondor.nest.db.activity.Connected;
 import com.icecondor.nest.db.activity.Connecting;
 import com.icecondor.nest.db.activity.Disconnected;
 import com.icecondor.nest.db.activity.GpsLocation;
-import com.icecondor.nest.db.activity.Start;
 import com.icecondor.nest.service.AlarmReceiver;
 import com.icecondor.nest.service.BatteryReceiver;
 import com.icecondor.nest.service.CellReceiver;
@@ -72,7 +71,8 @@ public class Condor extends Service {
         } else {
             start_reason += " (skipped init)";
         }
-        db.append(new Start(start_reason));
+        //db.append(new Start(start_reason));
+
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.
         return START_STICKY;
