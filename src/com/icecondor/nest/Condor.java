@@ -322,7 +322,7 @@ public class Condor extends Service {
         @Override
         public void onDisconnected() {
             clientAuthenticated = false;
-            db.append(new Disconnected());
+            db.append(new Disconnected("socket closed"));
             binder.onDisconnected();
         }
         @Override
@@ -375,6 +375,7 @@ public class Condor extends Service {
                 err.put("reason", "timeout");
                 binder.onApiError(id, err);
                 Log.d(Constants.APP_TAG, "condor: onMessageTimeout. disconnecting");
+                db.append(new Disconnected("onMessageTimeout #"+id));
                 api.disconnect();
             } catch (JSONException e) {
                 e.printStackTrace();
