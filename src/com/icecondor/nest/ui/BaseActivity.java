@@ -188,7 +188,17 @@ abstract public class BaseActivity extends ActionBarActivity
 
     protected void switchFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
-            .replace(R.id.container, fragment).commit();
+            .replace(R.id.container, fragment, "frags").commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag("frags");
+        if(fragment instanceof SettingsFragment && fragment.isVisible()){
+            switchFragment(actListFragment);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override

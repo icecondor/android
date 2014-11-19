@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -128,6 +129,7 @@ public class ActivityListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+       ((ActionBarActivity)getActivity()).getSupportActionBar().setTitle("Activities");
         invalidateView();
     }
 }

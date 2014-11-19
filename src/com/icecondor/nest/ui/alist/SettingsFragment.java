@@ -12,6 +12,7 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceManager;
 import android.support.v4.preference.PreferenceFragment;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -81,6 +82,7 @@ public class SettingsFragment extends PreferenceFragment
     @Override
     public void onResume() {
         super.onResume();
+        ((ActionBarActivity)getActivity()).getSupportActionBar().setTitle("Settings");
         refreshSummaries();
     }
 
