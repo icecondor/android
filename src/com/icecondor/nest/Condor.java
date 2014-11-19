@@ -347,11 +347,7 @@ public class Condor extends Service {
                         JSONObject actJson = db.activityJson(rowId);
                         Log.d(Constants.APP_TAG,"condor marked as synced "+rowId+" "+actJson);
                         if(actJson.getString("type").equals("location")) {
-                            GpsLocation loc = new GpsLocation(actJson);
-                            int count = Math.abs((int)(loc.getPoint().getAccuracy() * 3.28084 / 264));
-                            String unit = "block";
-                            if(count > 1) { unit = "blocks"; }
-                            notificationBar.updateText("Located within "+count+" "+unit+" using "+loc.getPoint().getProvider().toUpperCase());
+                            notifyPosition(actJson);
                         }
                         pushActivities();
                     }
@@ -368,6 +364,24 @@ public class Condor extends Service {
                 e.printStackTrace();
             }
         }
+
+        public void notifyPosition(JSONObject actJson) throws JSONException {
+            GpsLocation loc = new GpsLocation(actJson);
+            int count = Math.abs((int)(loc.getPoint().getAccuracy() * 3.28084 / 264));
+            String unit = "block";
+            if(count > 1) { unit = "blocks"; }
+            String provider = loc.getPoint().getProvider().toUpperCase();
+            if(provider.equals("NETWORK")) {
+                if(loc.getPoint().getAccuracy() < 200) {
+                    provider = "wifi";
+                } else {
+                    provider = "cell tower";
+                }
+            }
+            String msg = "Located within "+count+" "+unit+" using "+provider+".";
+            notificationBar.updateText(msg);
+        }
+
         @Override
         public void onMessageTimeout(String id) {
             try {
