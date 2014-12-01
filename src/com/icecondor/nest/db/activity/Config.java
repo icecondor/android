@@ -9,11 +9,13 @@ import com.icecondor.nest.db.Database;
 
 public class Config extends Activity  {
         private static final String VERB = "config";
+        private String desc = "";
 
         public Config(String key, String value) {
             super(VERB);
             try {
                 json.put(key, value);
+                desc = key+" "+value;
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -23,7 +25,7 @@ public class Config extends Activity  {
         public ContentValues getAttributes() {
             ContentValues cv = super.getAttributes();
             cv.put(Database.ACTIVITIES_VERB, VERB);
-            cv.put(Database.ACTIVITIES_DESCRIPTION, "");
+            cv.put(Database.ACTIVITIES_DESCRIPTION, desc);
             cv.put(Database.ACTIVITIES_JSON, json.toString());
             return cv;
         }
