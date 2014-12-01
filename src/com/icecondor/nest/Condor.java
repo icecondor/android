@@ -26,6 +26,7 @@ import com.icecondor.nest.api.Client.States;
 import com.icecondor.nest.api.ClientActions;
 import com.icecondor.nest.db.Database;
 import com.icecondor.nest.db.Point;
+import com.icecondor.nest.db.activity.Config;
 import com.icecondor.nest.db.activity.Connected;
 import com.icecondor.nest.db.activity.Connecting;
 import com.icecondor.nest.db.activity.Disconnected;
@@ -244,6 +245,7 @@ public class Condor extends Service {
             // transition to off
             stopRecording();
         }
+        db.append(new Config("recording", onOff ? "on" : "off"));
     }
 
     public void startRecording() {
