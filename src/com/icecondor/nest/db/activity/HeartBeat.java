@@ -13,10 +13,13 @@ public class HeartBeat extends Activity  {
     private final String description;
     private int batteryPercentage;
     private boolean power;
+    private long freeRam;
+    private long totalRam;
 
     public HeartBeat(String desc) {
         super(VERB);
         description = desc;
+        setMemory(Runtime.getRuntime());
     }
 
     @Override
@@ -50,4 +53,16 @@ public class HeartBeat extends Activity  {
         }
     }
 
+    public void setMemory(Runtime runTime) {
+        freeRam = runTime.freeMemory();
+        totalRam = runTime.totalMemory();
+        try {
+            JSONObject memory = new JSONObject();
+            memory.put("free", freeRam);
+            memory.put("total", totalRam);
+            json.put("memory", memory);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 }
