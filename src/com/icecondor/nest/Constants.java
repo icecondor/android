@@ -20,4 +20,5 @@ public class Constants {
     public static final String PREFERENCE_SOURCE_CELL = "source_cell";
     public static final String PREFERENCE_SOURCE_WIFI = "source_wifi";
     public static final String PREFERENCE_VERSION = "version_string";
+    public static final String PREFERENCE_LOGOUT = "logout_pref";
 }

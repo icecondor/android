@@ -130,6 +130,14 @@ public class Prefs {
         prefs.edit().putString(Main.PREF_KEY_AUTHENTICATED_USER_ID, userId).commit();
     }
 
+    public void setAuthenticatedEmail(String email) {
+        prefs.edit().putString(Main.PREF_KEY_AUTHENTICATED_EMAIL, email).commit();
+    }
+
+    public String getAuthenticatedEmail() {
+        return prefs.getString(Main.PREF_KEY_AUTHENTICATED_EMAIL, null);
+    }
+
     public void setAuthenticatedUsername(String username) {
         prefs.edit().putString(Main.PREF_KEY_AUTHENTICATED_USER_NAME, username).commit();
     }

@@ -30,6 +30,7 @@ public class SettingsFragment extends PreferenceFragment
                                    Constants.PREFERENCE_SOURCE_GPS,
                                    Constants.PREFERENCE_SOURCE_CELL,
                                    Constants.PREFERENCE_SOURCE_WIFI,
+                                   Constants.PREFERENCE_LOGOUT,
                                    Constants.PREFERENCE_VERSION
                                    };
 
@@ -49,7 +50,7 @@ public class SettingsFragment extends PreferenceFragment
         connectValidators();
 
         // logout is special
-        Preference logout = findPreference("logout_pref_notused");
+        Preference logout = findPreference(Constants.PREFERENCE_LOGOUT);
         logout.setOnPreferenceClickListener(this);
     }
 
@@ -126,6 +127,11 @@ public class SettingsFragment extends PreferenceFragment
         if(key.equals(Constants.PREFERENCE_VERSION)) {
             summary = Constants.VERSION;
         }
+        Log.d(Constants.APP_TAG, "prefSummary for "+key);
+        if(key.equals(Constants.PREFERENCE_LOGOUT)) {
+            summary = ((Main)getActivity()).prefs.getAuthenticatedEmail();
+        }
+        Log.d(Constants.APP_TAG, "prefSummary for "+key+" is "+summary);
         preference.setSummary(summary);
     }
 
@@ -155,7 +161,7 @@ public class SettingsFragment extends PreferenceFragment
     @Override
     public boolean onPreferenceClick(Preference preference) {
         Log.d(Constants.APP_TAG, "onPreferenceClick "+preference.getKey());
-        if(preference.getKey().equals("logout_pref_notused")) {
+        if(preference.getKey().equals(Constants.PREFERENCE_LOGOUT)) {
             ((Main)getActivity()).doLogout();
         }
         return false;

@@ -36,7 +36,7 @@ import com.icecondor.nest.ui.alist.SettingsFragment;
 abstract public class BaseActivity extends ActionBarActivity
                                    implements ServiceConnection,
                                               UiActions, OnItemClickListener {
-    protected Prefs prefs;
+    public Prefs prefs;
     private LocalBinder localBinder;
     protected Condor condor;
     protected Intent condorIntent;

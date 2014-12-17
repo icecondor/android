@@ -28,6 +28,7 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
     public static final String PREF_KEY_UNVERIFIED_TOKEN = "icecondor_unverified_token";
     public static final String PREF_KEY_AUTHENTICATION_TOKEN = "icecondor_authentication_token";
     public static String PREF_KEY_AUTHENTICATED_USER_ID = "icecondor_authenticated_user_id";
+    public static String PREF_KEY_AUTHENTICATED_EMAIL = "icecondor_authenticated_email";
     public static String PREF_KEY_AUTHENTICATED_USER_NAME = "icecondor_authenticated_user_name";
     private LoginFragment loginFragment;
     private LoginEmailFragment loginEmailFragment;
@@ -182,6 +183,7 @@ public class Main extends BaseActivity implements UiActions, OnEditorActionListe
                 if(user.has("username")) {
                     db.updateUser(user);
                     prefs.setAuthenticatedUsername(user.getString("username"));
+                    prefs.setAuthenticatedEmail(user.getString("email"));
                     condor.disconnect(); // auth management hack
                     condor.clearHistory();
                     if(prefs.isOnOff()){
