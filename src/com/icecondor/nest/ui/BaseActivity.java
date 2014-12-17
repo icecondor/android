@@ -50,8 +50,7 @@ abstract public class BaseActivity extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(Constants.APP_TAG, "BaseActivity("+this.getClass().getName()+"): onCreate");
-        Log.d(Constants.APP_TAG, "BaseActivity("+this.getClass().getName()+"): data "+getIntent().getData());
+        Log.d(Constants.APP_TAG, "BaseActivity("+this.getClass().getName()+"): onCreate data "+getIntent().getData());
         prefs = new Prefs(this);
         condorIntent = new Intent(this, Condor.class);
         handler = new Handler();
