@@ -427,7 +427,7 @@ public class Condor extends Service {
             this.callback = null;
         }
         public boolean hasHandler() {
-            if(handler != null) {
+            if(handler != null && callback != null) {
                 return true;
             } else {
                 return false;
