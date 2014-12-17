@@ -103,6 +103,9 @@ public class Prefs {
         editor.putBoolean(Constants.PREFERENCE_SOURCE_CELL, true);
         editor.putBoolean(Constants.PREFERENCE_SOURCE_WIFI, true);
 
+        /* Advanced */
+        editor.putBoolean(Constants.PREFERENCE_PERSISTENT_RECONNECT, false);
+
         editor.putBoolean(KEY_CONFIGURED, true);
         editor.commit();
     }
@@ -179,4 +182,11 @@ public class Prefs {
         prefs.edit().remove(Main.PREF_KEY_AUTHENTICATION_TOKEN).commit();
     }
 
+    public boolean isPersistentReconnect() {
+        return prefs.getBoolean(Constants.PREFERENCE_PERSISTENT_RECONNECT, false);
+    }
+
+    public void setPersistentReconnect(boolean b) {
+        prefs.edit().putBoolean(Constants.PREFERENCE_PERSISTENT_RECONNECT, b).commit();
+    }
 }

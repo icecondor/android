@@ -47,12 +47,18 @@
                 android:inputType="textUri"
         />
 
+        <CheckBoxPreference
+                android:key="persistent_reconnect"
+                android:title="Persistent Reconnect"
+                android:summary="Maintain idle connection" />
+
         <Preference
             android:key="version_string"
             android:title="Version"
             />
         
     </PreferenceCategory>
+    
     <PreferenceCategory
             android:title="Authentication">
         <Preference
