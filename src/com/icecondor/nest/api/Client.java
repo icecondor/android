@@ -29,7 +29,7 @@ public class Client implements ConnectCallbacks {
     private final AsyncHttpClient client;
     private final ClientActions actions;
     private boolean reconnect = true;
-    private static final int RECONNECT_WAIT_MS = 5000;
+    private static final int RECONNECT_WAIT_BASE = 2;
     private int reconnects = 0;
     private final Handler handler;
     private Future<WebSocket> websocketFuture;
@@ -97,8 +97,10 @@ public class Client implements ConnectCallbacks {
         actions.onConnectTimeout();
         if(reconnect) {
             reconnects += 1;
-            long waitMillis = exponentialBackoffTime(reconnects);
-            Log.d(Constants.APP_TAG, "api.Client connect: onTimeout. reconnects = "+reconnects+". next try "+(waitMillis/1000)+"s.");
+            long waitMillis = exponentialBackoffTimeMs(reconnects);
+            Log.d(Constants.APP_TAG, "api.Client connect: onTimeout. "+
+                                     "reconnects = "+reconnects+". "+
+                                     "next try "+(waitMillis/1000)+"s.");
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -108,8 +110,9 @@ public class Client implements ConnectCallbacks {
         }
     }
 
-    private long exponentialBackoffTime(int reconnects) {
-        return (long)Math.pow(RECONNECT_WAIT_MS/1000,reconnects);
+    private long exponentialBackoffTimeMs(int reconnects) {
+        double secs = Math.min(Math.pow(RECONNECT_WAIT_BASE,reconnects), 60*60);
+        return (long)(secs*1000);
     }
 
     /* ConnectCallbacks */
