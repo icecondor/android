@@ -152,6 +152,7 @@ public class Prefs {
     public void clearAuthenticatedUser() {
         prefs.edit().remove(Main.PREF_KEY_AUTHENTICATED_USER_ID).commit();
         prefs.edit().remove(Main.PREF_KEY_AUTHENTICATED_USER_NAME).commit();
+        prefs.edit().remove(Main.PREF_KEY_AUTHENTICATED_EMAIL).commit();
     }
 
     public boolean isAuthenticatedUser() {
