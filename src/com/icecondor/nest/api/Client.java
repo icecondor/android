@@ -69,8 +69,8 @@ public class Client implements ConnectCallbacks {
         }
     }
 
-    public void startPersistentConnect() {
-        reconnect = true;
+    public void startPersistentConnect(boolean persistent) {
+        reconnect = persistent;
         connect();
     }
 
