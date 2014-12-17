@@ -20,9 +20,10 @@ import com.icecondor.nest.R;
 import com.icecondor.nest.ui.BaseActivity;
 import com.icecondor.nest.ui.UiActions;
 
-public class Main extends BaseActivity implements UiActions, CompoundButton.OnCheckedChangeListener {
+public class Main extends BaseActivity implements UiActions,
+                                                  CompoundButton.OnCheckedChangeListener {
 
-    CompoundButton onOff;
+    private CompoundButton onOff;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,5 +133,13 @@ public class Main extends BaseActivity implements UiActions, CompoundButton.OnCh
 
     public void resetApiUrl(URI url) {
         condor.resetApiUrl(url);
+    }
+
+    public void resetTimersAndConnection() {
+        // frequency changed. stop/start all the things
+        if(condor != null) {
+            condor.stopRecording();
+            condor.startRecording();
+        }
     }
 }

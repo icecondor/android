@@ -259,7 +259,7 @@ public class Condor extends Service {
         }
     }
 
-    protected void stopRecording() {
+    public void stopRecording() {
         stopApi();
         stopGpsMonitor();
         stopNetworkMonitor();

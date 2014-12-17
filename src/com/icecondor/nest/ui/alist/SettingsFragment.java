@@ -145,6 +145,9 @@ public class SettingsFragment extends PreferenceFragment
                 URI apiUrl = URI.create(sharedPreferences.getString(Constants.PREFERENCE_API_URL, null));
                 ((Main)getActivity()).resetApiUrl(apiUrl);
             }
+            if(key.equals(Constants.PREFERENCE_RECORDING_FREQUENCY_SECONDS)){
+                ((Main)getActivity()).resetTimersAndConnection();
+            }
             refreshSummary(key);
         }
     }

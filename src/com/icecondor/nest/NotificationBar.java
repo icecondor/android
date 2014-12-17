@@ -44,4 +44,13 @@ public class NotificationBar {
                .setPriority(NotificationCompat.PRIORITY_LOW)
                .build();
     }
+
+    // old code, doesnt flash the way it used to
+    public void flashText(String msg) {
+        Notification notification = new Notification(R.drawable.ic_notification, msg,
+                System.currentTimeMillis());
+        notification.setLatestEventInfo(ctx, "IceCondor Notice", msg, contentIntent);
+        notificationManager.notify(2, notification);
+        notificationManager.cancel(2);
+    }
 }
