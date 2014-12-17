@@ -3,23 +3,25 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:paddingTop="5sp"
+        android:paddingBottom="5sp"
      >
 
     <ImageView
         android:id="@+id/drawer_row_icon"
         android:layout_width="30sp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="3sp" 
+        android:layout_gravity="center"
         />
 
     <TextView
         android:id="@+id/drawer_row_name"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:textColor="#ffffff"
         android:textSize="20sp"
         android:layout_marginLeft="2sp"
-        android:layout_marginTop="3sp"
-         />
+        />
 
 </LinearLayout>
