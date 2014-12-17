@@ -174,7 +174,7 @@ public class Condor extends Service {
 
     protected void startGpsMonitor() {
         int seconds = prefs.getRecordingFrequencyInSeconds();
-        Log.d(Constants.APP_TAG,"condor requesting GPS updates every "+seconds+" sec");
+        Log.d(Constants.APP_TAG,"condor requesting GPS updates every "+seconds/60+" minutes");
         locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
                 seconds*1000,
@@ -188,7 +188,7 @@ public class Condor extends Service {
 
     protected void startNetworkMonitor() {
         int seconds = prefs.getRecordingFrequencyInSeconds();
-        Log.d(Constants.APP_TAG,"condor requesting NETWORK updates every "+seconds+" sec");
+        Log.d(Constants.APP_TAG,"condor requesting NETWORK updates every "+seconds/60+" minutes");
         locationManager.requestLocationUpdates(
                 LocationManager.NETWORK_PROVIDER,
                 seconds*1000,
@@ -245,7 +245,15 @@ public class Condor extends Service {
             // transition to off
             stopRecording();
         }
-        db.append(new Config("recording", onOff ? "on" : "off"));
+        configChange("recording", onOff);
+    }
+
+    public void configChange(String key, boolean value) {
+        configChange(key, value ? "on" : "off");
+    }
+
+    public void configChange(String key, String value) {
+        db.append(new Config(key, value));
     }
 
     public void startRecording() {
