@@ -288,25 +288,21 @@ public class Condor extends Service {
     }
 
     public void pushActivities() {
-        if(clientAuthenticated) {
-            Cursor unsynced = db.ActivitiesUnsynced();
-            int count = unsynced.getCount();
-            Log.d(Constants.APP_TAG, "condor pushActivities unsynced count "+count);
-            if(count > 0) {
-                unsynced.moveToFirst();
-                String json = unsynced.getString(unsynced.getColumnIndex(Database.ACTIVITIES_JSON));
-                JSONObject activity;
-                try {
-                    activity = new JSONObject(json);
-                    int rowId = unsynced.getInt(unsynced.getColumnIndex(Database.ROW_ID));
-                    String apiId = api.activityAdd(activity);
-                    activityApiQueue.put(apiId, rowId);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+        Cursor unsynced = db.ActivitiesUnsynced();
+        int count = unsynced.getCount();
+        Log.d(Constants.APP_TAG, "condor pushActivities unsynced count "+count);
+        if(count > 0) {
+            unsynced.moveToFirst();
+            String json = unsynced.getString(unsynced.getColumnIndex(Database.ACTIVITIES_JSON));
+            JSONObject activity;
+            try {
+                activity = new JSONObject(json);
+                int rowId = unsynced.getInt(unsynced.getColumnIndex(Database.ROW_ID));
+                String apiId = api.activityAdd(activity);
+                activityApiQueue.put(apiId, rowId);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        } else {
-            Log.d(Constants.APP_TAG, "condor pushActivities ignored, no authentication");
         }
     }
 
@@ -415,6 +411,12 @@ public class Condor extends Service {
                 Log.d(Constants.APP_TAG, "condor: onMessageTimeout. disconnecting");
                 db.append(new Disconnected("onMessageTimeout #"+id));
                 api.disconnect();
+                if(isRecording()) {
+                    if(prefs.isPersistentReconnect() || isUnsyncedPriorityWaiting()) {
+                        Log.d(Constants.APP_TAG, "condor onMessageTimeout. reconnecting.");
+                        api.reconnect();
+                    }
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }

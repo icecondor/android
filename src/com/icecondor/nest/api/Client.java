@@ -81,11 +81,11 @@ public class Client implements ConnectCallbacks {
     }
 
     public void stop() {
-        reconnects = 0;
         disconnect();
     }
 
     public void disconnect() {
+        reconnects = 0;
         apiQueue.clear();
         handler.removeCallbacks(reconnectRunnable);
         if(websocket != null) {
@@ -183,9 +183,7 @@ public class Client implements ConnectCallbacks {
         try {
             final String id = payload.getString("id");
             apiQueue.add(id);
-            if(state == States.CONNECTED) {
-                websocket.send(payload.toString());
-            }
+            websocket.send(payload.toString());
             apiTimer.schedule(new TimerTask(){
                 @Override
                 public void run() {
