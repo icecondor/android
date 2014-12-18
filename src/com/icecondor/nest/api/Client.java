@@ -28,7 +28,6 @@ public class Client implements ConnectCallbacks {
     private final URI apiUrl;
     private final AsyncHttpClient client;
     private final ClientActions actions;
-    private boolean reconnect = true;
     private static final int RECONNECT_WAIT_BASE = 2;
     private int reconnects = 0;
     private final Handler handler;
@@ -37,8 +36,16 @@ public class Client implements ConnectCallbacks {
     private final Timer apiTimer;
     private final HashSet<String> apiQueue;
 
-    public enum States { WAITING, CONNECTING, CONNECTED};
+    public enum States { IDLE, WAITING, CONNECTING, CONNECTED };
     private States state;
+    private Runnable reconnectRunnable = new Runnable() {
+        @Override
+        public void run() {
+            Log.d(Constants.APP_TAG, "api.Client postDelayed firing.");
+            state = States.IDLE;
+            connect();
+        }
+    };
 
     public Client(URI serverURI, ClientActions actions) {
         this.apiUrl = serverURI;
@@ -46,17 +53,17 @@ public class Client implements ConnectCallbacks {
         handler = new Handler();
         this.client = AsyncHttpClient.getDefaultInstance();
         KoushiSocket.disableSSLCheck(client);
-        state = States.WAITING;
+        state = States.IDLE;
         apiTimer = new Timer("apiTimer");
         apiQueue = new HashSet<String>();
     }
 
     public void connect() {
         Log.d(Constants.APP_TAG, "client: connect(). state = "+state);
-        if(!isConnected()) {
+        if(state == States.IDLE) {
             state = States.CONNECTING;
             actions.onConnecting(apiUrl, reconnects);
-            // AndroidSync quirk, uses http urls
+            // AndroidAsync quirk, uses http urls
             String httpQuirkUrl = apiUrl.toString().replace("ws://", "http://").replace("wss://", "https://");
             AsyncHttpRequest get = new AsyncHttpGet(httpQuirkUrl);
             get.setTimeout(0);
@@ -65,7 +72,7 @@ public class Client implements ConnectCallbacks {
             }
             websocketFuture = client.websocket(get, null, new KoushiSocket(this));
         } else {
-            Log.d(Constants.APP_TAG, "client: ignoring connect(). connecting in progress.");
+            Log.d(Constants.APP_TAG, "client: ignoring connect(). State "+state);
         }
     }
 
@@ -73,22 +80,18 @@ public class Client implements ConnectCallbacks {
         return state == States.CONNECTED;
     }
 
-    public void startPersistentConnect(boolean persistent) {
-        reconnect = persistent;
-        connect();
-    }
-
     public void stop() {
-        reconnect = false;
         reconnects = 0;
         disconnect();
     }
 
     public void disconnect() {
         apiQueue.clear();
+        handler.removeCallbacks(reconnectRunnable);
         if(websocket != null) {
             websocket.close();
         }
+        state = States.IDLE;
     }
 
     public States getState() {
@@ -97,21 +100,18 @@ public class Client implements ConnectCallbacks {
 
     @Override
     public void onTimeout() {
-        state = States.WAITING;
+        state = States.IDLE;
         actions.onConnectTimeout();
-        if(reconnect) {
-            reconnects += 1;
-            long waitMillis = exponentialBackoffTimeMs(reconnects);
-            Log.d(Constants.APP_TAG, "api.Client connect: onTimeout. "+
-                                     "reconnects = "+reconnects+". "+
-                                     "next try "+(waitMillis/1000)+"s.");
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    connect();
-                }
-            }, waitMillis);
-        }
+    }
+
+    public void reconnect() {
+        reconnects += 1;
+        long waitMillis = exponentialBackoffTimeMs(reconnects);
+        Log.d(Constants.APP_TAG, "api.Client connect: onTimeout. "+
+                                 "reconnects = "+reconnects+". "+
+                                 "next try "+(waitMillis/1000)+"s.");
+        handler.postDelayed(reconnectRunnable , waitMillis);
+        state = States.WAITING;
     }
 
     private long exponentialBackoffTimeMs(int reconnects) {
@@ -150,14 +150,11 @@ public class Client implements ConnectCallbacks {
 
     @Override
     public void onDisconnected() {
-        Log.d(Constants.APP_TAG, "api.Client onDisconnected. reconnect is "+reconnect);
-        state = States.WAITING;
+        Log.d(Constants.APP_TAG, "api.Client onDisconnected.");
+        state = States.IDLE;
         reconnects = 0;
         actions.onDisconnected();
         apiQueue.clear();
-        if(reconnect) {
-            connect();
-        }
     }
 
     @Override

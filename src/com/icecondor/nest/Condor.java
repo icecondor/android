@@ -137,7 +137,7 @@ public class Condor extends Service {
 
     public void startApi() {
         notificationBar.updateText("Waiting for first location.");
-        api.startPersistentConnect(prefs.isPersistentReconnect());
+        api.connect();
     }
 
     public void stopApi() {
@@ -239,13 +239,14 @@ public class Condor extends Service {
         prefs.setOnOff(onOff);
         if(!oldOnOff && onOff) {
             // transition to on
+            configChange("recording", onOff);
             startRecording();
         }
         if(oldOnOff && !onOff) {
             // transition to off
+            configChange("recording", onOff);
             stopRecording();
         }
-        configChange("recording", onOff);
     }
 
     public void configChange(String key, boolean value) {
@@ -309,6 +310,10 @@ public class Condor extends Service {
         }
     }
 
+    public boolean isUnsyncedPriorityWaiting() {
+        return db.activitiesUnsyncedCount("location") > 0;
+    }
+
     /* Callbacks from network client */
     public class ApiActions implements ClientActions {
         @Override
@@ -334,10 +339,19 @@ public class Condor extends Service {
             clientAuthenticated = false;
             db.append(new Disconnected("socket closed"));
             binder.onDisconnected();
+            if(isRecording()) {
+                if(prefs.isPersistentReconnect() || isUnsyncedPriorityWaiting()) {
+                    Log.d(Constants.APP_TAG, "condor onDisconnected. reconnecting.");
+                    api.reconnect();
+                }
+            }
         }
         @Override
         public void onConnectTimeout() {
             binder.onConnectTimeout();
+            if(isRecording()) {
+                api.reconnect();
+            }
         }
         @Override
         public void onConnectException(Exception ex) {

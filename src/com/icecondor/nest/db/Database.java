@@ -124,6 +124,14 @@ public class Database {
                         null, null, ROW_ID+" desc", "");
     }
 
+    public int activitiesUnsyncedCount(String verb) {
+        Cursor cursor = db.query(Database.TABLE_ACTIVITIES, null,
+                        Database.ACTIVITIES_SYNCED_AT+" IS NULL and "+
+                        Database.ACTIVITIES_VERB+" = ?", new String[] {verb},
+                        null, null, ROW_ID+" desc", "");
+        return cursor.getCount();
+    }
+
     public void updateUser(JSONObject userJson) {
         User user = new User(userJson);
         db.insertWithOnConflict(Database.TABLE_USERS, null, user.getAttributes(),
