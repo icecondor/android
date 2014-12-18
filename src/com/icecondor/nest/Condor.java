@@ -50,7 +50,7 @@ public class Condor extends Service {
     private LocationManager locationManager;
     private GpsReceiver gpsReceiver;
     private CellReceiver cellReceiver;
-    private final HashMap<String, Integer> activityAddQueue = new HashMap<String, Integer>();
+    private final HashMap<String, Integer> activityApiQueue = new HashMap<String, Integer>();
     protected Handler apiThreadHandler;
     private NotificationBar notificationBar;
 
@@ -299,7 +299,7 @@ public class Condor extends Service {
                     activity = new JSONObject(json);
                     int rowId = unsynced.getInt(unsynced.getColumnIndex(Database.ROW_ID));
                     String apiId = api.activityAdd(activity);
-                    activityAddQueue.put(apiId, rowId);
+                    activityApiQueue.put(apiId, rowId);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -349,9 +349,9 @@ public class Condor extends Service {
             try {
                 if(msg.has("id")) {
                     apiId = msg.getString("id");
-                    if(activityAddQueue.containsKey(apiId)){
-                        int rowId = activityAddQueue.get(apiId);
-                        activityAddQueue.remove(apiId);
+                    if(activityApiQueue.containsKey(apiId)){
+                        int rowId = activityApiQueue.get(apiId);
+                        activityApiQueue.remove(apiId);
                         db.markActivitySynced(rowId);
                         binder.onNewActivity();
                         JSONObject actJson = db.activityJson(rowId);
