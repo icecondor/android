@@ -53,7 +53,7 @@ public class Client implements ConnectCallbacks {
 
     public void connect() {
         Log.d(Constants.APP_TAG, "client: connect(). state = "+state);
-        if(state != States.CONNECTED) {
+        if(!isConnected()) {
             state = States.CONNECTING;
             actions.onConnecting(apiUrl, reconnects);
             // AndroidSync quirk, uses http urls
@@ -67,6 +67,10 @@ public class Client implements ConnectCallbacks {
         } else {
             Log.d(Constants.APP_TAG, "client: ignoring connect(). connecting in progress.");
         }
+    }
+
+    public boolean isConnected() {
+        return state == States.CONNECTED;
     }
 
     public void startPersistentConnect(boolean persistent) {
