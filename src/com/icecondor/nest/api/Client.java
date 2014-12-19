@@ -183,7 +183,10 @@ public class Client implements ConnectCallbacks {
         try {
             final String id = payload.getString("id");
             apiQueue.add(id);
-            websocket.send(payload.toString());
+            if(state == States.CONNECTED) {
+                websocket.send(payload.toString());
+            }
+            // allow timer to fail, triggering reconnect
             apiTimer.schedule(new TimerTask(){
                 @Override
                 public void run() {
