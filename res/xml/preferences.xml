@@ -56,9 +56,30 @@
             android:key="version_string"
             android:title="Version"
             />
-        
+
     </PreferenceCategory>
-    
+
+    <PreferenceCategory
+        android:title="Enable Events">
+        <CheckBoxPreference
+                android:key="event_connect"
+                android:title="Connecting"
+                android:summary="on connection attempt" />
+        <CheckBoxPreference
+                android:key="event_connected"
+                android:title="Connected"
+                android:summary="on connection success" />
+        <CheckBoxPreference
+                android:key="event_disconnected"
+                android:title="Disconnected"
+                android:summary="on disconnection" />
+        <CheckBoxPreference
+                android:key="event_heartbeat"
+                android:title="Heartbeat"
+                android:summary="on each beat" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory
             android:title="Authentication">
         <Preference
