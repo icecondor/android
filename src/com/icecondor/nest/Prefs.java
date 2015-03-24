@@ -190,4 +190,21 @@ public class Prefs {
     public void setPersistentReconnect(boolean b) {
         prefs.edit().putBoolean(Constants.PREFERENCE_PERSISTENT_RECONNECT, b).commit();
     }
+
+    public boolean isEventConnecting() {
+        return prefs.getBoolean(Constants.PREFERENCE_EVENT_CONNECTING, false);
+    }
+
+    public boolean isEventConnected() {
+        return prefs.getBoolean(Constants.PREFERENCE_EVENT_CONNECTED, false);
+    }
+
+    public boolean isEventDisconnected() {
+        return prefs.getBoolean(Constants.PREFERENCE_EVENT_DISCONNECTED, false);
+    }
+
+    public boolean isEventHeartbeat() {
+        return prefs.getBoolean(Constants.PREFERENCE_EVENT_HEARTBEAT, false);
+    }
+
 }

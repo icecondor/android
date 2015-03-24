@@ -22,4 +22,9 @@ public class Constants {
     public static final String PREFERENCE_VERSION = "version_string";
     public static final String PREFERENCE_LOGOUT = "logout_pref";
     public static final String PREFERENCE_PERSISTENT_RECONNECT = "persistent_reconnect";
+    public static final String PREFERENCE_EVENT_CONNECTING = "event_connecting";
+    public static final String PREFERENCE_EVENT_CONNECTED = "event_connected";
+    public static final String PREFERENCE_EVENT_DISCONNECTED = "event_disconnected";
+    public static final String PREFERENCE_EVENT_HEARTBEAT= "event_heartbeat";
+
 }

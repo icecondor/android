@@ -62,7 +62,7 @@
     <PreferenceCategory
         android:title="Enable Events">
         <CheckBoxPreference
-                android:key="event_connect"
+                android:key="event_connecting"
                 android:title="Connecting"
                 android:summary="on connection attempt" />
         <CheckBoxPreference
