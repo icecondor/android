@@ -16,10 +16,12 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.icecondor.nest.Constants;
+import com.icecondor.nest.Prefs;
 
 public class Database {
     private final String DATABASE_NAME = "icecondor";
     private final OpenHelper dbHelper;
+    private Prefs prefs;
     public static final int DATABASE_VERSION = 1;
     public static final String ROW_ID = "_id";
     public static final String ROW_CREATED_AT = "created_at";
@@ -41,6 +43,7 @@ public class Database {
 
     public Database(Context context) {
         dbHelper = new OpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION);
+        prefs = new Prefs(context);
     }
 
     public Database open() throws SQLException {
@@ -96,9 +99,31 @@ public class Database {
             trimTable(obj.getTableName(), 900);
         }
         ContentValues cv = obj.getAttributes();
+        if(!isSyncEnabledFor(cv.getAsString(Database.ACTIVITIES_VERB))) {
+            String halfId = cv.getAsString(ACTIVITIES_UUID).substring(0,32)+"----";
+            cv.put(ACTIVITIES_UUID, halfId);
+            cv.put(ACTIVITIES_SYNCED_AT, DateTime.now().toString());
+        }
         Date now = new Date();
         Log.d(Constants.APP_TAG, ""+now+" Database append("+obj.getClass().getSimpleName()+") "+cv);
         db.insert(obj.getTableName(), null, cv);
+    }
+
+    private boolean isSyncEnabledFor(String verb) {
+        if(verb == "connecting") {
+            return prefs.isEventConnecting();
+        }
+        if(verb == "connected") {
+            return prefs.isEventConnected();
+        }
+        if(verb == "disconnected") {
+            return prefs.isEventDisconnected();
+        }
+        if(verb == "heartbeat") {
+            return prefs.isEventHeartbeat();
+        }
+        return true;
+
     }
 
     private void trimTable(String tableName, int i) {
