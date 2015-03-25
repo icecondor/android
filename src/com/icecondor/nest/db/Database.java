@@ -160,7 +160,7 @@ public class Database {
     public int activitiesUnsyncedCount(String verb) {
         Cursor cursor = db.rawQuery(
                 "select count(*) from "+Database.TABLE_ACTIVITIES+
-                "where "+ Database.ACTIVITIES_SYNCED_AT+" IS NULL and "+
+                " where "+ Database.ACTIVITIES_SYNCED_AT+" IS NULL and "+
                           Database.ACTIVITIES_VERB+" = ? order by "+ROW_ID+" desc",
                         new String[] {verb});
         cursor.moveToFirst();
