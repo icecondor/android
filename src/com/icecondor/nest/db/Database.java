@@ -143,18 +143,22 @@ public class Database {
         return cursor.getCount();
     }
 
-    public Cursor ActivitiesUnsynced() {
+    public Cursor activitiesLastUnsynced() {
         return db.query(Database.TABLE_ACTIVITIES, null,
                         Database.ACTIVITIES_SYNCED_AT+" IS NULL", null,
-                        null, null, ROW_ID+" desc", "");
+                        null, null, ROW_ID+" desc", "1");
     }
 
     public int activitiesUnsyncedCount(String verb) {
-        Cursor cursor = db.query(Database.TABLE_ACTIVITIES, null,
-                        Database.ACTIVITIES_SYNCED_AT+" IS NULL and "+
-                        Database.ACTIVITIES_VERB+" = ?", new String[] {verb},
-                        null, null, ROW_ID+" desc", "");
-        return cursor.getCount();
+        Cursor cursor = db.rawQuery(
+                "select count(*) from "+Database.TABLE_ACTIVITIES+
+                "where "+ Database.ACTIVITIES_SYNCED_AT+" IS NULL and "+
+                          Database.ACTIVITIES_VERB+" = ? order by "+ROW_ID+" desc",
+                        new String[] {verb});
+        cursor.moveToFirst();
+        int count= cursor.getInt(0);
+        cursor.close();
+        return count;
     }
 
     public void updateUser(JSONObject userJson) {

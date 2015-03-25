@@ -288,7 +288,7 @@ public class Condor extends Service {
     }
 
     public void pushActivities() {
-        Cursor unsynced = db.ActivitiesUnsynced();
+        Cursor unsynced = db.activitiesLastUnsynced();
         int count = unsynced.getCount();
         Log.d(Constants.APP_TAG, "condor pushActivities unsynced count "+count);
         if(count > 0) {
@@ -304,6 +304,7 @@ public class Condor extends Service {
                 e.printStackTrace();
             }
         }
+        unsynced.close();
     }
 
     public boolean isUnsyncedPriorityWaiting() {
