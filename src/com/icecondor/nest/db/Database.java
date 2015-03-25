@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
@@ -95,7 +96,7 @@ public class Database {
     }
 
     public void append(Sqlitable obj) {
-        if(rowCount(obj.getTableName()) > 1000) {
+        if(DatabaseUtils.queryNumEntries(db, obj.getTableName()) > 1000) {
             trimTable(obj.getTableName(), 900);
         }
         ContentValues cv = obj.getAttributes();
@@ -147,6 +148,13 @@ public class Database {
         return db.query(Database.TABLE_ACTIVITIES, null,
                         Database.ACTIVITIES_SYNCED_AT+" IS NULL", null,
                         null, null, ROW_ID+" desc", "1");
+    }
+
+    public Cursor activitiesLastUnsynced(String verb) {
+        return db.query(Database.TABLE_ACTIVITIES, null,
+                        Database.ACTIVITIES_SYNCED_AT+" IS NULL and "+
+                                Database.ACTIVITIES_VERB+" = ?",
+                        null, null, null, ROW_ID+" desc", "1");
     }
 
     public int activitiesUnsyncedCount(String verb) {
