@@ -136,7 +136,16 @@ public class Condor extends Service {
     }
 
     public void startApi() {
-        notificationBar.updateText("Waiting for first location.");
+        Cursor cursor = db.activitiesLastUnsynced("location");
+        long time;
+        if(cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            String synced_at = cursor.getString(cursor.getColumnIndex(Database.ACTIVITIES_SYNCED_AT));
+            time = DateTime.parse(synced_at).getMillis();
+        } else {
+            time = System.currentTimeMillis();
+        }
+        notificationBar.updateText("Waiting for first location.", time);
         api.connect();
     }
 

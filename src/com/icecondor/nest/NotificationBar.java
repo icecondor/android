@@ -23,7 +23,11 @@ public class NotificationBar {
     }
 
     public void updateText(String msg) {
-        ongoingNotification = buildNotification(msg);
+        updateText(msg, System.currentTimeMillis());
+    }
+
+    public void updateText(String msg, long when) {
+        ongoingNotification = buildNotification(msg, when);
         notificationManager.notify(1, ongoingNotification);
     }
 
@@ -31,7 +35,7 @@ public class NotificationBar {
         notificationManager.cancel(1);
     }
 
-    private Notification buildNotification(String msg) {
+    private Notification buildNotification(String msg, long when) {
         int icon = R.drawable.ic_notification;
         //Bitmap bitmap = BitmapFactory.decodeResource(ctx.getResources(), icon);
         return (new NotificationCompat.Builder(ctx))
@@ -42,6 +46,7 @@ public class NotificationBar {
                .setContentTitle("IceCondor")
                .setContentText(msg)
                .setPriority(NotificationCompat.PRIORITY_LOW)
+               .setWhen(when)
                .build();
     }
 
