@@ -447,6 +447,7 @@ public class Condor extends Service {
         }
         public void clearHandler() {
             Log.d(Constants.APP_TAG, "condor: localBinder: clearHandler ");
+            this.handler.removeCallbacksAndMessages(null);
             this.handler = null;
             this.callback = null;
         }
