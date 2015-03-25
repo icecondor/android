@@ -42,11 +42,27 @@ public class GpsLocation extends Activity {
         return point;
     }
 
+    public String providerNameNetworkSpecial(Point point) {
+        String provider = point.getProvider();
+        float accuracy = point.getAccuracy();
+        if(provider.equals("network")) {
+            if(accuracy < 200) {
+                return provider+"/wifi";
+            } else {
+                return provider+"/tower";
+            }
+        } else {
+            return provider;
+        }
+    }
+
     @Override
     public ContentValues getAttributes() {
         ContentValues cv = super.getAttributes();
         cv.put(Database.ACTIVITIES_VERB, VERB);
-        cv.put(Database.ACTIVITIES_DESCRIPTION, point.getProvider()+" accuracy "+(int)point.getAccuracy());
+        cv.put(Database.ACTIVITIES_DESCRIPTION, providerNameNetworkSpecial(point)+
+                                                " accuracy "+(int)point.getAccuracy()+
+                                                " meters");
         cv.put(Database.ACTIVITIES_JSON, json.toString());
         return cv;
     }
