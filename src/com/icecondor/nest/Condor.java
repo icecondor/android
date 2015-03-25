@@ -593,4 +593,8 @@ public class Condor extends Service {
         }
     }
 
+    // let the Alarm thread write using the open db handle
+    public Database getDb() {
+        return db;
+    }
 }
