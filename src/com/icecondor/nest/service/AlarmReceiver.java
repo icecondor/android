@@ -29,8 +29,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 Log.i(Constants.APP_TAG, "AlarmReceiver onReceive Warning Batt not valid");
             }
             condor.getDb().append(heartBeat);
-            ((Condor)context).binder.onNewActivity();
-            ((Condor)context).pushActivities();
+            condor.binder.onNewActivity();
         }
     }
 
