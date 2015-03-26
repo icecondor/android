@@ -17,6 +17,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.icecondor.nest.Constants;
+import com.icecondor.nest.Prefs;
 import com.icecondor.nest.R;
 
 public class SettingsFragment extends PreferenceFragment
@@ -30,6 +31,10 @@ public class SettingsFragment extends PreferenceFragment
                                    Constants.PREFERENCE_SOURCE_GPS,
                                    Constants.PREFERENCE_SOURCE_CELL,
                                    Constants.PREFERENCE_SOURCE_WIFI,
+                                   Constants.PREFERENCE_EVENT_CONNECTED,
+                                   Constants.PREFERENCE_EVENT_CONNECTING,
+                                   Constants.PREFERENCE_EVENT_DISCONNECTED,
+                                   Constants.PREFERENCE_EVENT_HEARTBEAT,
                                    Constants.PREFERENCE_LOGOUT,
                                    Constants.PREFERENCE_VERSION
                                    };
@@ -138,6 +143,7 @@ public class SettingsFragment extends PreferenceFragment
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Preference preference = getPreferenceScreen().findPreference(key);
+        Prefs prefs = new Prefs(sharedPreferences);
         if(preference != null) {
             if(key.equals(Constants.PREFERENCE_AUTOSTART)){
                 boolean onOff = sharedPreferences.getBoolean(Constants.PREFERENCE_AUTOSTART, false);
@@ -151,9 +157,17 @@ public class SettingsFragment extends PreferenceFragment
                 URI apiUrl = URI.create(sharedPreferences.getString(Constants.PREFERENCE_API_URL, null));
                 ((Main)getActivity()).resetApiUrl(apiUrl);
             }
-            if(key.equals(Constants.PREFERENCE_RECORDING_FREQUENCY_SECONDS)){
+            if(key.equals(Constants.PREFERENCE_RECORDING_FREQUENCY_SECONDS)) {
                 ((Main)getActivity()).resetTimersAndConnection();
+                ((Main)getActivity()).configChangeRecord("frequency", ""+prefs.getRecordingFrequencyInSeconds()/60);
             }
+            if(key.equals(Constants.PREFERENCE_SOURCE_GPS) ||
+                    key.equals(Constants.PREFERENCE_SOURCE_CELL) ||
+                    key.equals(Constants.PREFERENCE_SOURCE_WIFI) ){
+                ((Main)getActivity()).resetTimersAndConnection();
+                ((Main)getActivity()).configChangeRecord("source", "GPS: "+prefs.isGpsOn()+" Cell:"+prefs.isCellOn()+" Wifi:"+prefs.isWifiOn());
+            }
+
             refreshSummary(key);
         }
     }

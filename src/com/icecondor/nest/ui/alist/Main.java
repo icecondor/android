@@ -135,11 +135,14 @@ public class Main extends BaseActivity implements UiActions,
         condor.resetApiUrl(url);
     }
 
+    public void configChangeRecord(String key, String desc) {
+        condor.configChange(key, desc);
+    }
+
     public void resetTimersAndConnection() {
         // frequency changed. stop/start all the things
         if(condor != null) {
             condor.stopRecording();
-            condor.configChange("frequency", ""+prefs.getRecordingFrequencyInSeconds()/60);
             condor.startRecording();
         }
     }

@@ -23,6 +23,15 @@ public class Prefs {
 
     public Prefs(Context ctx) {
         prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        finishConstruct();
+    }
+
+    public Prefs(SharedPreferences sPrefs) {
+        prefs = sPrefs;
+        finishConstruct();
+    }
+
+    private void finishConstruct(){
         if(prefs.getBoolean(KEY_CONFIGURED, false) == false) {
             ensureDefaults();
         }
