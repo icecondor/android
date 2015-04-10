@@ -111,6 +111,7 @@ public class Condor extends Service {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         gpsReceiver = new GpsReceiver(this);
         cellReceiver = new CellReceiver(this);
+        restoreLastLocation();
 
         /* Notification Bar */
         notificationBar = new NotificationBar(this);
@@ -136,14 +137,11 @@ public class Condor extends Service {
     }
 
     public void startApi() {
-        Cursor cursor = db.activitiesLastUnsynced("location");
         long time;
-        if(cursor.getCount() > 0) {
-            cursor.moveToFirst();
-            String synced_at = cursor.getString(cursor.getColumnIndex(Database.ACTIVITIES_SYNCED_AT));
-            time = DateTime.parse(synced_at).getMillis();
-        } else {
+        if(lastLocation == null) {
             time = System.currentTimeMillis();
+        } else {
+        	time = lastLocation.getDateTime().getMillis();
         }
         notificationBar.updateText("Waiting for first location.", time);
         api.connect();
@@ -586,7 +584,8 @@ public class Condor extends Service {
 
     /* Location callbacks */
     public void onLocationChanged(Point point) {
-        db.append(new GpsLocation(point));
+    	lastLocation = new GpsLocation(point);
+        db.append(lastLocation);
         pushActivities();
         binder.onNewActivity();
     }
@@ -606,5 +605,27 @@ public class Condor extends Service {
     // let the Alarm thread write using the open db handle
     public Database getDb() {
         return db;
+    }
+
+    public GpsLocation getLastLocation() {
+    	return lastLocation;
+    }
+
+    public void restoreLastLocation() {
+    	if(lastLocation == null) {
+            Cursor cursor = db.activitiesLast("location");
+            if(cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                try {
+					lastLocation = new GpsLocation(db.rowToJson(cursor));
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+            }    		
+    	}
+    }
+    public boolean isDataActive(int networkType) {
+    	NetworkInfo netInfo = connectivityManager.getNetworkInfo(networkType);
+    	return netInfo.isConnected();
     }
 }

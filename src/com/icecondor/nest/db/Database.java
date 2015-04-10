@@ -188,17 +188,17 @@ public class Database {
                               ROW_ID+" = ?", new String[]{Integer.toString(id)});
     }
 
-    public JSONObject activityJson(int rowId) {
+    public JSONObject activityJson(int rowId) throws JSONException {
         Cursor c = db.query(Database.TABLE_ACTIVITIES, null,
                         ROW_ID +" is ?", new String[] {String.valueOf(rowId)},
                         null, null, ROW_ID+" desc", "");
         if(c.moveToFirst()) {
-            try {
-                return new JSONObject(c.getString(c.getColumnIndex(Database.ACTIVITIES_JSON)));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            return rowToJson(c);
         }
         return null;
     }
+
+	public JSONObject rowToJson(Cursor c) throws JSONException {
+	    return new JSONObject(c.getString(c.getColumnIndex(Database.ACTIVITIES_JSON)));
+	}
 }

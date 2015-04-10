@@ -15,7 +15,7 @@ public class GpsLocation extends Activity {
     private final Point point;
 
     public GpsLocation(JSONObject json) throws JSONException {
-        super(VERB);
+        super(json);
         Location location = new Location(json.getString("provider"));
         location.setLatitude(json.getDouble("latitude"));
         location.setLongitude(json.getDouble("longitude"));
