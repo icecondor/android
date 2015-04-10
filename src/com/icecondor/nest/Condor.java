@@ -276,6 +276,7 @@ public class Condor extends Service {
         startAlarm();
         if(prefs.isGpsOn()) {
             //startGpsMonitor();
+        	gpsOneShot();
         }
         if(prefs.isCellOn() || prefs.isWifiOn()) {
             startNetworkMonitor();
@@ -595,6 +596,10 @@ public class Condor extends Service {
         db.append(lastLocation);
         pushActivities();
         binder.onNewActivity();
+        // stop trying GPS after successful non-GPS point
+        if(!point.getProvider().equals(LocationManager.GPS_PROVIDER)) {
+        	locationManager.removeUpdates(gpsReceiver);
+        }
     }
 
     public String updateUsername(String username) {
