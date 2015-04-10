@@ -113,6 +113,9 @@ public class Condor extends Service {
         cellReceiver = new CellReceiver(this);
         restoreLastLocation();
 
+        /* Connection Manager */
+        connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+
         /* Notification Bar */
         notificationBar = new NotificationBar(this);
 
@@ -193,6 +196,10 @@ public class Condor extends Service {
         locationManager.removeUpdates(gpsReceiver);
     }
 
+    public void gpsOneShot() {
+    	locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, gpsReceiver, null);
+    }
+    
     protected void startNetworkMonitor() {
         int seconds = prefs.getRecordingFrequencyInSeconds();
         Log.d(Constants.APP_TAG,"condor requesting NETWORK updates every "+seconds/60+" minutes");
@@ -268,7 +275,7 @@ public class Condor extends Service {
         startApi();
         startAlarm();
         if(prefs.isGpsOn()) {
-            startGpsMonitor();
+            //startGpsMonitor();
         }
         if(prefs.isCellOn() || prefs.isWifiOn()) {
             startNetworkMonitor();
