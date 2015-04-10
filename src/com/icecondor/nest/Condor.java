@@ -16,8 +16,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.location.LocationManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -55,8 +53,6 @@ public class Condor extends Service {
     private final HashMap<String, Integer> activityApiQueue = new HashMap<String, Integer>();
     protected Handler apiThreadHandler;
     private NotificationBar notificationBar;
-    private GpsLocation lastLocation;
-	private ConnectivityManager connectivityManager;
 
     @Override
     public void onCreate() {
