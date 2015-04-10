@@ -9,6 +9,8 @@ import android.util.Log;
 
 import com.icecondor.nest.Condor;
 import com.icecondor.nest.Constants;
+import com.icecondor.nest.Prefs;
+import com.icecondor.nest.db.activity.GpsLocation;
 import com.icecondor.nest.db.activity.HeartBeat;
 
 public class AlarmReceiver extends BroadcastReceiver {
@@ -30,6 +32,17 @@ public class AlarmReceiver extends BroadcastReceiver {
             }
             condor.getDb().append(heartBeat);
             condor.binder.onNewActivity();
+            GpsLocation lastLocation = condor.getLastLocation();
+            if(lastLocation != null) {
+                Prefs prefs = new Prefs(context);
+            	long elapsed = System.currentTimeMillis() - lastLocation.getPoint().getTime();
+                int seconds = prefs.getRecordingFrequencyInSeconds();
+            	if(elapsed/1000 > seconds) {
+            		if(prefs.isGpsOn()) {
+            			condor.gpsOneShot();
+            		}
+            	}
+            }
         }
     }
 

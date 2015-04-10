@@ -157,6 +157,12 @@ public class Database {
                         null, null, null, ROW_ID+" desc", "1");
     }
 
+    public Cursor activitiesLast(String verb) {
+        return db.query(Database.TABLE_ACTIVITIES, null,
+                        Database.ACTIVITIES_VERB+" = ?",
+                        null, null, null, ROW_ID+" desc", "1");
+    }
+
     public int activitiesUnsyncedCount(String verb) {
         Cursor cursor = db.rawQuery(
                 "select count(*) from "+Database.TABLE_ACTIVITIES+
