@@ -15,12 +15,11 @@ import android.util.Log;
 import com.icecondor.nest.Constants;
 
 public class Activity implements Sqlitable {
-    protected final JSONObject json;
+    protected final JSONObject json = new JSONObject();
     protected final String id;
     protected final DateTime date;
 
     public Activity(String type) {
-        json = new JSONObject();
         id = UUID.randomUUID().toString();
         date = new DateTime(DateTimeZone.UTC);
         try {
@@ -32,6 +31,22 @@ public class Activity implements Sqlitable {
             e.printStackTrace();
         }
     }
+    
+	public Activity(JSONObject ijson) throws JSONException {
+		if(ijson.getString("class").equals(getClass().getName())) {
+			id = ijson.getString("id");
+			date = DateTime.parse(ijson.getString("date"));
+	
+			json.put("id", id);
+			json.put("class", ijson.getString("class"));
+			json.put("date", date);
+			json.put("type", ijson.getString("type"));
+		} else {
+			throw new RuntimeException("Incompatible JSON for "+getClass().getName());
+		}
+	}
+    
+    public DateTime getDateTime() { return date; }
 
     @Override
     public String getTableName() {
