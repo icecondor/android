@@ -56,7 +56,7 @@ public class ActivityListFragment extends Fragment {
                          R.id.activity_row_date,
                          R.id.activity_row_action,
                          R.id.activity_row_description,
-                         R.id.activity_row_uuid};
+                         R.id.activity_row_header};
         db = new Database(getActivity());
         sCursorAdapter = new SimpleCursorAdapter(getActivity(),
                                                       R.layout.activity_row,
@@ -90,7 +90,7 @@ public class ActivityListFragment extends Fragment {
                 if(time.isAfter(DateTime.now().minusDays(1))) {
                     format = "h:mm:ssa";
                 }
-                String displayTime = time.toString(format);
+                String displayTime = time.toString(format).toLowerCase();
                 ((TextView)view).setText(displayTime);
                 return true;
             }
@@ -104,13 +104,13 @@ public class ActivityListFragment extends Fragment {
             int uuidIndex = cursor.getColumnIndex(Database.ACTIVITIES_UUID);
             if(dbColumnIndex == uuidIndex) {
                 String shortUuid = "#"+cursor.getString(uuidIndex).substring(32);
-                TextView uuidView = ((TextView)view);
-                uuidView.setText(shortUuid);
+                //TextView uuidView = ((TextView)view);
+                //uuidView.setText(shortUuid);
                 String syncedAt = cursor.getString(cursor.getColumnIndex(Database.ACTIVITIES_SYNCED_AT));
                 if(syncedAt == null) {
-                    uuidView.setTextColor(Color.GRAY);
+                    view.setBackgroundColor(Color.rgb(250,250,250));
                 } else {
-                    uuidView.setTextColor(Color.GREEN);
+                    view.setBackgroundColor(Color.rgb(200,200,200));
                 }
                 return true;
             }

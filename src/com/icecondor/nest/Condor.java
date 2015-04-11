@@ -344,7 +344,7 @@ public class Condor extends Service {
         }
         @Override
         public void onConnected() {
-            db.append(new Connected());
+            db.append(new Connected("server connected"));
             binder.onConnected();
             if(prefs.isAuthenticatedUser()){
                 authApiCall = api.accountAuthSession(prefs.getAuthenticationToken(), getDeviceID());
