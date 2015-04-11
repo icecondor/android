@@ -114,6 +114,10 @@ public class Prefs {
 
         /* Advanced */
         editor.putBoolean(Constants.PREFERENCE_PERSISTENT_RECONNECT, false);
+        editor.putBoolean(Constants.PREFERENCE_EVENT_CONNECTING, false);
+        editor.putBoolean(Constants.PREFERENCE_EVENT_CONNECTED, false);
+        editor.putBoolean(Constants.PREFERENCE_EVENT_DISCONNECTED, false);
+        editor.putBoolean(Constants.PREFERENCE_EVENT_HEARTBEAT, true);
 
         editor.putBoolean(KEY_CONFIGURED, true);
         editor.commit();
