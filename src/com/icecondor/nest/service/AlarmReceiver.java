@@ -24,8 +24,9 @@ public class AlarmReceiver extends BroadcastReceiver {
         if (action.equals(Constants.ACTION_WAKE_ALARM)) {
             Log.i(Constants.APP_TAG, "AlarmReceiver onReceive "+
                      context.getClass().getSimpleName()+" now "+new Date());
-            HeartBeat heartBeat = new HeartBeat("3g:"+condor.isDataActive(ConnectivityManager.TYPE_MOBILE)
-            		                            +" wifi:"+condor.isDataActive(ConnectivityManager.TYPE_WIFI));
+            HeartBeat heartBeat = new HeartBeat("");
+            heartBeat.setCellData(condor.isDataActive(ConnectivityManager.TYPE_MOBILE));
+            heartBeat.setWifiData(condor.isDataActive(ConnectivityManager.TYPE_WIFI));
             if(condor.isBatteryValid()){
                 heartBeat.setBatteryPercentage(condor.getBattPercent());
                 heartBeat.setPower(condor.getBattAc());

@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.ContentValues;
+import android.provider.ContactsContract.DataUsageFeedback;
 
 import com.icecondor.nest.db.Activity;
 import com.icecondor.nest.db.Database;
@@ -65,4 +66,20 @@ public class HeartBeat extends Activity  {
             e.printStackTrace();
         }
     }
+
+	public void setCellData(boolean dataActive) {
+		try {
+			json.put("celldata", dataActive);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void setWifiData(boolean dataActive) {
+		try {
+			json.put("wifidata", dataActive);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
 }
