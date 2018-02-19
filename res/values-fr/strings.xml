@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">IceCondor</string>
+    <string name="action_settings">Paramètres</string>
+
+    <string name="drawer_open">Ouvrir</string>
+    <string name="drawer_closed">Fermé</string>
+    <!--  Strings for possible PreferenceActivity Back/Next buttons -->
+    <string name="back_button_label">Précédent</string>
+    <string name="next_button_label">Suivant</string>
+
+    <!-- Optional button to Skip a PreferenceActivity [CHAR LIMIT=20] -->
+    <string name="skip_button_label">Passer</string>
+
+    <string name="username_description">Veuillez choisir un nom d'utilisateur. Il permettra d'identifier votre compte sans révéler votre adresse e-mail.</string>
+</resources>
