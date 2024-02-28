@@ -1,10 +1,9 @@
-package com.icecondor.nest;
+package com.icecondor.hawk;
 
 import java.net.URI;
 import java.util.HashMap;
 import java.util.UUID;
 
-import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -60,7 +59,7 @@ public class Condor extends Service {
 	
     @Override
     public void onCreate() {
-        Log.d(Constants.APP_TAG, "** Condor onCreate "+new DateTime()+" **");
+        Log.d(Constants.APP_TAG, "** Condor onCreate "+ java.time.LocalDateTime.now() +" **");
     }
 
     @Override
