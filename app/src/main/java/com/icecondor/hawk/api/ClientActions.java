@@ -1,4 +1,4 @@
-package com.icecondor.nest.api;
+package com.icecondor.hawk.api;
 
 import java.net.URI;
 

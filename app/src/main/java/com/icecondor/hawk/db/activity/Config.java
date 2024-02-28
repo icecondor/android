@@ -1,11 +1,11 @@
-package com.icecondor.nest.db.activity;
+package com.icecondor.hawk.db.activity;
 
 import org.json.JSONException;
 
 import android.content.ContentValues;
 
-import com.icecondor.nest.db.Activity;
-import com.icecondor.nest.db.Database;
+import com.icecondor.hawk.db.Activity;
+import com.icecondor.hawk.db.Database;
 
 public class Config extends Activity  {
         private static final String VERB = "config";

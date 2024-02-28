@@ -1,11 +1,11 @@
-package com.icecondor.nest.db;
+package com.icecondor.hawk.db;
 
 import java.util.Date;
 
-import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -16,8 +16,8 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.icecondor.nest.Constants;
-import com.icecondor.nest.Prefs;
+import com.icecondor.hawk.Constants;
+import com.icecondor.hawk.Prefs;
 
 public class Database {
     private final String DATABASE_NAME = "icecondor";
@@ -103,7 +103,7 @@ public class Database {
         if(!isSyncEnabledFor(cv.getAsString(Database.ACTIVITIES_VERB))) {
             String halfId = cv.getAsString(ACTIVITIES_UUID).substring(0,32)+"----";
             cv.put(ACTIVITIES_UUID, halfId);
-            cv.put(ACTIVITIES_SYNCED_AT, DateTime.now().toString());
+            cv.put(ACTIVITIES_SYNCED_AT, java.time.LocalDateTime.now().toString());
         }
         Date now = new Date();
         Log.d(Constants.APP_TAG, ""+now+" Database append("+obj.getClass().getSimpleName()+") "+cv);
@@ -131,7 +131,7 @@ public class Database {
         Cursor cursor = db.query(tableName, new String[] {ROW_ID},
                                  null, null, null, null, ROW_ID+" asc", ""+i);
         cursor.moveToFirst();
-        long firstRowId = cursor.getLong(cursor.getColumnIndex(ROW_ID));
+        @SuppressLint("Range") long firstRowId = cursor.getLong(cursor.getColumnIndex(ROW_ID));
         db.delete(tableName, ROW_ID+" < ?", new String[] {""+firstRowId});
     }
 
@@ -183,7 +183,7 @@ public class Database {
 
     public void markActivitySynced(int id) {
         ContentValues cv = new ContentValues();
-        cv.put(ACTIVITIES_SYNCED_AT, DateTime.now().toString());
+        cv.put(ACTIVITIES_SYNCED_AT, java.time.LocalDateTime.now().toString());
         int rows = db.update(TABLE_ACTIVITIES, cv,
                               ROW_ID+" = ?", new String[]{Integer.toString(id)});
     }
@@ -198,7 +198,8 @@ public class Database {
         return null;
     }
 
-	public JSONObject rowToJson(Cursor c) throws JSONException {
+	@SuppressLint("Range")
+    public JSONObject rowToJson(Cursor c) throws JSONException {
 	    return new JSONObject(c.getString(c.getColumnIndex(Database.ACTIVITIES_JSON)));
 	}
 }

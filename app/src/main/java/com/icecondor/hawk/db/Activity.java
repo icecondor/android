@@ -1,4 +1,4 @@
-package com.icecondor.nest.db;
+package com.icecondor.hawk.db;
 
 import java.security.InvalidParameterException;
 import java.util.UUID;
@@ -12,7 +12,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.util.Log;
 
-import com.icecondor.nest.Constants;
+import com.icecondor.hawk.Constants;
 
 public class Activity implements Sqlitable {
     protected final JSONObject json = new JSONObject();

@@ -13,6 +13,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -22,21 +23,23 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.icecondor.nest.api.Client;
-import com.icecondor.nest.api.Client.States;
-import com.icecondor.nest.api.ClientActions;
-import com.icecondor.nest.db.Database;
-import com.icecondor.nest.db.Point;
-import com.icecondor.nest.db.activity.Config;
-import com.icecondor.nest.db.activity.Connected;
-import com.icecondor.nest.db.activity.Connecting;
-import com.icecondor.nest.db.activity.Disconnected;
-import com.icecondor.nest.db.activity.GpsLocation;
-import com.icecondor.nest.service.AlarmReceiver;
-import com.icecondor.nest.service.BatteryReceiver;
-import com.icecondor.nest.service.CellReceiver;
-import com.icecondor.nest.service.GpsReceiver;
-import com.icecondor.nest.ui.UiActions;
+import androidx.core.app.ActivityCompat;
+
+import com.icecondor.hawk.api.Client;
+import com.icecondor.hawk.api.Client.States;
+import com.icecondor.hawk.api.ClientActions;
+import com.icecondor.hawk.db.Database;
+import com.icecondor.hawk.db.Point;
+import com.icecondor.hawk.db.activity.Config;
+import com.icecondor.hawk.db.activity.Connected;
+import com.icecondor.hawk.db.activity.Connecting;
+import com.icecondor.hawk.db.activity.Disconnected;
+import com.icecondor.hawk.db.activity.GpsLocation;
+import com.icecondor.hawk.service.AlarmReceiver;
+import com.icecondor.hawk.service.BatteryReceiver;
+import com.icecondor.hawk.service.CellReceiver;
+import com.icecondor.hawk.service.GpsReceiver;
+import com.icecondor.hawk.ui.UiActions;
 
 public class Condor extends Service {
 
@@ -55,22 +58,22 @@ public class Condor extends Service {
     protected Handler apiThreadHandler;
     private NotificationBar notificationBar;
     private GpsLocation lastLocation;
-	private ConnectivityManager connectivityManager;
-	
+    private ConnectivityManager connectivityManager;
+
     @Override
     public void onCreate() {
-        Log.d(Constants.APP_TAG, "** Condor onCreate "+ java.time.LocalDateTime.now() +" **");
+        Log.d(Constants.APP_TAG, "** Condor onCreate " + java.time.LocalDateTime.now() + " **");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String start_reason = "started";
-        Log.d(Constants.APP_TAG, "Condor onStartCommand flags "+flags+" startId "+startId);
-        if(intent == null) {
+        Log.d(Constants.APP_TAG, "Condor onStartCommand flags " + flags + " startId " + startId);
+        if (intent == null) {
             Log.d(Constants.APP_TAG, "Condor null intent - restarted after kill");
             start_reason = "restarted";
         }
-        if(db == null) { /* init only once */
+        if (db == null) { /* init only once */
             handleCommand(intent);
         } else {
             start_reason += " (skipped init)";
@@ -83,14 +86,14 @@ public class Condor extends Service {
     }
 
     public void handleCommand(Intent intent) {
-        Log.d(Constants.APP_TAG, "Condor handleCommand "+intent);
+        Log.d(Constants.APP_TAG, "Condor handleCommand " + intent);
         Context ctx = getApplicationContext();
 
         /* Preferences */
         prefs = new Prefs(ctx);
 
         /* Database */
-        Log.d(Constants.APP_TAG, "Condor opening database. was "+db);
+        Log.d(Constants.APP_TAG, "Condor opening database. was " + db);
         db = new Database(ctx);
         db.open();
 
@@ -102,9 +105,9 @@ public class Condor extends Service {
         AlarmReceiver alarm_receiver = new AlarmReceiver();
         registerReceiver(alarm_receiver, new IntentFilter(Constants.ACTION_WAKE_ALARM));
         wake_alarm_intent = PendingIntent.getBroadcast(getApplicationContext(),
-                                                            0,
-                                                            new Intent(Constants.ACTION_WAKE_ALARM),
-                                                            0);
+                0,
+                new Intent(Constants.ACTION_WAKE_ALARM),
+                PendingIntent.FLAG_IMMUTABLE);
 
         /* Battery Monitor */
         batteryReceiver = new BatteryReceiver();
@@ -117,14 +120,14 @@ public class Condor extends Service {
         restoreLastLocation();
 
         /* Connection Manager */
-        connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
         /* Notification Bar */
         notificationBar = new NotificationBar(this);
 
         /* API */
         api = new Client(prefs.getApiUrl(), new ApiActions());
-        if(prefs.isAuthenticatedUser() && isRecording()) {
+        if (prefs.isAuthenticatedUser() && isRecording()) {
             Log.d(Constants.APP_TAG, "Condor isRecording is ON.");
             startRecording();
         }
@@ -132,8 +135,8 @@ public class Condor extends Service {
 
     private void ensureDeviceID() {
         String deviceId = getDeviceID();
-        if(deviceId == null) {
-            deviceId = "device-"+UUID.randomUUID();
+        if (deviceId == null) {
+            deviceId = "device-" + UUID.randomUUID();
             prefs.setDeviceId(deviceId);
         }
     }
@@ -144,10 +147,10 @@ public class Condor extends Service {
 
     public void startApi() {
         long time;
-        if(lastLocation == null) {
+        if (lastLocation == null) {
             time = System.currentTimeMillis();
         } else {
-        	time = lastLocation.getDateTime().getMillis();
+            time = lastLocation.getDateTime().getMillis();
         }
         notificationBar.updateText("Waiting for first location.", time);
         api.connect();
@@ -163,11 +166,11 @@ public class Condor extends Service {
         stopAlarm();
         int seconds = prefs.getRecordingFrequencyInSeconds();
         int minutes = seconds / 60;
-        Log.d(Constants.APP_TAG, "condor startAlarm at "+minutes+" minutes");
+        Log.d(Constants.APP_TAG, "condor startAlarm at " + minutes + " minutes");
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
-                        System.currentTimeMillis(),
-                        seconds*1000,
-                        wake_alarm_intent);
+                System.currentTimeMillis(),
+                seconds * 1000,
+                wake_alarm_intent);
     }
 
     protected void stopAlarm() {
@@ -187,28 +190,58 @@ public class Condor extends Service {
 
     protected void startGpsMonitor() {
         int seconds = prefs.getRecordingFrequencyInSeconds();
-        Log.d(Constants.APP_TAG,"condor requesting GPS updates every "+seconds/60+" minutes");
+        Log.d(Constants.APP_TAG, "condor requesting GPS updates every " + seconds / 60 + " minutes");
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
-                seconds*1000,
+                seconds * 1000,
                 0.0F, gpsReceiver);
     }
 
     protected void stopGpsMonitor() {
-        Log.d(Constants.APP_TAG,"condor unrequesting GPS updates");
+        Log.d(Constants.APP_TAG, "condor unrequesting GPS updates");
         locationManager.removeUpdates(gpsReceiver);
     }
 
     public void gpsOneShot() {
-    	locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, gpsReceiver, null);
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, gpsReceiver, null);
     }
-    
+
     protected void startNetworkMonitor() {
         int seconds = prefs.getRecordingFrequencyInSeconds();
-        Log.d(Constants.APP_TAG,"condor requesting NETWORK updates every "+seconds/60+" minutes");
+        Log.d(Constants.APP_TAG, "condor requesting NETWORK updates every " + seconds / 60 + " minutes");
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         locationManager.requestLocationUpdates(
                 LocationManager.NETWORK_PROVIDER,
-                seconds*1000,
+                seconds * 1000,
                 0.0F, cellReceiver);
     }
 

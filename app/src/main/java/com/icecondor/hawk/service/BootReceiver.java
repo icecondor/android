@@ -1,4 +1,4 @@
-package com.icecondor.nest.service;
+package com.icecondor.hawk.service;
 
 import java.util.Date;
 
@@ -7,8 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.icecondor.nest.Condor;
-import com.icecondor.nest.Constants;
+import com.icecondor.hawk.Condor;
+import com.icecondor.hawk.Constants;
 
 public class BootReceiver extends BroadcastReceiver {
     @Override

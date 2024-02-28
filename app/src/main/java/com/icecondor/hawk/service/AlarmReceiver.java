@@ -1,4 +1,4 @@
-package com.icecondor.nest.service;
+package com.icecondor.hawk.service;
 
 import java.util.Date;
 
@@ -8,11 +8,11 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.util.Log;
 
-import com.icecondor.nest.Condor;
-import com.icecondor.nest.Constants;
-import com.icecondor.nest.Prefs;
-import com.icecondor.nest.db.activity.GpsLocation;
-import com.icecondor.nest.db.activity.HeartBeat;
+import com.icecondor.hawk.Condor;
+import com.icecondor.hawk.Constants;
+import com.icecondor.hawk.Prefs;
+import com.icecondor.hawk.db.activity.GpsLocation;
+import com.icecondor.hawk.db.activity.HeartBeat;
 
 public class AlarmReceiver extends BroadcastReceiver {
     @Override

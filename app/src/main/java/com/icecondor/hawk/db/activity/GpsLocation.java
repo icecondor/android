@@ -1,4 +1,4 @@
-package com.icecondor.nest.db.activity;
+package com.icecondor.hawk.db.activity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -6,9 +6,9 @@ import org.json.JSONObject;
 import android.content.ContentValues;
 import android.location.Location;
 
-import com.icecondor.nest.db.Activity;
-import com.icecondor.nest.db.Database;
-import com.icecondor.nest.db.Point;
+import com.icecondor.hawk.db.Activity;
+import com.icecondor.hawk.db.Database;
+import com.icecondor.hawk.db.Point;
 
 public class GpsLocation extends Activity {
     private static final String VERB = "location";
