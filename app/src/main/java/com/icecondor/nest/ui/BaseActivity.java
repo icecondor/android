@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -23,16 +24,18 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toolbar;
 
+import com.icecondor.hawk.R;
 import com.icecondor.nest.Condor;
 import com.icecondor.nest.Condor.LocalBinder;
 import com.icecondor.nest.Constants;
 import com.icecondor.nest.Prefs;
-import com.icecondor.nest.R;
+
 import com.icecondor.nest.ui.alist.ActivityListFragment;
 import com.icecondor.nest.ui.alist.SettingsFragment;
 
-abstract public class BaseActivity extends ActionBarActivity
+abstract public class BaseActivity extends Activity
                                    implements ServiceConnection,
                                               UiActions, OnItemClickListener {
     public Prefs prefs;
