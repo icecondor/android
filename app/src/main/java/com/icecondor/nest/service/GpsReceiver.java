@@ -1,11 +1,11 @@
-package com.icecondor.hawk.service;
+package com.icecondor.nest.service;
 
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 
-import com.icecondor.hawk.Condor;
-import com.icecondor.hawk.db.Point;
+import com.icecondor.nest.Condor;
+import com.icecondor.nest.db.Point;
 
 public class GpsReceiver implements LocationListener {
     private final Condor condor;

@@ -1,4 +1,4 @@
-package com.icecondor.hawk.db;
+package com.icecondor.nest.db;
 
 import java.util.Date;
 
@@ -16,8 +16,8 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.icecondor.hawk.Constants;
-import com.icecondor.hawk.Prefs;
+import com.icecondor.nest.Constants;
+import com.icecondor.nest.Prefs;
 
 public class Database {
     private final String DATABASE_NAME = "icecondor";

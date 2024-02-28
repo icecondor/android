@@ -1,4 +1,4 @@
-package com.icecondor.hawk.db.activity;
+package com.icecondor.nest.db.activity;
 
 import android.content.ContentValues;
 

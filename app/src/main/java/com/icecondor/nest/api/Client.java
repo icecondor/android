@@ -1,4 +1,4 @@
-package com.icecondor.hawk.api;
+package com.icecondor.nest.api;
 
 import java.net.URI;
 import java.security.MessageDigest;

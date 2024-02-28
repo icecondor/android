@@ -1,4 +1,4 @@
-package com.icecondor.hawk.service;
+package com.icecondor.nest.service;
 
 import java.util.Date;
 
@@ -8,7 +8,7 @@ import android.content.Intent;
 import android.os.BatteryManager;
 import android.util.Log;
 
-import com.icecondor.hawk.Constants;
+import com.icecondor.nest.Constants;
 
 public class BatteryReceiver extends BroadcastReceiver {
     private int last_battery_level;

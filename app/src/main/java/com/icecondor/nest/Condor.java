@@ -1,4 +1,4 @@
-package com.icecondor.hawk;
+package com.icecondor.nest;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -25,21 +26,21 @@ import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
 
-import com.icecondor.hawk.api.Client;
-import com.icecondor.hawk.api.Client.States;
-import com.icecondor.hawk.api.ClientActions;
-import com.icecondor.hawk.db.Database;
-import com.icecondor.hawk.db.Point;
-import com.icecondor.hawk.db.activity.Config;
-import com.icecondor.hawk.db.activity.Connected;
-import com.icecondor.hawk.db.activity.Connecting;
-import com.icecondor.hawk.db.activity.Disconnected;
-import com.icecondor.hawk.db.activity.GpsLocation;
-import com.icecondor.hawk.service.AlarmReceiver;
-import com.icecondor.hawk.service.BatteryReceiver;
-import com.icecondor.hawk.service.CellReceiver;
-import com.icecondor.hawk.service.GpsReceiver;
-import com.icecondor.hawk.ui.UiActions;
+import com.icecondor.nest.api.Client;
+import com.icecondor.nest.api.Client.States;
+import com.icecondor.nest.api.ClientActions;
+import com.icecondor.nest.db.Database;
+import com.icecondor.nest.db.Point;
+import com.icecondor.nest.db.activity.Config;
+import com.icecondor.nest.db.activity.Connected;
+import com.icecondor.nest.db.activity.Connecting;
+import com.icecondor.nest.db.activity.Disconnected;
+import com.icecondor.nest.db.activity.GpsLocation;
+import com.icecondor.nest.service.AlarmReceiver;
+import com.icecondor.nest.service.BatteryReceiver;
+import com.icecondor.nest.service.CellReceiver;
+import com.icecondor.nest.service.GpsReceiver;
+import com.icecondor.nest.ui.UiActions;
 
 public class Condor extends Service {
 
@@ -150,7 +151,7 @@ public class Condor extends Service {
         if (lastLocation == null) {
             time = System.currentTimeMillis();
         } else {
-            time = lastLocation.getDateTime().getMillis();
+            time = lastLocation.getDateTime().toInstant().toEpochMilli();
         }
         notificationBar.updateText("Waiting for first location.", time);
         api.connect();
@@ -344,11 +345,11 @@ public class Condor extends Service {
         Log.d(Constants.APP_TAG, "condor pushActivities unsynced count "+count);
         if(count > 0) {
             unsynced.moveToFirst();
-            String json = unsynced.getString(unsynced.getColumnIndex(Database.ACTIVITIES_JSON));
+            @SuppressLint("Range") String json = unsynced.getString(unsynced.getColumnIndex(Database.ACTIVITIES_JSON));
             JSONObject activity;
             try {
                 activity = new JSONObject(json);
-                int rowId = unsynced.getInt(unsynced.getColumnIndex(Database.ROW_ID));
+                @SuppressLint("Range") int rowId = unsynced.getInt(unsynced.getColumnIndex(Database.ROW_ID));
                 String apiId = api.activityAdd(activity);
                 activityApiQueue.put(apiId, rowId);
             } catch (JSONException e) {

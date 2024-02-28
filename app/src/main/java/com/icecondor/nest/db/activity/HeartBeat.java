@@ -1,13 +1,12 @@
-package com.icecondor.hawk.db.activity;
+package com.icecondor.nest.db.activity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.ContentValues;
-import android.provider.ContactsContract.DataUsageFeedback;
 
-import com.icecondor.hawk.db.Activity;
-import com.icecondor.hawk.db.Database;
+import com.icecondor.nest.db.Activity;
+import com.icecondor.nest.db.Database;
 
 public class HeartBeat extends Activity  {
     private static final String VERB = "heartbeat";
