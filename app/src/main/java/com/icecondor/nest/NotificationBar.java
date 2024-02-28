@@ -5,8 +5,10 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.NotificationCompat;
 
+import androidx.core.app.NotificationCompat;
+
+import com.icecondor.hawk.R;
 import com.icecondor.nest.ui.alist.Main;
 
 public class NotificationBar {
@@ -19,7 +21,7 @@ public class NotificationBar {
         this.ctx = ctx;
         notificationManager = (NotificationManager)ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         contentIntent = PendingIntent.getActivity(ctx, 0, new Intent(ctx, Main.class),
-                                          Intent.FLAG_ACTIVITY_NEW_TASK);
+                 PendingIntent.FLAG_IMMUTABLE );
     }
 
     public void updateText(String msg) {
@@ -50,12 +52,4 @@ public class NotificationBar {
                .build();
     }
 
-    // old code, doesnt flash the way it used to
-    public void flashText(String msg) {
-        Notification notification = new Notification(R.drawable.ic_notification, msg,
-                System.currentTimeMillis());
-        notification.setLatestEventInfo(ctx, "IceCondor Notice", msg, contentIntent);
-        notificationManager.notify(2, notification);
-        notificationManager.cancel(2);
-    }
 }
